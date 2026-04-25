@@ -6,7 +6,7 @@ class Dasawisma extends User {
         this.id = data.id || null;
         this.password = data.password;
         this.nik = data.nik;
-        this.role = 'anggota'; 
+        this.role = data.role; 
         this.tempat_lahir = data.tempat_lahir;
         this.tanggal_lahir = data.tanggal_lahir;
         this.created_at =  new Date();
