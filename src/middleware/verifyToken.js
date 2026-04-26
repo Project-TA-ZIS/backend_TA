@@ -15,7 +15,7 @@ const verifyJWT = (req, res, next) => {
     if (err)
       return res.status(403).json({ message: "Invalid or expired token" });
     req.id = decoded.id;
-    req.role = decoded.role;
+    req.roles = decoded.roles;
     next();
   });
 };
