@@ -17,6 +17,16 @@ app.use(
   verifyJWT,
   require("./routes/dasawisma_monitoring_routes/anggotaDasawisma.routes"),
 );
+app.use(
+  "/mustahik",
+  verifyJWT,
+  require("./routes/ZIS_monitoring_routes/mustahik.routes"),
+);
+app.use(
+  "/muzakki",
+  verifyJWT,
+  require("./routes/ZIS_monitoring_routes/muzakki.routes"),
+);
 
 // const bcrypt = require('bcrypt');
 // bcrypt.hash('testdasawisma', 10).then(console.log);

@@ -5,7 +5,7 @@ const router = express.Router();
 router.get("/get/getAllAnggota", dasawismaController.getAllAnggotaDasawisma);
 router.get("/get/getAnggota/:id", dasawismaController.getAnggotaDasawismaById);
 router.post("/post/createAnggota", dasawismaController.createAnggotaDasawisma);
-router.post("/post/createKoordinator", dasawismaController.createKoordinatorDasawisma);
+router.delete("/delete/deleteAnggota/:id", dasawismaController.deleteAnggotaDasawisma);
 
 
 module.exports = router;

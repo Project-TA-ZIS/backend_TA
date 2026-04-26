@@ -39,7 +39,7 @@ const createAmil = async (amilData) => {
             nomor_telpon,
             alamat,
             password,
-            roles,
+            roless,
             created_at,
             updated_at,
             deleted_at,
@@ -53,7 +53,7 @@ const createAmil = async (amilData) => {
     amil.nomor_telpon,
     amil.alamat,
     amil.password,
-    amil.roles,
+    amil.roless,
     amil.created_at,
     amil.updated_at,
     amil.deleted_at,
@@ -64,9 +64,21 @@ const createAmil = async (amilData) => {
   return {  ...amilData};
 };
 
+const deleteAmil = async (id) => {
+  const query = `
+    UPDATE amil
+    SET deleted_status = 1, deleted_at = NOW()
+    WHERE id = ? AND deleted_status = 0
+  `;
+  const [result] = await conn.execute(query, [id]);
+  return result.affectedRows > 0;
+}
+
+
 module.exports = {
   getAllAmil,
   getAmilById,
   getAmilByEmail,
   createAmil,
+  deleteAmil,
 };

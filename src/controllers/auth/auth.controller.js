@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const amilRepo = require("../../repositories/ZIS_monitoring_repo/amil.repo");
 const dasawismaRepo = require("../../repositories/dasawisma_monitoring_repo/anggotaDasawisma.repo");
+const mustahikRepo = require("../../repositories/ZIS_monitoring_repo/mustahik.repo");
+const muzakkiRepo = require("../../repositories/ZIS_monitoring_repo/muzakki.repo");
 
 const login = async (req, res) => {
   try {
@@ -10,12 +12,13 @@ const login = async (req, res) => {
 
     const amil = await amilRepo.getAmilByEmail(email);
     if (amil) {
+      console.log(amil.roles);
       const isPasswordValid = await bcrypt.compare(password, amil.password);
       if (!isPasswordValid) {
         return res.status(401).json({ message: "password salah" });
       }
       const token = jwt.sign(
-        { id: amil.id, role: amil.role },
+        { id: amil.id, roles: amil.roles },
         process.env.JWT_SECRET,
         { expiresIn: "1h" },
       );
@@ -32,7 +35,7 @@ const login = async (req, res) => {
         return res.status(401).json({ message: "password salah" });
       }
       const token = jwt.sign(
-        { id: dasawisma.id, role: dasawisma.role },
+        { id: dasawisma.id, roles: dasawisma.roles },
         process.env.JWT_SECRET,
         { expiresIn: "1h" },
       );
@@ -49,14 +52,14 @@ const login = async (req, res) => {
 const getUserLoggedIn = async (req, res) => {
   try {
     const userId = req.id;
-    const userRole = req.role;
+    const userroles = req.roles;
     let userData;
 
-    if (userRole === "amil") {
+    if (userroles === "amil zakat") {
       userData = await amilRepo.getAmilById(userId);
     } else if (
-      userRole === "anggota dasawisma" ||
-      userRole === "koordinator dasawisma"
+      userroles === "anggota dasawisma" ||
+      userroles === "koordinator dasawisma"
     ) {
       userData = await dasawismaRepo.getAnggotaDasawismaById(userId);
     }
@@ -86,9 +89,25 @@ const cekEmail = async (email) => {
   return !!user;
 };
 
+const cekNIKTerpakai = async (nik) => {
+  const [mustahik, muzakki] = await Promise.all([
+    mustahikRepo.getMustahikByNik(nik),
+    muzakkiRepo.getMuzakkiByNik(nik),
+  ]);
+
+  return mustahik || muzakki;
+};
+
+const cekNIK = async (nik) => {
+  const user = await cekNIKTerpakai(nik);
+  return !!user;
+}
+
 module.exports = {
   login,
   getUserLoggedIn,
-  cekEmail,
   cekEmailTerpakai,
+  cekEmail,
+  cekNIKTerpakai,
+  cekNIK,
 };

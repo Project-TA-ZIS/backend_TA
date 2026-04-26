@@ -29,7 +29,6 @@ const createAnggotaDasawisma = async (anggotaData) => {
   const hashedPassword = await bcrypt.hash(anggotaData.password, 10);
   const anggota = new DasawismaModel({
     ...anggotaData,
-    role: "anggota dasawisma",
     password: hashedPassword,
   });
   const query = `
@@ -41,7 +40,7 @@ const createAnggotaDasawisma = async (anggotaData) => {
       alamat,
       password,
       nik,
-      role,
+      roles,
       tempat_lahir,
       tanggal_lahir,
       created_at,
@@ -59,7 +58,7 @@ const createAnggotaDasawisma = async (anggotaData) => {
     anggota.alamat,
     anggota.password,
     anggota.nik,
-    anggota.role,
+    anggota.roles,
     anggota.tempat_lahir,
     anggota.tanggal_lahir,
     anggota.created_at,
@@ -75,54 +74,20 @@ const createAnggotaDasawisma = async (anggotaData) => {
   };
 };
 
-const createKoordinatorDasawisma = async (anggotaData) => {
-  const hashedPassword = await bcrypt.hash(anggotaData.password, 10);
-  const anggota = new DasawismaModel({
-    ...anggotaData,
-    role: "koordinator dasawisma",
-    password: hashedPassword,
-  });
+const deleteAnggotaDasawisma = async (id) => {
+  const deleted_at = new Date();
+  const deleted_status = 1;
   const query = `
-    INSERT INTO anggota_dasawisma 
-    (
-      nama_lengkap,
-      email,
-      nomor_telpon,
-      alamat,
-      password,
-      nik,
-      role,
-      tempat_lahir,
-      tanggal_lahir,
-      created_at,
-      updated_at,
-      deleted_at,
-      deleted_status
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    UPDATE anggota_dasawisma
+    SET deleted_at = ?, deleted_status = ?
+    WHERE id = ? AND deleted_status = 0
   `;
 
-  const values = [
-    anggota.nama_lengkap,
-    anggota.email,
-    anggota.nomor_telpon,
-    anggota.alamat,
-    anggota.password,
-    anggota.nik,
-    anggota.role,
-    anggota.tempat_lahir,
-    anggota.tanggal_lahir,
-    anggota.created_at,
-    anggota.updated_at,
-    anggota.deleted_at,
-    anggota.deleted_status,
-  ];
+  const values = [deleted_at, deleted_status, id];
 
   const [result] = await conn.execute(query, values);
 
-  return {
-    ...anggota,
-  };
+  return result.affectedRows > 0;
 };
 
 module.exports = {
@@ -130,5 +95,5 @@ module.exports = {
   getAnggotaDasawismaById,
   getAnggotaDasawismaByEmail,
   createAnggotaDasawisma,
-  createKoordinatorDasawisma,
+  deleteAnggotaDasawisma,
 };
