@@ -79,10 +79,47 @@ const deleteMuzakki = async (id) => {
   return result.affectedRows > 0;
 };
 
+const editMuzakki = async (id, muzakkiData) => {
+  const muzakki = new muzakkiModel({
+    ...muzakkiData,
+  });
+  const query = `
+        UPDATE muzakki
+        SET
+            nama_lengkap = ?,
+            email = ?,
+            nomor_telpon = ?,
+            alamat = ?,
+            npwp = ?,
+            nik = ?,
+            tempat_lahir = ?,
+            tanggal_lahir = ?,
+            jenis_kelamin = ?,
+            pekerjaan = ?,
+            updated_at = NOW()
+        WHERE id = ? AND deleted_status = 0
+    `;
+  const [result] = await conn.execute(query, [
+    muzakki.nama_lengkap,
+    muzakki.email,
+    muzakki.nomor_telpon,
+    muzakki.alamat,
+    muzakki.npwp,
+    muzakki.nik,
+    muzakki.tempat_lahir,
+    muzakki.tanggal_lahir,
+    muzakki.jenis_kelamin,
+    muzakki.pekerjaan,
+    id,
+  ]);
+  return result.affectedRows > 0;
+}
+
 module.exports = {
   getAllMuzakki,
   getMuzakkiById,
   createMuzakki,
   deleteMuzakki,
   getMuzakkiByNik,
+  editMuzakki,
 };

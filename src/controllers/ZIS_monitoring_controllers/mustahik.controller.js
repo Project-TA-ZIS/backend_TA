@@ -76,9 +76,31 @@ const deleteMustahik = async (req, res) => {
   }
 };
 
+const editMustahik = async (req, res) => {
+  const { id } = req.params;
+  const mustahikData = req.body;
+  const roles = req.roles;
+  try {
+    if (roles != "amil zakat") {
+      return res
+        .status(403)
+        .json({ error: "hanya amil zakat yang boleh mengedit mustahik" });
+    }
+    const updatedMustahik = await mustahikRepo.editMustahik(id, mustahikData);
+    if (updatedMustahik) {
+      res.status(200).json({ message: "Mustahik updated successfully", status: updatedMustahik, data: mustahikData });
+    } else {
+      res.status(404).json({ message: "Mustahik not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllMustahik,
   getMustahikById,
   createMustahik,
   deleteMustahik,
+  editMustahik
 };
