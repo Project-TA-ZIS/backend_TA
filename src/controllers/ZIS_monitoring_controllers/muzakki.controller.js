@@ -63,6 +63,26 @@ const deleteMuzakki = async (req, res) => {
   }
 };
 
+const editMuzakki = async (req, res) => {
+  const { id } = req.params;
+  const muzakkiData = req.body;
+  try {
+    const roles = req.roles;
+    if (roles != "amil zakat") {
+      return res
+        .status(403)
+        .json({ error: "hanya amil zakat yang boleh mengedit muzakki" });
+    }
+    const updated = await muzakkiRepo.editMuzakki(id, muzakkiData);
+    if (!updated) {
+      return res.status(404).json({ message: "Muzakki not found" });
+    }
+    res.status(200).json({ message: "Muzakki updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllMuzakki,
   getMuzakkiById,

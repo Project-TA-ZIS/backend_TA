@@ -75,10 +75,44 @@ const deleteMustahik = async (id) => {
   return result.affectedRows > 0;
 };
 
+const editMustahik = async (id, mustahikData) => {
+  const mustahik = new mustahikModel({
+    ...mustahikData,
+  });
+  const query = `
+
+        UPDATE mustahik
+        SET 
+            nama_lengkap = ?,
+            nomor_telpon = ?,
+            alamat = ?,
+            nik = ?,
+            tempat_lahir = ?,
+            tanggal_lahir = ?,
+            jenis_kelamin = ?,
+            kategori = ?,
+            updated_at = NOW()
+        WHERE id = ? AND deleted_status = 0
+    `;
+  const [result] = await conn.execute(query, [
+    mustahik.nama_lengkap,
+    mustahik.nomor_telpon,
+    mustahik.alamat,
+    mustahik.nik,
+    mustahik.tempat_lahir,
+    mustahik.tanggal_lahir,
+    mustahik.jenis_kelamin,
+    mustahik.kategori,
+    id,
+  ]);
+  return result.affectedRows > 0;
+};
+
 module.exports = {
   getAllMustahik,
   getMustahikById,
   createMustahik,
   deleteMustahik,
   getMustahikByNik,
+  editMustahik,
 };
