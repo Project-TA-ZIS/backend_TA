@@ -7,6 +7,7 @@ const verifyJWT = require("./middleware/verifyToken");
 app.use(cors());
 app.use(express.json());
 app.use("/auth", require("./routes/auth_routes/auth.routes"));
+
 app.use(
   "/amil",
   verifyJWT,
@@ -27,7 +28,15 @@ app.use(
   verifyJWT,
   require("./routes/ZIS_monitoring_routes/muzakki.routes"),
 );
+app.use(
+  "/pemasukanZIS",
+  require("./routes/ZIS_monitoring_routes/pemasukanZIS.routes"),
+);
 
+app.use(
+  "/totalZIS",
+  require("./routes/ZIS_monitoring_routes/totalZIS.routes"),
+);
 // const bcrypt = require('bcrypt');
 // bcrypt.hash('testdasawisma', 10).then(console.log);
 

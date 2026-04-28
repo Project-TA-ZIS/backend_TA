@@ -1,10 +1,14 @@
-class TotalKasZIS   {
-    constructor(data) {
-        this.id = data.id;
-        this.jumlah_keseluruhan = data.jumlah_keseluruhan;
-        this.kategori = data.kategori; // ENUM: zakat fitrah, zakat mal, shodaqoh, infaq
-        this.updated_at = new Date();
-    }
-}
+const express = require("express");
+const totalZISController = require("../../controllers/ZIS_monitoring_controllers/totalZIS.controller");
+const router = express.Router();
 
-module.exports = TotalKasZIS;
+router.get(
+  "/get/getTotalZISByKategori",
+  totalZISController.getTotalZISByKategori,
+);
+router.get(
+  "/get/getTotalAllPemasukanZIS",
+  totalZISController.getTotalAllPemasukanZIS,
+);
+
+module.exports = router;
