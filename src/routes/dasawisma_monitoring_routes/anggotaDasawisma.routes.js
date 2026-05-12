@@ -6,6 +6,7 @@ router.get("/get/getAllAnggota", dasawismaController.getAllAnggotaDasawisma);
 router.get("/get/getAnggota/:id", dasawismaController.getAnggotaDasawismaById);
 router.post("/post/createAnggota", dasawismaController.createAnggotaDasawisma);
 router.delete("/delete/deleteAnggota/:id", dasawismaController.deleteAnggotaDasawisma);
+router.put("/update/updateAnggota", dasawismaController.updateAnggotaDasawisma);
 
 
 module.exports = router;

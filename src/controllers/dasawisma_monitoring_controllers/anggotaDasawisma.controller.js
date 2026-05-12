@@ -30,6 +30,7 @@ const getAnggotaDasawismaById = async (req, res) => {
 };
 
 const createAnggotaDasawisma = async (req, res) => {
+  console.log(req.body)
   try {
     const roles = req.roles;
 
@@ -78,10 +79,24 @@ const deleteAnggotaDasawisma = async (req, res) => {
   } 
 };
 
+const updateAnggotaDasawisma = async (req, res) => {
+  try {
+
+    const id = req.id;
+    const updated = await anggotaRepo.updateAnggotaDasawisma(id, req.body);
+    if (!updated) {
+      return res.status(404).json({ message: "Anggota not found" });
+    }
+    return res.status(200).json({ message: "Anggota berhasil diupdate" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   getAllAnggotaDasawisma,
   getAnggotaDasawismaById,
   createAnggotaDasawisma,
-  deleteAnggotaDasawisma
+  deleteAnggotaDasawisma,
+  updateAnggotaDasawisma
 };
