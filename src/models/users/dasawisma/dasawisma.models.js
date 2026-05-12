@@ -3,12 +3,12 @@ const User = require('../users.models');
 class Dasawisma extends User {
     constructor(data) {
         super(data);
-        this.id = data.id || null;
+        this.id = data.id ?? null;
         this.password = data.password;
-        this.nik = data.nik;
-        this.role = data.role; 
-        this.tempat_lahir = data.tempat_lahir;
-        this.tanggal_lahir = data.tanggal_lahir;
+        this.nik = data.nik ?? null;
+        this.roles = data.roles; 
+        this.tempat_lahir = data.tempat_lahir ?? null;
+        this.tanggal_lahir = data.tanggal_lahir ?? null;
         this.created_at =  new Date();
         this.updated_at = null;
         this.deleted_at = null;

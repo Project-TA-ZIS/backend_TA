@@ -40,7 +40,6 @@ const addPemasukanZIS = async (req, res) => {
       req.body;
 
     const roles = req.roles;
-    console.log(req.body)
     if (roles != "amil zakat") {
       return res.status(403).json({
         error: "hanya amil zakat yang boleh menambahkan pemasukan ZIS",

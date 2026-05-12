@@ -90,10 +90,46 @@ const deleteAnggotaDasawisma = async (id) => {
   return result.affectedRows > 0;
 };
 
+const updateAnggotaDasawisma = async (id, anggotaData) => {
+  const updated_at = new Date();
+  const query = `
+  UPDATE anggota_dasawisma
+  SET 
+    nama_lengkap = ?,
+    email = ?,
+    nomor_telpon = ?,
+    alamat = ?,
+    password = ?,
+    nik = ?,
+    tempat_lahir = ?,
+    tanggal_lahir = ?,
+    updated_at = ?
+  WHERE id = ? AND deleted_status = 0
+`;
+
+  const values = [
+    anggotaData.nama_lengkap ?? null,
+    anggotaData.email ?? null,
+    anggotaData.nomor_telpon ?? null,
+    anggotaData.alamat ?? null,
+    anggotaData.password ?? null,
+    anggotaData.nik ?? null,
+    anggotaData.tempat_lahir ?? null,
+    anggotaData.tanggal_lahir ?? null,
+    updated_at,
+    id,
+  ];
+
+  const [result] = await conn.execute(query, values);
+
+  return result.affectedRows > 0;
+};
+
 module.exports = {
   getAllAnggotaDasawisma,
   getAnggotaDasawismaById,
   getAnggotaDasawismaByEmail,
   createAnggotaDasawisma,
   deleteAnggotaDasawisma,
+  updateAnggotaDasawisma,
 };
