@@ -7,6 +7,20 @@ const getTotalZISByKategori = async () => {
   return data;
 };
 
+const getTotalZISWhereKategori = async (kategori) => {
+
+  const [data] = await conn.execute(
+    `
+    SELECT jumlah_keseluruhan
+    FROM total_zis
+    WHERE kategori = ?
+    `,
+    [kategori]
+  );
+
+  return data[0];
+};
+
 const getTotalAllPemasukanZIS = async () => {
   const [data] = await conn.execute(`
     SELECT 
@@ -17,7 +31,7 @@ const getTotalAllPemasukanZIS = async () => {
   return data[0];
 };
 
-const updateTotalZIS = async (kategori, jumlah) => {
+const tambahTotalZIS = async (kategori, jumlah) => {
   const [result] = await conn.execute(
     "UPDATE total_zis SET jumlah_keseluruhan = jumlah_keseluruhan + ?, updated_at = ? WHERE kategori = ?",
     [jumlah, new Date(), kategori]
@@ -25,8 +39,18 @@ const updateTotalZIS = async (kategori, jumlah) => {
   return result;
 };
 
+const kurangTotalZIS = async (kategori, jumlah) => {
+  const [result] = await conn.execute(
+    "UPDATE total_zis SET jumlah_keseluruhan = jumlah_keseluruhan - ?, updated_at = ? WHERE kategori = ?",
+    [jumlah, new Date(), kategori]
+  );
+  return result;
+};
+
 module.exports = {
   getTotalZISByKategori,
+  getTotalZISWhereKategori,
   getTotalAllPemasukanZIS,
-  updateTotalZIS,
+  tambahTotalZIS,
+  kurangTotalZIS,
 };
