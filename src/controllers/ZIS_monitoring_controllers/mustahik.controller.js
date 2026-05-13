@@ -1,15 +1,18 @@
 const mustahikRepo = require("../../repositories/ZIS_monitoring_repo/mustahik.repo");
 const authController = require("../auth/auth.controller");
+const mustahikModel = require("../../models/mustahik/mustahik.models");
 
 const getAllMustahik = async (req, res) => {
   try {
-    const mustahik = await mustahikRepo.getAllMustahik();
+    const mustahik = (await mustahikRepo.getAllMustahik()).map(
+      (item) => new mustahikModel(item),
+    );
 
     if (mustahik.length === 0) {
       return res.status(404).json({ error: "No mustahik found" });
     }
 
-    res.status(200).json(mustahik);
+    res.status(200).json({ data: mustahik });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -17,10 +20,11 @@ const getAllMustahik = async (req, res) => {
 
 const getMustahikById = async (req, res) => {
   const { id } = req.params;
+
   try {
     const mustahik = await mustahikRepo.getMustahikById(id);
     if (mustahik) {
-      res.status(200).json(mustahik);
+      res.status(200).json({ data: new mustahikModel(mustahik) });
     } else {
       res.status(404).json({ error: "Mustahik not found" });
     }
@@ -30,18 +34,27 @@ const getMustahikById = async (req, res) => {
 };
 
 const createMustahik = async (req, res) => {
-  const mustahikData = req.body;
-  const roles = req.roles;
-
   try {
+    const roles = req.roles;
     if (roles != "amil zakat") {
       return res
         .status(403)
         .json({ error: "hanya amil zakat yang boleh menambah mustahik" });
     }
 
+    const mustahikData = new mustahikModel({
+      nama_lengkap: req.body.nama_lengkap,
+      nomor_telpon: req.body.nomor_telpon,
+      alamat: req.body.alamat,
+      nik: req.body.nik,
+      tempat_lahir: req.body.tempat_lahir,
+      tanggal_lahir: req.body.tanggal_lahir,
+      jenis_kelamin: req.body.jenis_kelamin,
+      kategori: req.body.kategori,
+    });
+
     const cekNik = await authController.cekNIK(mustahikData.nik);
-    
+
     if (cekNik) {
       return res.status(400).json({ message: "NIK sudah terdaftar" });
     }
@@ -49,7 +62,10 @@ const createMustahik = async (req, res) => {
     const newMustahik = await mustahikRepo.createMustahik(mustahikData);
     res.status(200).json({
       message: "Mustahik created successfully",
-      data: newMustahik,
+      data: {
+        ...mustahikData,
+        id: newMustahik,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -77,18 +93,34 @@ const deleteMustahik = async (req, res) => {
 };
 
 const editMustahik = async (req, res) => {
-  const { id } = req.params;
-  const mustahikData = req.body;
-  const roles = req.roles;
   try {
+    const { id } = req.params;
+
+    const roles = req.roles;
     if (roles != "amil zakat") {
       return res
         .status(403)
         .json({ error: "hanya amil zakat yang boleh mengedit mustahik" });
     }
+
+    const mustahikData = new mustahikModel({
+      nama_lengkap: req.body.nama_lengkap,
+      nomor_telpon: req.body.nomor_telpon,
+      alamat: req.body.alamat,
+      nik: req.body.nik,
+      tempat_lahir: req.body.tempat_lahir,
+      tanggal_lahir: req.body.tanggal_lahir,
+      jenis_kelamin: req.body.jenis_kelamin,
+      kategori: req.body.kategori,
+    });
+
     const updatedMustahik = await mustahikRepo.editMustahik(id, mustahikData);
     if (updatedMustahik) {
-      res.status(200).json({ message: "Mustahik updated successfully", status: updatedMustahik, data: mustahikData });
+      res.status(200).json({
+        message: "Mustahik updated successfully",
+        status: updatedMustahik,
+        data: mustahikData,
+      });
     } else {
       res.status(404).json({ message: "Mustahik not found" });
     }
@@ -102,5 +134,5 @@ module.exports = {
   getMustahikById,
   createMustahik,
   deleteMustahik,
-  editMustahik
+  editMustahik,
 };

@@ -1,33 +1,40 @@
 const muzakkiRepo = require("../../repositories/ZIS_monitoring_repo/muzakki.repo");
 const authController = require("../auth/auth.controller");
+const muzakkiModel = require("../../models/users/muzakki/muzakki.models");
 
 const getAllMuzakki = async (req, res) => {
   try {
-    const muzakki = await muzakkiRepo.getAllMuzakki();
+    const muzakki = (await muzakkiRepo.getAllMuzakki()).map(
+      (item) => new muzakkiModel(item),
+    );
+
     if (muzakki.length === 0) {
       return res.status(404).json({ message: "No muzakki found" });
     }
-    res.status(200).json(muzakki);
+    res.status(200).json({
+      data: muzakki,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 const getMuzakkiById = async (req, res) => {
-  const { id } = req.params;
   try {
+    const { id } = req.params;
     const muzakki = await muzakkiRepo.getMuzakkiById(id);
     if (!muzakki) {
       return res.status(404).json({ message: "Muzakki not found" });
     }
-    res.status(200).json(muzakki);
+    res.status(200).json({
+      data: new muzakkiModel(muzakki),
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 const createMuzakki = async (req, res) => {
-  const muzakkiData = req.body;
   try {
     const roles = req.roles;
     if (roles != "amil zakat") {
@@ -35,6 +42,18 @@ const createMuzakki = async (req, res) => {
         .status(403)
         .json({ error: "hanya amil zakat yang boleh menambah muzakki" });
     }
+    const muzakkiData = new muzakkiModel({
+      nama_lengkap: req.body.nama_lengkap,
+      email: req.body.email,
+      nomor_telpon: req.body.nomor_telpon,
+      alamat: req.body.alamat,
+      npwp: req.body.npwp,
+      nik: req.body.nik,
+      tempat_lahir: req.body.tempat_lahir,
+      tanggal_lahir: req.body.tanggal_lahir,
+      jenis_kelamin: req.body.jenis_kelamin,
+      pekerjaan: req.body.pekerjaan,
+    });
 
     const cekNik = await authController.cekNIK(muzakkiData.nik);
     if (cekNik) {
@@ -42,9 +61,13 @@ const createMuzakki = async (req, res) => {
     }
 
     const newMuzakkiId = await muzakkiRepo.createMuzakki(muzakkiData);
-    res
-      .status(201)
-      .json({ message: "Muzakki created successfully", id: newMuzakkiId });
+    res.status(201).json({
+      message: "Muzakki created successfully",
+      data: {
+        ...muzakkiData,
+        id: newMuzakkiId,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -64,20 +87,43 @@ const deleteMuzakki = async (req, res) => {
 };
 
 const editMuzakki = async (req, res) => {
-  const { id } = req.params;
-  const muzakkiData = req.body;
   try {
+    const { id } = req.params;
+
     const roles = req.roles;
     if (roles != "amil zakat") {
       return res
         .status(403)
         .json({ error: "hanya amil zakat yang boleh mengedit muzakki" });
     }
+
+    const muzakkiData = new muzakkiModel({
+      id: parseInt(id),
+      nama_lengkap: req.body.nama_lengkap,
+      email: req.body.email,
+      nomor_telpon: req.body.nomor_telpon,
+      alamat: req.body.alamat,
+      npwp: req.body.npwp,
+      nik: req.body.nik,
+      tempat_lahir: req.body.tempat_lahir,
+      tanggal_lahir: req.body.tanggal_lahir,
+      jenis_kelamin: req.body.jenis_kelamin,
+      pekerjaan: req.body.pekerjaan,
+    });
+
+    const cekNik = await authController.cekNIK(muzakkiData.nik);
+    if (cekNik) {
+      return res.status(400).json({ message: "NIK sudah terdaftar" });
+    }
+
     const updated = await muzakkiRepo.editMuzakki(id, muzakkiData);
     if (!updated) {
       return res.status(404).json({ message: "Muzakki not found" });
     }
-    res.status(200).json({ message: "Muzakki updated successfully" });
+
+    res
+      .status(200)
+      .json({ message: "Muzakki updated successfully", data: muzakkiData });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -88,4 +134,5 @@ module.exports = {
   getMuzakkiById,
   createMuzakki,
   deleteMuzakki,
+  editMuzakki,
 };
