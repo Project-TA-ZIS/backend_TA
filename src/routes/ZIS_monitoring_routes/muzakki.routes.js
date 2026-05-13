@@ -7,5 +7,6 @@ router.get("/get/getAllMuzakki", muzakkiController.getAllMuzakki);
 router.get("/get/getMuzakkiById/:id", muzakkiController.getMuzakkiById);
 router.post("/post/createMuzakki", muzakkiController.createMuzakki);
 router.delete("/delete/deleteMuzakki/:id", muzakkiController.deleteMuzakki);
+router.put("/put/editMuzakki/:id", muzakkiController.editMuzakki);
 
 module.exports = router;

@@ -27,41 +27,19 @@ const getAmilByEmail = async (email) => {
 
 const createAmil = async (amilData) => {
   const hashedPassword = await bcrypt.hash(amilData.password, 10);
-  const amil = new amilModel({
-    ...amilData,
-    password: hashedPassword,
-  });
-  const query = `
-        INSERT INTO amil 
-        (
-            nama_lengkap,   
-            email,
-            nomor_telpon,
-            alamat,
-            password,
-            roless,
-            created_at,
-            updated_at,
-            deleted_at,
-            deleted_status
-        )   
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-  const values = [
-    amil.nama_lengkap,
-    amil.email,
-    amil.nomor_telpon,
-    amil.alamat,
-    amil.password,
-    amil.roless,
-    amil.created_at,
-    amil.updated_at,
-    amil.deleted_at,
-    amil.deleted_status,
-  ];
-
-  const [result] = await conn.execute(query, values);
-  return {  ...amilData};
+  const [result] = await conn.execute(
+    "INSERT INTO amil (nama_lengkap, email, nomor_telpon, alamat, password, roles, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    [
+      amilData.nama_lengkap,
+      amilData.email,
+      amilData.nomor_telpon,
+      amilData.alamat,
+      hashedPassword,
+      amilData.roles,
+      amilData.created_at,
+    ],
+  );
+  return result.insertId;
 };
 
 const deleteAmil = async (id) => {
@@ -72,8 +50,24 @@ const deleteAmil = async (id) => {
   `;
   const [result] = await conn.execute(query, [id]);
   return result.affectedRows > 0;
-}
+};
 
+const updateAmil = async (id, amilData) => {
+  const query = `
+    UPDATE amil
+    SET nama_lengkap = ?, email = ?, nomor_telpon = ?, alamat = ?,  roles = ?, updated_at = NOW()
+    WHERE id = ? AND deleted_status = 0
+  `;
+  const [result] = await conn.execute(query, [
+    amilData.nama_lengkap,
+    amilData.email,
+    amilData.nomor_telpon,
+    amilData.alamat,
+    amilData.roles,
+    id,
+  ]);
+  return result.affectedRows > 0;
+};
 
 module.exports = {
   getAllAmil,
@@ -81,4 +75,5 @@ module.exports = {
   getAmilByEmail,
   createAmil,
   deleteAmil,
+  updateAmil
 };

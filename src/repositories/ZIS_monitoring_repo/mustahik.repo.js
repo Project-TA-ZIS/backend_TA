@@ -26,14 +26,12 @@ const getMustahikByNik = async (nik) => {
 };
 
 const createMustahik = async (mustahikData) => {
-  const mustahik = new mustahikModel({
-    ...mustahikData,
-  });
-  const query = `
-        INSERT INTO mustahik 
-        (
-            nama_lengkap,
-            nomor_telpon,
+  const [result] = await conn.execute(
+    `
+      INSERT INTO mustahik 
+      (
+          nama_lengkap,
+          nomor_telpon,
             alamat,
             nik,
             tempat_lahir,
@@ -46,22 +44,24 @@ const createMustahik = async (mustahikData) => {
             deleted_status
         )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-  const [result] = await conn.execute(query, [
-    mustahik.nama_lengkap,
-    mustahik.nomor_telpon,
-    mustahik.alamat,
-    mustahik.nik,
-    mustahik.tempat_lahir,
-    mustahik.tanggal_lahir,
-    mustahik.jenis_kelamin,
-    mustahik.kategori,
-    mustahik.created_at,
-    mustahik.updated_at,
-    mustahik.deleted_at,
-    mustahik.deleted_status,
-  ]);
-  return { id: result.insertId, ...mustahikData };
+    `,
+    [
+      mustahikData.nama_lengkap,
+      mustahikData.nomor_telpon,
+      mustahikData.alamat,
+      mustahikData.nik,
+      mustahikData.tempat_lahir,
+      mustahikData.tanggal_lahir,
+      mustahikData.jenis_kelamin,
+      mustahikData.kategori,
+      mustahikData.created_at,
+      mustahikData.updated_at,
+      mustahikData.deleted_at,
+      mustahikData.deleted_status,
+    ],
+  );
+
+  return result.insertId;
 };
 
 const deleteMustahik = async (id) => {
@@ -76,9 +76,6 @@ const deleteMustahik = async (id) => {
 };
 
 const editMustahik = async (id, mustahikData) => {
-  const mustahik = new mustahikModel({
-    ...mustahikData,
-  });
   const query = `
 
         UPDATE mustahik
@@ -95,14 +92,14 @@ const editMustahik = async (id, mustahikData) => {
         WHERE id = ? AND deleted_status = 0
     `;
   const [result] = await conn.execute(query, [
-    mustahik.nama_lengkap,
-    mustahik.nomor_telpon,
-    mustahik.alamat,
-    mustahik.nik,
-    mustahik.tempat_lahir,
-    mustahik.tanggal_lahir,
-    mustahik.jenis_kelamin,
-    mustahik.kategori,
+    mustahikData.nama_lengkap,
+    mustahikData.nomor_telpon,
+    mustahikData.alamat,
+    mustahikData.nik,
+    mustahikData.tempat_lahir,
+    mustahikData.tanggal_lahir,
+    mustahikData.jenis_kelamin,
+    mustahikData.kategori,
     id,
   ]);
   return result.affectedRows > 0;

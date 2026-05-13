@@ -64,9 +64,8 @@ const createMuzakki = async (muzakkiData) => {
     muzakki.updated_at,
     muzakki.deleted_at,
     muzakki.deleted_status,
-    
   ]);
-  return {id: result.insertId, ...muzakkiData};
+  return result.insertId;
 };
 
 const deleteMuzakki = async (id) => {
@@ -113,7 +112,7 @@ const editMuzakki = async (id, muzakkiData) => {
     id,
   ]);
   return result.affectedRows > 0;
-}
+};
 
 module.exports = {
   getAllMuzakki,
