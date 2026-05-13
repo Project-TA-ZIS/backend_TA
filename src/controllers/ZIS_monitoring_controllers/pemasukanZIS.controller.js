@@ -6,12 +6,14 @@ const totalZIS = require("../../models/total_kas/totalZIS.models");
 
 const getAllPemasukanZIS = async (req, res) => {
   try {
-    const data = await pemasukanZISRepo.getAllPemasukanZIS();
+    const data = (await pemasukanZISRepo.getAllPemasukanZIS()).map(
+      (item) => new PemasukanZIS(item),
+    );
     if (data.length === 0) {
       return res.status(404).json({ message: "No pemasukan ZIS found" });
     }
 
-    res.status(200).json(data);
+    res.status(200).json({ data: data });
   } catch (error) {
     res
       .status(500)
@@ -26,7 +28,7 @@ const getPemasukanZISById = async (req, res) => {
     if (!data) {
       return res.status(404).json({ message: "Pemasukan ZIS not found" });
     }
-    res.status(200).json(data);
+    res.status(200).json({ data: new PemasukanZIS(data) });
   } catch (error) {
     res
       .status(500)
@@ -36,9 +38,6 @@ const getPemasukanZISById = async (req, res) => {
 
 const addPemasukanZIS = async (req, res) => {
   try {
-    const { muzakki_id, kategori, jumlah, deskripsi, tanggal_penghimpunan } =
-      req.body;
-
     const roles = req.roles;
     if (roles != "amil zakat") {
       return res.status(403).json({
@@ -46,22 +45,35 @@ const addPemasukanZIS = async (req, res) => {
       });
     }
 
-    const muzakki = await muzakkiRepo.getMuzakkiById(muzakki_id);
+    const newPemasukanZIS = new PemasukanZIS({
+      muzakki_id: req.body.muzakki_id,
+      kategori: req.body.kategori,
+      jumlah: req.body.jumlah,
+      deskripsi: req.body.deskripsi,
+      tanggal_penghimpunan: req.body.tanggal_penghimpunan,
+    });
+
+    const muzakki = await muzakkiRepo.getMuzakkiById(
+      newPemasukanZIS.muzakki_id,
+    );
     if (!muzakki) {
       return res.status(404).json({ message: "Muzakki not found" });
     }
 
-    const data = await pemasukanZISRepo.addPemasukanZIS({
-      muzakki_id,
-      kategori,
-      jumlah,
-      deskripsi,
-      tanggal_penghimpunan,
+    const insertId = await pemasukanZISRepo.addPemasukanZIS(newPemasukanZIS);
+
+    await totalZISRepo.tambahTotalZIS(
+      newPemasukanZIS.kategori,
+      newPemasukanZIS.jumlah,
+    );
+
+    res.status(200).json({
+      message: "Pemasukan ZIS added successfully",
+      data: {
+        ...newPemasukanZIS,
+        id: insertId,
+      },
     });
-    await totalZISRepo.updateTotalZIS(kategori, jumlah);
-    res
-      .status(200)
-      .json({ message: "Pemasukan ZIS added successfully", id: data });
   } catch (error) {
     res
       .status(500)
@@ -71,10 +83,6 @@ const addPemasukanZIS = async (req, res) => {
 
 const updatePemasukanZIS = async (req, res) => {
   try {
-    const id = req.params.id;
-    const { muzakki_id, kategori, jumlah, deskripsi, tanggal_penghimpunan } =
-      req.body;
-
     const roles = req.roles;
     if (roles != "amil zakat") {
       return res
@@ -82,7 +90,17 @@ const updatePemasukanZIS = async (req, res) => {
         .json({ error: "hanya amil zakat yang boleh mengedit pemasukan ZIS" });
     }
 
-    const muzakki = await muzakkiRepo.getMuzakkiById(muzakki_id);
+    const { id } = req.params.id;
+
+    const pemasukanZIS = new PemasukanZIS({
+      muzakki_id: req.body.muzakki_id,
+      kategori: req.body.kategori,
+      jumlah: req.body.jumlah,
+      deskripsi: req.body.deskripsi,
+      tanggal_penghimpunan: req.body.tanggal_penghimpunan,
+    });
+
+    const muzakki = await muzakkiRepo.getMuzakkiById(PemasukanZIS.muzakki_id);
     if (!muzakki) {
       return res.status(404).json({ message: "Muzakki not found" });
     }
@@ -92,38 +110,24 @@ const updatePemasukanZIS = async (req, res) => {
       return res.status(404).json({ message: "Pemasukan ZIS not found" });
     }
 
-    // ✅ UPDATE DATA DULU
-    await pemasukanZISRepo.updatePemasukanZIS(id, {
-      muzakki_id,
-      kategori,
-      jumlah,
-      deskripsi,
-      tanggal_penghimpunan,
-    });
-
-    // 🔥 CEK PERUBAHAN
     const isJumlahChanged = jumlah !== existingData.jumlah;
     const isKategoriChanged = kategori !== existingData.kategori;
 
-    // ✅ HANYA UPDATE TOTAL JIKA PERLU
     if (isJumlahChanged || isKategoriChanged) {
-      // ❗ Kalau kategori berubah → lebih kompleks
       if (isKategoriChanged) {
-        // kurangi kategori lama
         await totalZISRepo.updateTotalZIS(
           existingData.kategori,
           -existingData.jumlah,
         );
 
-        // tambah ke kategori baru
         await totalZISRepo.updateTotalZIS(kategori, jumlah);
       } else {
-        // hanya jumlah berubah
         const selisih = jumlah - existingData.jumlah;
 
         await totalZISRepo.updateTotalZIS(kategori, selisih);
       }
     }
+    await pemasukanZISRepo.updatePemasukanZIS(id, pemasukanZIS);
 
     res.status(200).json({ message: "Pemasukan ZIS updated successfully" });
   } catch (error) {

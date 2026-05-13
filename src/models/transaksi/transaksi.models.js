@@ -1,9 +1,10 @@
 class transaksi {
-    constructor(data) {
-        this.jumlah = data.jumlah;
-        this.deskripsi = data.deskripsi;
-        this.tanggal = data.tanggal;
-    }
+  constructor(data) {
+    this.id = data.id ?? null;
+    this.jumlah = data.jumlah ?? 0;
+    this.deskripsi = data.deskripsi ?? null;
+    // this.tanggal = data.tanggal;
+  }
 }
 
 module.exports = transaksi;
