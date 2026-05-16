@@ -45,17 +45,14 @@ const createAnggotaDasawisma = async (req, res) => {
       });
     }
 
-    const cekEmail = await authController.cekEmail(req.body.email);
-    if (cekEmail) {
-      return res.status(400).json({ message: "Email sudah terdaftar" });
-    }
-
     const data = new anggotaDasawismaModel({
       nama_lengkap: req.body.nama_lengkap,
       email: req.body.email,
       password: req.body.password,
       roles: req.body.roles,
     });
+
+    await validateNewData(data);
 
     const created = await anggotaRepo.createAnggotaDasawisma(data);
     return res.status(200).json({
@@ -106,6 +103,8 @@ const updateAnggotaDasawisma = async (req, res) => {
       tanggal_lahir: req.body.tanggal_lahir,
     });
 
+    await validateNewData(newData, id);
+
     const updated = await anggotaRepo.updateAnggotaDasawisma(id, newData);
     if (!updated) {
       return res.status(404).json({ message: "Anggota not found" });
@@ -115,6 +114,37 @@ const updateAnggotaDasawisma = async (req, res) => {
       .json({ message: "Anggota berhasil diupdate", data: updated });
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+const validateNewData = async (data, currentId = null) => {
+  // cek email
+  if (data.email) {
+    const emailExist = await anggotaRepo.getAnggotaDasawismaByEmail(data.email);
+
+    if (emailExist && emailExist.id != currentId) {
+      throw new Error("Email sudah terdaftar");
+    }
+  }
+
+  // cek nik
+  if (data.nik) {
+    const nikExist = await anggotaRepo.getAnggotaDasawismaByNik(data.nik);
+
+    if (nikExist && nikExist.id != currentId) {
+      throw new Error("NIK sudah terdaftar");
+    }
+  }
+
+  // cek nomor telpon
+  if (data.nomor_telpon) {
+    const phoneExist = await anggotaRepo.getAnggotaDasawismaByPhone(
+      data.nomor_telpon,
+    );
+
+    if (phoneExist && phoneExist.id != currentId) {
+      throw new Error("Nomor telpon sudah terdaftar");
+    }
   }
 };
 

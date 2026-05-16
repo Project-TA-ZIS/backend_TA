@@ -25,6 +25,14 @@ const getAmilByEmail = async (email) => {
   return data[0];
 };
 
+const getAmilbyNomorTelpon = async (nomor_telpon) => {
+  const [data] = await conn.execute(
+    "SELECT * FROM amil WHERE nomor_telpon = ? AND deleted_status = 0",
+    [nomor_telpon],
+  );
+  return data[0];
+}
+
 const createAmil = async (amilData) => {
   const hashedPassword = await bcrypt.hash(amilData.password, 10);
   const [result] = await conn.execute(
@@ -73,6 +81,7 @@ module.exports = {
   getAllAmil,
   getAmilById,
   getAmilByEmail,
+  getAmilbyNomorTelpon,
   createAmil,
   deleteAmil,
   updateAmil

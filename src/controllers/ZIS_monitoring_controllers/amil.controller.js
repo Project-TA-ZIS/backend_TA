@@ -41,11 +41,6 @@ const createAmil = async (req, res) => {
       });
     }
 
-    const cekEmail = await authController.cekEmail(req.body.email);
-    if (cekEmail) {
-      return res.status(400).json({ message: "Email sudah terdaftar" });
-    }
-
     const newAmil = new amilModel({
       nama_lengkap: req.body.nama_lengkap,
       email: req.body.email,
@@ -53,6 +48,8 @@ const createAmil = async (req, res) => {
       alamat: req.body.alamat,
       password: req.body.password,
     });
+
+    await validateNewData(newAmil);
 
     const created = await amilRepo.createAmil(newAmil);
     return res.status(200).json({
@@ -106,19 +103,36 @@ const updateAmil = async (req, res) => {
       alamat: req.body.alamat,
     });
 
+    await validateNewData(newData, id);
+
     const updated = await amilRepo.updateAmil(id, newData);
     if (!updated) {
       return res.status(400).json({ message: "Failed to update amil" });
     }
-    return res
-      .status(200)
-      .json({
-        message: "Amil updated successfully",
-        status: updated,
-        data: req.body,
-      });
+    return res.status(200).json({
+      message: "Amil updated successfully",
+      status: updated,
+      data: req.body,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+const validateNewData = async (data, currentId = null) => {
+  if (data.email) {
+    const existingEmail = await amilRepo.getAmilByEmail(data.email);
+    if (existingEmail && existingEmail.id !== currentId) {
+      throw new Error("Email sudah terdaftar");
+    }
+  }
+  if (data.nomor_telpon) {
+    const existingNomorTelpon = await amilRepo.getAmilbyNomorTelpon(
+      data.nomor_telpon,
+    );
+    if (existingNomorTelpon && existingNomorTelpon.id !== currentId) {
+      throw new Error("Nomor telpon sudah terdaftar");
+    }
   }
 };
 
@@ -127,5 +141,5 @@ module.exports = {
   getAmilById,
   createAmil,
   deleteAmil,
-  updateAmil
+  updateAmil,
 };

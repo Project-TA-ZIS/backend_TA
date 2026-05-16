@@ -25,6 +25,15 @@ const getAnggotaDasawismaByEmail = async (email) => {
   return data[0];
 };
 
+const getAnggotaDasawismaByPhone = async (nomor_telpon) => {
+  const [data] = await conn.execute(
+    "SELECT * FROM anggota_dasawisma WHERE nomor_telpon = ? AND deleted_status = 0",
+    [nomor_telpon]
+  );
+
+  return data[0];
+};
+
 const getAnggotaDasawismaByNik = async (nik) => {
   const [data] = await conn.execute(
     "SELECT * FROM anggota_dasawisma WHERE nik = ? AND deleted_status = 0",
@@ -96,6 +105,8 @@ module.exports = {
   getAllAnggotaDasawisma,
   getAnggotaDasawismaById,
   getAnggotaDasawismaByEmail,
+  getAnggotaDasawismaByNik,
+  getAnggotaDasawismaByPhone,
   createAnggotaDasawisma,
   deleteAnggotaDasawisma,
   updateAnggotaDasawisma,

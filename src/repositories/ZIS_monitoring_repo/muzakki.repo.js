@@ -24,6 +24,22 @@ const getMuzakkiByNik = async (nik) => {
   return data[0];
 };
 
+const getMuzakkiByEmail = async (email) => {
+  const [data] = await conn.execute(
+    "SELECT * FROM muzakki WHERE email = ? AND deleted_status = 0",
+    [email],
+  );
+  return data[0];
+};
+
+const getMuzakkiByNomorTelpon = async (nomor_telpon) => {
+  const [data] = await conn.execute(
+    "SELECT * FROM muzakki WHERE nomor_telpon = ? AND deleted_status = 0",
+    [nomor_telpon],
+  );
+  return data[0];
+};
+
 const createMuzakki = async (muzakkiData) => {
   const muzakki = new muzakkiModel({
     ...muzakkiData,
@@ -120,5 +136,7 @@ module.exports = {
   createMuzakki,
   deleteMuzakki,
   getMuzakkiByNik,
+  getMuzakkiByEmail,
+  getMuzakkiByNomorTelpon,
   editMuzakki,
 };

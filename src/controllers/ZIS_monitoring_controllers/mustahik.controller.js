@@ -53,12 +53,8 @@ const createMustahik = async (req, res) => {
       kategori: req.body.kategori,
     });
 
-    const cekNik = await authController.cekNIK(mustahikData.nik);
-
-    if (cekNik) {
-      return res.status(400).json({ message: "NIK sudah terdaftar" });
-    }
-
+    await validateNewData(mustahikData);
+    
     const newMustahik = await mustahikRepo.createMustahik(mustahikData);
     res.status(200).json({
       message: "Mustahik created successfully",
@@ -114,6 +110,8 @@ const editMustahik = async (req, res) => {
       kategori: req.body.kategori,
     });
 
+    await validateNewData(mustahikData, id);
+
     const updatedMustahik = await mustahikRepo.editMustahik(id, mustahikData);
     if (updatedMustahik) {
       res.status(200).json({
@@ -126,6 +124,23 @@ const editMustahik = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+const validateNewData = async (data, currentId = null) => {
+  // Cek NIK
+  if (data.nik) {
+    const existingNik = await getMustahikByNik(data.nik);
+    if (existingNik && existingNik.id !== currentId) {
+      throw new Error("NIK sudah terdaftar");
+    }
+  }
+  // Cek nomor telepon
+  if (data.nomor_telpon) {
+    const existingPhone = await getMustahikByPhone(data.nomor_telpon);
+    if (existingPhone && existingPhone.id !== currentId) {
+      throw new Error("Nomor telepon sudah terdaftar");
+    }
   }
 };
 
