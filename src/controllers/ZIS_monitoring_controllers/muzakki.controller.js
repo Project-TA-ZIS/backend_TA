@@ -55,10 +55,7 @@ const createMuzakki = async (req, res) => {
       pekerjaan: req.body.pekerjaan,
     });
 
-    const cekNik = await authController.cekNIK(muzakkiData.nik);
-    if (cekNik) {
-      return res.status(400).json({ message: "NIK sudah terdaftar" });
-    }
+    await validateNewData(muzakkiData);
 
     const newMuzakkiId = await muzakkiRepo.createMuzakki(muzakkiData);
     res.status(201).json({
@@ -111,10 +108,7 @@ const editMuzakki = async (req, res) => {
       pekerjaan: req.body.pekerjaan,
     });
 
-    const cekNik = await authController.cekNIK(muzakkiData.nik);
-    if (cekNik) {
-      return res.status(400).json({ message: "NIK sudah terdaftar" });
-    }
+    await validateNewData(muzakkiData, id);
 
     const updated = await muzakkiRepo.editMuzakki(id, muzakkiData);
     if (!updated) {
@@ -126,6 +120,24 @@ const editMuzakki = async (req, res) => {
       .json({ message: "Muzakki updated successfully", data: muzakkiData });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+const validateNewData = async (data, currentId = null) => {
+  const cekNik = await authController.cekNIK(data.nik);
+  if (cekNik && cekNik.id !== currentId) {
+    throw new Error("NIK sudah terdaftar");
+  }
+  if (data.email) {
+    const existingEmail = await muzakkiRepo.getMuzakkiByEmail(data.email);
+    if (existingEmail && existingEmail.id !== currentId) {
+      throw new Error("Email sudah terdaftar");
+    }
+
+    const existingEmailInAmil = await authController.cekEmailDiAmil(data.email);
+    if (existingEmailInAmil) {
+      throw new Error("Email sudah terdaftar di amil");
+    }
   }
 };
 

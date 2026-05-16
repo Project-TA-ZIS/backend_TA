@@ -25,6 +25,14 @@ const getMustahikByNik = async (nik) => {
   return data[0];
 };
 
+const getMustahikByPhone = async (phone) => {
+  const [data] = await conn.execute(
+    "SELECT * FROM mustahik WHERE nomor_telpon = ? AND deleted_status = 0",
+    [phone],
+  );
+  return data[0];
+};
+
 const createMustahik = async (mustahikData) => {
   const [result] = await conn.execute(
     `
@@ -108,6 +116,7 @@ const editMustahik = async (id, mustahikData) => {
 module.exports = {
   getAllMustahik,
   getMustahikById,
+  getMustahikByPhone,
   createMustahik,
   deleteMustahik,
   getMustahikByNik,
