@@ -169,10 +169,57 @@ const deletePemasukanZIS = async (req, res) => {
   }
 };
 
+const getRiwayatPemasukanZISByNik = async (req, res) => {
+  try {
+    const nik = req.body?.nik ?? req.query?.nik;
+    const last_phone_digits =
+      req.body?.last_phone_digits ?? req.query?.last_phone_digits;
+
+    if (!nik || !last_phone_digits) {
+      return res.status(400).json({
+        message: "nik dan last_phone_digits wajib diisi",
+      });
+    }
+
+    const muzakki = await muzakkiRepo.getMuzakkiByNik(nik);
+
+    if (!muzakki) {
+      return res.status(404).json({
+        message: "Muzakki tidak ditemukan",
+      });
+    }
+
+    const last4Digit = (muzakki.nomor_telpon ?? "").toString().slice(-4);
+
+    if (last4Digit !== last_phone_digits.toString()) {
+      return res.status(400).json({
+        message: "Validasi nomor telpon gagal",
+      });
+    }
+
+    const data = await pemasukanZISRepo.getPemasukanZISByMuzakkiId(muzakki.id);
+    if (data.length === 0) {
+      return res.status(404).json({
+        message: "Tidak ada riwayat pemasukan ZIS untuk muzakki ini",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Riwayat pemasukan ZIS berhasil ditemukan",
+      data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllPemasukanZIS,
   getPemasukanZISById,
   addPemasukanZIS,
   updatePemasukanZIS,
   deletePemasukanZIS,
+  getRiwayatPemasukanZISByNik
 };

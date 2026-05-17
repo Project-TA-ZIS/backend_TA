@@ -11,6 +11,10 @@ router.get(
   "/get/getPemasukanZISById/:id",
   pemasukanZISController.getPemasukanZISById,
 );
+router.get(
+  "/get/getRiwayatPemasukanZISByNik",
+  pemasukanZISController.getRiwayatPemasukanZISByNik,
+);
 router.post(
   "/add/addPemasukanZIS",
   verifyJWT,
