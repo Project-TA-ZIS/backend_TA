@@ -57,10 +57,26 @@ const deletePemasukanZIS = async (id) => {
   return result;
 };
 
+const getPemasukanZISByMuzakkiId = async (muzakki_id) => {
+  const [data] = await conn.execute(
+    `
+      SELECT *
+      FROM pemasukan_zis
+      WHERE muzakki_id = ?
+      AND deleted_status = 0
+      ORDER BY created_at DESC
+    `,
+    [muzakki_id]
+  );
+
+  return data;
+};
+
 module.exports = {
   getAllPemasukanZIS,
   getPemasukanZISById,
   addPemasukanZIS,
   updatePemasukanZIS,
   deletePemasukanZIS,
+  getPemasukanZISByMuzakkiId
 };
