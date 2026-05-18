@@ -1,5 +1,4 @@
 const conn = require("../../config/db_connection");
-const PemasukanZIS = require("../../models/transaksi/transaksi_zis/pemasukanZIS.models");
 
 const getAllPemasukanZIS = async () => {
   const [data] = await conn.execute(
@@ -24,7 +23,7 @@ const addPemasukanZIS = async (pemasukanZIS) => {
       pemasukanZIS.kategori,
       pemasukanZIS.jumlah,
       pemasukanZIS.deskripsi,
-      pemasukanZIS.tanggal,
+      pemasukanZIS.tanggal_penghimpunan,
       new Date(),
     ],
   );

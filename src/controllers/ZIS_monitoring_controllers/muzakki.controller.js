@@ -124,19 +124,28 @@ const editMuzakki = async (req, res) => {
 };
 
 const validateNewData = async (data, currentId = null) => {
-  const cekNik = await authController.cekNIK(data.nik);
-  if (cekNik && cekNik.id !== currentId) {
-    throw new Error("NIK sudah terdaftar");
-  }
+  // cek email
   if (data.email) {
     const existingEmail = await muzakkiRepo.getMuzakkiByEmail(data.email);
     if (existingEmail && existingEmail.id !== currentId) {
       throw new Error("Email sudah terdaftar");
     }
+  }
 
-    const existingEmailInAmil = await authController.cekEmailDiAmil(data.email);
-    if (existingEmailInAmil) {
-      throw new Error("Email sudah terdaftar di amil");
+  // Cek NIK
+  if (data.nik) {
+    const existingNik = await muzakkiRepo.getMuzakkiByNik(data.nik);
+    if (existingNik && existingNik.id !== currentId) {
+      throw new Error("NIK sudah terdaftar");
+    }
+  }
+  // Cek nomor telepon
+  if (data.nomor_telpon) {
+    const existingPhone = await muzakkiRepo.getMuzakkiByNomorTelpon(
+      data.nomor_telpon,
+    );
+    if (existingPhone && existingPhone.id !== currentId) {
+      throw new Error("Nomor telepon sudah terdaftar");
     }
   }
 };

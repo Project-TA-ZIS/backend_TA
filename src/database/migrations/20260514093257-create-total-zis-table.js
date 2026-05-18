@@ -1,18 +1,19 @@
-'use strict';
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('total_zis', {
+    await queryInterface.createTable("total_zis", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
       kategori: Sequelize.ENUM(
-        'zakat fitrah',
-        'zakat mal',
-        'infaq',
-        'shodaqoh'
+        "zakat fitrah beras",
+        "zakat fitrah uang",
+        "zakat mal",
+        "infaq",
+        "shodaqoh",
       ),
       jumlah_keseluruhan: {
         type: Sequelize.DECIMAL(12, 2),
@@ -23,6 +24,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable('total_zis');
+    await queryInterface.dropTable("total_zis");
   },
 };

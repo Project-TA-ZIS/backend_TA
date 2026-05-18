@@ -37,15 +37,20 @@ app.use(
   require("./routes/ZIS_monitoring_routes/pemasukanZIS.routes"),
 );
 
-app.use(
-  "/totalZIS",
-  require("./routes/ZIS_monitoring_routes/totalZIS.routes"),
-);
+app.use("/totalZIS", require("./routes/ZIS_monitoring_routes/totalZIS.routes"));
 app.use(
   "/pengeluaranZIS",
   require("./routes/ZIS_monitoring_routes/penyaluranZIS.routes"),
 );
-// const bcrypt = require('bcrypt');
-// bcrypt.hash('testdasawisma', 10).then(console.log);
+app.use(
+  "/pemasukanDasawisma",
+  verifyJWT,
+  require("./routes/dasawisma_monitoring_routes/pemasukanDasawisma.routes"),
+);
+app.use(
+  "/totalKasDasawisma",
+  verifyJWT,
+  require("./routes/dasawisma_monitoring_routes/totalKasDasawisma.routes"),
+);
 
 module.exports = app;

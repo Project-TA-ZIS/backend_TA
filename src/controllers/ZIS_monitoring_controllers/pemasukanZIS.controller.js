@@ -52,7 +52,7 @@ const addPemasukanZIS = async (req, res) => {
       deskripsi: req.body.deskripsi,
       tanggal_penghimpunan: req.body.tanggal_penghimpunan,
     });
-
+    
     const muzakki = await muzakkiRepo.getMuzakkiById(
       newPemasukanZIS.muzakki_id,
     );

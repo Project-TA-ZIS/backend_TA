@@ -4,7 +4,12 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkInsert("total_zis", [
       {
-        kategori: "zakat fitrah",
+        kategori: "zakat fitrah beras",
+        jumlah_keseluruhan: 0,
+        updated_at: null,
+      },
+      {
+        kategori: "zakat fitrah uang",
         jumlah_keseluruhan: 0,
         updated_at: null,
       },
