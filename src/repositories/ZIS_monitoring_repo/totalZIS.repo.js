@@ -22,11 +22,28 @@ const getTotalZISWhereKategori = async (kategori) => {
 
 const getTotalAllPemasukanZIS = async () => {
   const [data] = await conn.execute(`
-    SELECT 
-      SUM(jumlah_keseluruhan) as total,
-      MAX(updated_at) as updated_at
+    SELECT
+      SUM(
+        CASE
+          WHEN kategori != 'zakat fitrah beras'
+          THEN jumlah_keseluruhan
+          ELSE 0
+        END
+      ) AS total_uang,
+
+      SUM(
+        CASE
+          WHEN kategori = 'zakat fitrah beras'
+          THEN jumlah_keseluruhan
+          ELSE 0
+        END
+      ) AS total_beras,
+
+      MAX(updated_at) AS updated_at
+
     FROM total_zis
   `);
+
   return data[0];
 };
 

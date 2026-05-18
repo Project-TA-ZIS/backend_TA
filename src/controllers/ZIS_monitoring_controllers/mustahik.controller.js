@@ -54,7 +54,7 @@ const createMustahik = async (req, res) => {
     });
 
     await validateNewData(mustahikData);
-    
+
     const newMustahik = await mustahikRepo.createMustahik(mustahikData);
     res.status(200).json({
       message: "Mustahik created successfully",
@@ -130,14 +130,16 @@ const editMustahik = async (req, res) => {
 const validateNewData = async (data, currentId = null) => {
   // Cek NIK
   if (data.nik) {
-    const existingNik = await getMustahikByNik(data.nik);
+    const existingNik = await mustahikRepo.getMustahikByNik(data.nik);
     if (existingNik && existingNik.id !== currentId) {
       throw new Error("NIK sudah terdaftar");
     }
   }
   // Cek nomor telepon
   if (data.nomor_telpon) {
-    const existingPhone = await getMustahikByPhone(data.nomor_telpon);
+    const existingPhone = await mustahikRepo.getMustahikByPhone(
+      data.nomor_telpon,
+    );
     if (existingPhone && existingPhone.id !== currentId) {
       throw new Error("Nomor telepon sudah terdaftar");
     }

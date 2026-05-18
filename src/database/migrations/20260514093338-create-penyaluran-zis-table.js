@@ -21,7 +21,8 @@ module.exports = {
       },
 
       kategori: Sequelize.ENUM(
-        "zakat fitrah",
+        "zakat fitrah beras",
+        "zakat fitrah uang",
         "zakat mal",
         "infaq",
         "shodaqoh",

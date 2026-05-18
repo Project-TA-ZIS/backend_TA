@@ -165,6 +165,28 @@ const options = {
             updated_at: { type: "string", format: "date-time", nullable: true },
           },
         },
+        PemasukanDasawisma: {
+          type: "object",
+          properties: {
+            id: { type: "integer", nullable: true },
+            jumlah: { type: "number", example: 10000 },
+            deskripsi: { type: "string", nullable: true },
+            tanggal_penghimpunan: { type: "string", format: "date", nullable: true },
+            anggota_dasawisma_id: { type: "integer", nullable: true },
+            created_at: { type: "string", format: "date-time" },
+            updated_at: { type: "string", format: "date-time", nullable: true },
+            deleted_at: { type: "string", format: "date-time", nullable: true },
+            deleted_status: { type: "integer", example: 0 },
+          },
+        },
+        TotalKasDasawisma: {
+          type: "object",
+          properties: {
+            id: { type: "integer" },
+            jumlah_keseluruhan: { type: "number" },
+            updated_at: { type: "string", format: "date-time", nullable: true },
+          },
+        },
       },
     },
   },
