@@ -11,24 +11,52 @@ module.exports = {
 
       anggota_dasawisma_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "anggota_dasawisma",
           key: "id",
         },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
+        onDelete: "SET NULL",
       },
 
-      jumlah: Sequelize.DECIMAL(12, 2),
+      sumber: {
+        type: Sequelize.ENUM("IURAN", "LAINNYA"),
+        allowNull: false,
+        defaultValue: "IURAN",
+      },
 
-      deskripsi: Sequelize.TEXT,
+      jumlah: {
+        type: Sequelize.DECIMAL(12, 2),
+        allowNull: false,
+      },
 
-      tanggal_penghimpunan: Sequelize.DATEONLY,
+      deskripsi: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
 
-      created_at: Sequelize.DATE,
-      updated_at: Sequelize.DATE,
-      deleted_at: Sequelize.DATE,
+      tanggal_penghimpunan: {
+        type: Sequelize.DATEONLY,
+        allowNull: false,
+      },
+
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+
+      deleted_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
 
       deleted_status: {
         type: Sequelize.BOOLEAN,

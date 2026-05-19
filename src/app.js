@@ -34,12 +34,18 @@ app.use(
 );
 app.use(
   "/pemasukanZIS",
+  verifyJWT,
   require("./routes/ZIS_monitoring_routes/pemasukanZIS.routes"),
 );
 
-app.use("/totalZIS", require("./routes/ZIS_monitoring_routes/totalZIS.routes"));
+app.use(
+  "/totalZIS",
+  verifyJWT,
+  require("./routes/ZIS_monitoring_routes/totalZIS.routes"),
+);
 app.use(
   "/pengeluaranZIS",
+  verifyJWT,
   require("./routes/ZIS_monitoring_routes/penyaluranZIS.routes"),
 );
 app.use(
@@ -51,6 +57,11 @@ app.use(
   "/totalKasDasawisma",
   verifyJWT,
   require("./routes/dasawisma_monitoring_routes/totalKasDasawisma.routes"),
+);
+app.use(
+  "/pengeluaranDasawisma",
+  verifyJWT,
+  require("./routes/dasawisma_monitoring_routes/penyaluranDasawisma.routes"),
 );
 
 module.exports = app;
