@@ -122,15 +122,18 @@ const updateAmil = async (req, res) => {
 const validateNewData = async (data, currentId = null) => {
   if (data.email) {
     const existingEmail = await amilRepo.getAmilByEmail(data.email);
-    if (existingEmail && existingEmail.id !== currentId) {
+
+    if (existingEmail && existingEmail.id !== Number(currentId)) {
       throw new Error("Email sudah terdaftar");
     }
   }
+
   if (data.nomor_telpon) {
     const existingNomorTelpon = await amilRepo.getAmilbyNomorTelpon(
       data.nomor_telpon,
     );
-    if (existingNomorTelpon && existingNomorTelpon.id !== currentId) {
+
+    if (existingNomorTelpon && existingNomorTelpon.id !== Number(currentId)) {
       throw new Error("Nomor telpon sudah terdaftar");
     }
   }

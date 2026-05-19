@@ -18,7 +18,16 @@ const tambahTotalDasawisma = async (jumlah) => {
   return result;
 };
 
+const kurangiTotalDasawisma = async (jumlah) => {
+  const [result] = await conn.execute(
+    "UPDATE total_kas_dasawisma SET jumlah_keseluruhan = jumlah_keseluruhan - ?, updated_at = ?",
+    [jumlah, new Date()],
+  );
+  return result;
+};
+
 module.exports = {
   getAllTotalDasawisma,
   tambahTotalDasawisma,
+  kurangiTotalDasawisma,
 };

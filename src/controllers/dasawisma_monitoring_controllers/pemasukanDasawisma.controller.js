@@ -70,6 +70,7 @@ const addPemasukanDasawisma = async (req, res) => {
     const newPemasukanDasawisma = new PemasukanDasawismaModels({
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
+      sumber: req.body.sumber,
       tanggal_penghimpunan: req.body.tanggal_penghimpunan,
       anggota_dasawisma_id: req.body.anggota_dasawisma_id,
       created_at: new Date(),
