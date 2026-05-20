@@ -3,6 +3,7 @@ const pemasukanZISRepo = require("../../repositories/ZIS_monitoring_repo/pemasuk
 const totalZISRepo = require("../../repositories/ZIS_monitoring_repo/totalZIS.repo");
 const PemasukanZIS = require("../../models/transaksi/transaksi_zis/pemasukanZIS.models");
 const totalZIS = require("../../models/total_kas/totalZIS.models");
+const authController = require("../auth/auth.controller");
 
 const getAllPemasukanZIS = async (req, res) => {
   try {
@@ -52,7 +53,16 @@ const addPemasukanZIS = async (req, res) => {
       deskripsi: req.body.deskripsi,
       tanggal_penghimpunan: req.body.tanggal_penghimpunan,
     });
-    
+
+    const dateStatus = authController.validateDate(
+      newPemasukanDasawisma.tanggal_penghimpunan,
+    );
+    if (!dateStatus.valid) {
+      return res
+        .status(400)
+        .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
+    }
+
     const muzakki = await muzakkiRepo.getMuzakkiById(
       newPemasukanZIS.muzakki_id,
     );
@@ -99,6 +109,15 @@ const updatePemasukanZIS = async (req, res) => {
       deskripsi: req.body.deskripsi,
       tanggal_penghimpunan: req.body.tanggal_penghimpunan,
     });
+
+    const dateStatus = authController.validateDate(
+      pemasukanZIS.tanggal_penghimpunan,
+    );
+    if (!dateStatus.valid) {
+      return res
+        .status(400)
+        .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
+    }
 
     const muzakki = await muzakkiRepo.getMuzakkiById(PemasukanZIS.muzakki_id);
     if (!muzakki) {
@@ -221,5 +240,5 @@ module.exports = {
   addPemasukanZIS,
   updatePemasukanZIS,
   deletePemasukanZIS,
-  getRiwayatPemasukanZISByNik
+  getRiwayatPemasukanZISByNik,
 };

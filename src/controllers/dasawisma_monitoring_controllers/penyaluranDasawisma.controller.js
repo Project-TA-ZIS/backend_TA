@@ -1,6 +1,7 @@
 const pengeluaranDasawismaRepo = require("../../repositories/dasawisma_monitoring_repo/penyaluranDasawisma.repo");
 const totalDasawismaRepos = require("../../repositories/dasawisma_monitoring_repo/totalKasDasawisma.repo");
 const penyaluranDasawismaModel = require("../../models/transaksi/transaksi_dasawisma/pengeluaranDasawisma");
+const authController = require("../auth/auth.controller");
 
 const getAllPengeluaranDasawisma = async (req, res) => {
   try {
@@ -54,7 +55,6 @@ const getPengeluaranDasawismaById = async (req, res) => {
 };
 
 const addPengeluaranDasawisma = async (req, res) => {
-
   try {
     const role = req.roles;
     if (role !== "koordinator dasawisma") {
@@ -65,7 +65,7 @@ const addPengeluaranDasawisma = async (req, res) => {
     }
 
     const totalDasawisma = await totalDasawismaRepos.getAllTotalDasawisma();
-    console.log(totalDasawisma)
+    console.log(totalDasawisma);
     if (totalDasawisma.jumlah_keseluruhan < req.body.jumlah) {
       return res.status(400).json({
         message: "Total Kas Dasawisma tidak mencukupi untuk pengeluaran ini",
@@ -77,6 +77,17 @@ const addPengeluaranDasawisma = async (req, res) => {
       deskripsi: req.body.deskripsi,
       tanggal_penyaluran: req.body.tanggal_penyaluran,
     });
+
+    const dateStatus = authController.validateDate(
+      penyaluranDasawisma.tanggal_penyaluran,
+    );
+    if (!dateStatus.valid) {
+      return res
+        .status(400)
+        .json({
+          message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
+        });
+    }
 
     const insertedId =
       await pengeluaranDasawismaRepo.addPengeluaranDasawisma(
@@ -112,6 +123,18 @@ const updatePengeluaranDasawisma = async (req, res) => {
       deskripsi: req.body.deskripsi,
       tanggal_penyaluran: req.body.tanggal_penyaluran,
     });
+
+    const dateStatus = authController.validateDate(
+      penyaluranDasawisma.tanggal_penyaluran,
+    );
+    if (!dateStatus.valid) {
+      return res
+        .status(400)
+        .json({
+          message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
+        });
+    }
+
     const result = await pengeluaranDasawismaRepo.updatePengeluaranDasawisma(
       id,
       penyaluranDasawisma,

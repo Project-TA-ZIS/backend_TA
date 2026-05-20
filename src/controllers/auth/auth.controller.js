@@ -100,7 +100,7 @@ const cekNIKTerpakai = async (nik) => {
 const cekNIK = async (nik) => {
   const user = await cekNIKTerpakai(nik);
   return !!user;
-}
+};
 
 const comparePassword = async (plainPassword, hashedPassword) => {
   return await bcrypt.compare(plainPassword, hashedPassword);
@@ -108,6 +108,28 @@ const comparePassword = async (plainPassword, hashedPassword) => {
 
 const hashPassword = async (password) => {
   return await bcrypt.hash(password, 10);
+};
+
+const validateDate = (dateString) => {
+  // cek format valid
+  if (dateString !== new Date(dateString).toISOString().split("T")[0]) {
+    return false;
+  }
+
+  // tanggal hari ini
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // tanggal input
+  const inputDate = new Date(dateString);
+  inputDate.setHours(0, 0, 0, 0);
+
+  // tidak boleh lebih dari hari ini
+  if (inputDate > today) {
+    return false;
+  }
+
+  return true;
 };
 
 module.exports = {
@@ -119,4 +141,5 @@ module.exports = {
   cekNIK,
   comparePassword,
   hashPassword,
+  validateDate
 };
