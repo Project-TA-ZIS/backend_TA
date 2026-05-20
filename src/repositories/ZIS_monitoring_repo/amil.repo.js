@@ -77,6 +77,16 @@ const updateAmil = async (id, amilData) => {
   return result.affectedRows > 0;
 };
 
+const updateAmilPassword = async (id, newPassword) => {
+  const query = `
+    UPDATE amil
+    SET password = ?, updated_at = NOW()
+    WHERE id = ? AND deleted_status = 0
+  `;
+  const [result] = await conn.execute(query, [newPassword, id]);
+  return result.affectedRows > 0;
+};
+
 module.exports = {
   getAllAmil,
   getAmilById,
@@ -84,5 +94,7 @@ module.exports = {
   getAmilbyNomorTelpon,
   createAmil,
   deleteAmil,
-  updateAmil
+  updateAmil,
+  updateAmilPassword
+
 };

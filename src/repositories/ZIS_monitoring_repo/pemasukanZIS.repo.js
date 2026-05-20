@@ -1,9 +1,15 @@
 const conn = require("../../config/db_connection");
 
 const getAllPemasukanZIS = async () => {
-  const [data] = await conn.execute(
-    "SELECT * FROM pemasukan_zis WHERE deleted_status = 0",
-  );
+  const [data] = await conn.execute(`
+      SELECT 
+        pz.*,
+        mz.nama_lengkap AS nama_muzakki
+      FROM pemasukan_zis pz
+      LEFT JOIN muzakki mz
+        ON pz.muzakki_id = mz.id
+      WHERE pz.deleted_status = 0
+    `);
   return data;
 };
 
