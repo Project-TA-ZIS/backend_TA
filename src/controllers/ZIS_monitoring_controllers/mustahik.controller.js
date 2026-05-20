@@ -42,6 +42,27 @@ const createMustahik = async (req, res) => {
         .json({ error: "hanya amil zakat yang boleh menambah mustahik" });
     }
 
+    if (
+      !req.body.nama_lengkap ||
+      !req.body.nomor_telpon ||
+      !req.body.alamat ||
+      !req.body.nik ||
+      !req.body.tempat_lahir ||
+      !req.body.tanggal_lahir ||
+      !req.body.jenis_kelamin ||
+      !req.body.kategori
+    ) {
+      return res.status(400).json({
+        message: "Semua field wajib diisi",
+      });
+    }
+
+    if (req.body.password.length < 6) {
+      return res.status(400).json({
+        message: "Password minimal 6 karakter",
+      });
+    }
+
     const mustahikData = new mustahikModel({
       nama_lengkap: req.body.nama_lengkap,
       nomor_telpon: req.body.nomor_telpon,
