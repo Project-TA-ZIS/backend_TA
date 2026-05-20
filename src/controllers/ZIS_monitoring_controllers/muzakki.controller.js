@@ -127,7 +127,7 @@ const validateNewData = async (data, currentId = null) => {
   // cek email
   if (data.email) {
     const existingEmail = await muzakkiRepo.getMuzakkiByEmail(data.email);
-    if (existingEmail && existingEmail.id !== currentId) {
+    if (existingEmail && existingEmail.id !== Number(currentId)) {
       throw new Error("Email sudah terdaftar");
     }
   }
@@ -135,7 +135,7 @@ const validateNewData = async (data, currentId = null) => {
   // Cek NIK
   if (data.nik) {
     const existingNik = await muzakkiRepo.getMuzakkiByNik(data.nik);
-    if (existingNik && existingNik.id !== currentId) {
+    if (existingNik && existingNik.id !== Number(currentId)) {
       throw new Error("NIK sudah terdaftar");
     }
   }
@@ -144,7 +144,7 @@ const validateNewData = async (data, currentId = null) => {
     const existingPhone = await muzakkiRepo.getMuzakkiByNomorTelpon(
       data.nomor_telpon,
     );
-    if (existingPhone && existingPhone.id !== currentId) {
+    if (existingPhone && existingPhone.id !== Number(currentId)) {
       throw new Error("Nomor telepon sudah terdaftar");
     }
   }

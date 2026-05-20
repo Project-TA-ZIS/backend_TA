@@ -101,6 +101,17 @@ const updateAnggotaDasawisma = async (id, anggotaData) => {
   return result.affectedRows > 0;
 };
 
+const updatePassword = async (id, newPassword) => {
+  const [result] = await conn.execute(
+    `UPDATE anggota_dasawisma
+    SET password = ?, updated_at = ?
+    WHERE id = ? AND deleted_status = 0`,
+    [newPassword, new Date(), id],
+  );
+
+  return result.affectedRows > 0;
+};
+
 module.exports = {
   getAllAnggotaDasawisma,
   getAnggotaDasawismaById,
@@ -110,4 +121,5 @@ module.exports = {
   createAnggotaDasawisma,
   deleteAnggotaDasawisma,
   updateAnggotaDasawisma,
+  updatePassword
 };

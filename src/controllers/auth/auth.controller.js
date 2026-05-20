@@ -12,7 +12,6 @@ const login = async (req, res) => {
 
     const amil = await amilRepo.getAmilByEmail(email);
     if (amil) {
-      console.log(amil.roles);
       const isPasswordValid = await bcrypt.compare(password, amil.password);
       if (!isPasswordValid) {
         return res.status(401).json({ message: "password salah" });
@@ -103,6 +102,14 @@ const cekNIK = async (nik) => {
   return !!user;
 }
 
+const comparePassword = async (plainPassword, hashedPassword) => {
+  return await bcrypt.compare(plainPassword, hashedPassword);
+};
+
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+
 module.exports = {
   login,
   getUserLoggedIn,
@@ -110,4 +117,6 @@ module.exports = {
   cekEmail,
   cekNIKTerpakai,
   cekNIK,
+  comparePassword,
+  hashPassword,
 };

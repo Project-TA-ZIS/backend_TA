@@ -122,7 +122,7 @@ const validateNewData = async (data, currentId = null) => {
   if (data.email) {
     const emailExist = await anggotaRepo.getAnggotaDasawismaByEmail(data.email);
 
-    if (emailExist && emailExist.id != currentId) {
+    if (emailExist && emailExist.id != Number(currentId)) {
       throw new Error("Email sudah terdaftar");
     }
   }
@@ -131,7 +131,7 @@ const validateNewData = async (data, currentId = null) => {
   if (data.nik) {
     const nikExist = await anggotaRepo.getAnggotaDasawismaByNik(data.nik);
 
-    if (nikExist && nikExist.id != currentId) {
+    if (nikExist && nikExist.id != Number(currentId)) {
       throw new Error("NIK sudah terdaftar");
     }
   }
@@ -142,9 +142,40 @@ const validateNewData = async (data, currentId = null) => {
       data.nomor_telpon,
     );
 
-    if (phoneExist && phoneExist.id != currentId) {
+    if (phoneExist && phoneExist.id != Number(currentId)) {
       throw new Error("Nomor telpon sudah terdaftar");
     }
+  }
+};
+
+const updatePassword = async (req, res) => {
+  try {
+    const id = req.id;
+    const { oldPassword, newPassword } = req.body;
+
+    const anggota = await anggotaRepo.getAnggotaDasawismaById(id);
+    if (!anggota) {
+      return res.status(404).json({ message: "Anggota not found" });
+    }
+
+    const isPasswordValid = await authController.comparePassword(
+      oldPassword,
+      anggota.password,
+    );
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Password lama salah" });
+    }
+
+    const hashedPassword = await authController.hashPassword(newPassword);
+    const updated = await anggotaRepo.updatePassword(id, hashedPassword);
+
+    if (!updated) {
+      return res.status(404).json({ message: "Anggota not found" });
+    }
+
+    return res.status(200).json({ message: "Password berhasil diupdate" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -154,4 +185,5 @@ module.exports = {
   createAnggotaDasawisma,
   deleteAnggotaDasawisma,
   updateAnggotaDasawisma,
+  updatePassword,
 };
