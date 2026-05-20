@@ -6,6 +6,7 @@ const PemasukanZIS = require("../../models/transaksi/transaksi_zis/pemasukanZIS.
 const totalZIS = require("../../models/total_kas/totalZIS.models");
 const mustahikRepo = require("../../repositories/ZIS_monitoring_repo/mustahik.repo");
 const penyaluranZISModel = require("../../models/transaksi/transaksi_zis/penyaluranZIS.models");
+const authController = require("../auth/auth.controller");
 
 const getAllPengeluaranZIS = async (req, res) => {
   try {
@@ -58,6 +59,15 @@ const addPengeluaranZIS = async (req, res) => {
       deskripsi: req.body.deskripsi,
       tanggal_penyaluran: req.body.tanggal_penyaluran,
     });
+
+    const dateStatus = authController.validateDate(
+      newPemasukanDasawisma.tanggal_penghimpunan,
+    );
+    if (!dateStatus.valid) {
+      return res
+        .status(400)
+        .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
+    }
 
     const totalZIS = await totalZISRepo.getTotalZISWhereKategori(
       penyaluranZIS.kategori,
@@ -120,6 +130,15 @@ const updatePengeluaranZIS = async (req, res) => {
       deskripsi: req.body.deskripsi,
       tanggal_penyaluran: req.body.tanggal_penyaluran,
     });
+
+    const dateStatus = authController.validateDate(
+      penyaluranZIS.tanggal_penyaluran,
+    );
+    if (!dateStatus.valid) {
+      return res
+        .status(400)
+        .json({ message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini" });
+    }
 
     const mustahik = await mustahikRepo.getMustahikById(
       penyaluranZIS.mustahik_id,

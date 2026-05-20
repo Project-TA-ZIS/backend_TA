@@ -1,6 +1,7 @@
 const pemasukanDasawismaRepo = require("../../repositories/dasawisma_monitoring_repo/pemasukanDasawisma.repo");
 const PemasukanDasawismaModels = require("../../models/transaksi/transaksi_dasawisma/pemasukanDasawisma");
 const totalKasDasawismaRepo = require("../../repositories/dasawisma_monitoring_repo/totalKasDasawisma.repo");
+const authController = require("../auth/auth.controller");
 
 const checkRoles = (roles) => {
   if (roles != "koordinator dasawisma" && roles != "anggota dasawisma") {
@@ -76,6 +77,15 @@ const addPemasukanDasawisma = async (req, res) => {
       created_at: new Date(),
     });
 
+    const dateStatus = authController.validateDate(
+      newPemasukanDasawisma.tanggal_penghimpunan,
+    );
+    if (!dateStatus.valid) {
+      return res
+        .status(400)
+        .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
+    }
+
     const insertId = await pemasukanDasawismaRepo.createPemasukanDasawisma(
       newPemasukanDasawisma,
     );
@@ -110,6 +120,15 @@ const updatePemasukanDasawisma = async (req, res) => {
       await pemasukanDasawismaRepo.getPemasukanDasawismaById(id);
     if (!existingData) {
       return res.status(404).json({ message: "Pemasukan dasawisma not found" });
+    }
+
+    const dateStatus = authController.validateDate(
+      newPemasukanDasawisma.tanggal_penghimpunan,
+    );
+    if (!dateStatus.valid) {
+      return res
+        .status(400)
+        .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
     }
 
     const updatedPemasukanDasawisma = new PemasukanDasawismaModels({
