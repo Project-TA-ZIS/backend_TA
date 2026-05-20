@@ -42,6 +42,29 @@ const createMuzakki = async (req, res) => {
         .status(403)
         .json({ error: "hanya amil zakat yang boleh menambah muzakki" });
     }
+
+    if (
+      !req.body.nama_lengkap ||
+      !req.body.email ||
+      !req.body.nomor_telpon ||
+      !req.body.alamat ||
+      !req.body.nik ||
+      !req.body.tempat_lahir ||
+      !req.body.tanggal_lahir ||
+      !req.body.jenis_kelamin ||
+      !req.body.pekerjaan
+    ) {
+      return res.status(400).json({
+        message: "Semua field wajib diisi",
+      });
+    }
+
+    if (req.body.password.length < 6) {
+      return res.status(400).json({
+        message: "Password minimal 6 karakter",
+      });
+    }
+
     const muzakkiData = new muzakkiModel({
       nama_lengkap: req.body.nama_lengkap,
       email: req.body.email,

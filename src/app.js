@@ -34,18 +34,15 @@ app.use(
 );
 app.use(
   "/pemasukanZIS",
-  verifyJWT,
   require("./routes/ZIS_monitoring_routes/pemasukanZIS.routes"),
 );
 
 app.use(
   "/totalZIS",
-  verifyJWT,
   require("./routes/ZIS_monitoring_routes/totalZIS.routes"),
 );
 app.use(
   "/pengeluaranZIS",
-  verifyJWT,
   require("./routes/ZIS_monitoring_routes/penyaluranZIS.routes"),
 );
 app.use(

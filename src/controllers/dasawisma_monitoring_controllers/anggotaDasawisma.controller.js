@@ -45,6 +45,18 @@ const createAnggotaDasawisma = async (req, res) => {
       });
     }
 
+    if (!req.body.nama_lengkap || !req.body.email || !req.body.password || !req.body.nomor_telpon) {
+      return res.status(400).json({
+        message: "Semua field wajib diisi",
+      });
+    }
+
+    if (req.body.password.length < 6) {
+      return res.status(400).json({
+        message: "Password minimal 6 karakter",
+      });
+    }
+
     const data = new anggotaDasawismaModel({
       nama_lengkap: req.body.nama_lengkap,
       email: req.body.email,

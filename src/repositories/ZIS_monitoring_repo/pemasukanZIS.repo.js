@@ -65,11 +65,15 @@ const deletePemasukanZIS = async (id) => {
 const getPemasukanZISByMuzakkiId = async (muzakki_id) => {
   const [data] = await conn.execute(
     `
-      SELECT *
+      SELECT 
+        pemasukan_zis.*,
+        muzakki.nama_lengkap AS nama_muzakki
       FROM pemasukan_zis
-      WHERE muzakki_id = ?
-      AND deleted_status = 0
-      ORDER BY created_at DESC
+      LEFT JOIN muzakki 
+        ON pemasukan_zis.muzakki_id = muzakki.id
+      WHERE pemasukan_zis.muzakki_id = ?
+      AND pemasukan_zis.deleted_status = 0
+      ORDER BY pemasukan_zis.created_at DESC
     `,
     [muzakki_id]
   );
