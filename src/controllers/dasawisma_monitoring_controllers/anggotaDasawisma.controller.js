@@ -11,7 +11,7 @@ const getAllAnggotaDasawisma = async (req, res) => {
     if (data.length === 0) {
       return res
         .status(404)
-        .json({ message: "Tidak ada anggota dasawisma ditemukan" });
+        .json({ message: "Tidak ada kader dasawisma ditemukan" });
     }
 
     return res.status(200).json({ data: data });
@@ -38,14 +38,14 @@ const createAnggotaDasawisma = async (req, res) => {
   try {
     const roles = req.roles;
 
-    if (roles !== "koordinator dasawisma") {
+    if (roles !== "penanggung jawab dasawisma") {
       return res.status(403).json({
         message:
-          "hanya koordinator dasawisma yang dapat membuat anggota atau koordinator dasawisma",
+          "hanya penanggung jawab dasawisma yang dapat membuat anggota atau penanggung jawab dasawisma",
       });
     }
 
-    if (!req.body.nama_lengkap || !req.body.email || !req.body.password || !req.body.nomor_telpon) {
+    if (!req.body.nama_lengkap || !req.body.email || !req.body.password) {
       return res.status(400).json({
         message: "Semua field wajib diisi",
       });
@@ -82,10 +82,10 @@ const deleteAnggotaDasawisma = async (req, res) => {
   try {
     const roles = req.roles;
 
-    if (roles !== "koordinator dasawisma") {
+    if (roles !== "penanggung jawab dasawisma") {
       return res.status(403).json({
         message:
-          "hanya koordinator dasawisma yang dapat menghapus anggota atau koordinator dasawisma",
+          "hanya penanggung jawab dasawisma yang dapat menghapus anggota atau penanggung jawab dasawisma",
       });
     }
 

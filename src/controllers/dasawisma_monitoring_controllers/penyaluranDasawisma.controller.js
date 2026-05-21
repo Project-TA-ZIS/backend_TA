@@ -6,7 +6,7 @@ const authController = require("../auth/auth.controller");
 const getAllPengeluaranDasawisma = async (req, res) => {
   try {
     const role = req.roles;
-    if (role !== "koordinator dasawisma" && role !== "anggota dasawisma") {
+    if (role !== "penanggung jawab dasawisma" && role !== "anggota dasawisma") {
       return res.status(403).json({
         error:
           "hanya koordinator dan anggota dasawisma yang boleh mengakses data pengeluaran Dasawisma",
@@ -32,7 +32,7 @@ const getAllPengeluaranDasawisma = async (req, res) => {
 const getPengeluaranDasawismaById = async (req, res) => {
   try {
     const role = req.roles;
-    if (role !== "koordinator dasawisma" && role !== "anggota dasawisma") {
+    if (role !== "penanggung jawab dasawisma" && role !== "anggota dasawisma") {
       return res.status(403).json({
         error:
           "hanya koordinator dan anggota dasawisma yang boleh mengakses data pengeluaran Dasawisma",
@@ -57,10 +57,10 @@ const getPengeluaranDasawismaById = async (req, res) => {
 const addPengeluaranDasawisma = async (req, res) => {
   try {
     const role = req.roles;
-    if (role !== "koordinator dasawisma") {
+    if (role !== "penanggung jawab dasawisma") {
       return res.status(403).json({
         error:
-          "hanya koordinator dasawisma yang boleh menambahkan pengeluaran Dasawisma",
+          "hanya penanggung jawab dasawisma yang boleh menambahkan pengeluaran Dasawisma",
       });
     }
 
@@ -81,7 +81,7 @@ const addPengeluaranDasawisma = async (req, res) => {
     const dateStatus = authController.validateDate(
       penyaluranDasawisma.tanggal_penyaluran,
     );
-    if (!dateStatus.valid) {
+    if (!dateStatus) {
       return res
         .status(400)
         .json({
@@ -111,10 +111,10 @@ const addPengeluaranDasawisma = async (req, res) => {
 const updatePengeluaranDasawisma = async (req, res) => {
   try {
     const role = req.roles;
-    if (role !== "koordinator dasawisma") {
+    if (role !== "penanggung jawab dasawisma") {
       return res.status(403).json({
         error:
-          "hanya koordinator dasawisma yang boleh mengubah data pengeluaran Dasawisma",
+          "hanya penanggung jawab dasawisma yang boleh mengubah data pengeluaran Dasawisma",
       });
     }
     const { id } = req.params;
@@ -127,7 +127,7 @@ const updatePengeluaranDasawisma = async (req, res) => {
     const dateStatus = authController.validateDate(
       penyaluranDasawisma.tanggal_penyaluran,
     );
-    if (!dateStatus.valid) {
+    if (!dateStatus) {
       return res
         .status(400)
         .json({

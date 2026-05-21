@@ -4,7 +4,7 @@ const totalKasDasawismaRepo = require("../../repositories/dasawisma_monitoring_r
 const authController = require("../auth/auth.controller");
 
 const checkRoles = (roles) => {
-  if (roles != "koordinator dasawisma" && roles != "anggota dasawisma") {
+  if (roles != "penanggung jawab dasawisma" && roles != "anggota dasawisma") {
     return false;
   } else {
     return true;
@@ -17,7 +17,7 @@ const getAllPemasukanDasawisma = async (req, res) => {
     if (!checkRoles(roles)) {
       return res.status(403).json({
         error:
-          "hanya koordinator dasawisma dan anggota dasawisma yang boleh mengakses data pemasukan dasawisma",
+          "hanya penanggung jawab dasawisma dan anggota dasawisma yang boleh mengakses data pemasukan dasawisma",
       });
     }
 
@@ -41,7 +41,7 @@ const getPemasukanDasawismaById = async (req, res) => {
     if (!checkRoles(roles)) {
       return res.status(403).json({
         error:
-          "hanya koordinator dasawisma dan anggota dasawisma yang boleh mengakses data pemasukan dasawisma",
+          "hanya penanggung jawab dasawisma dan anggota dasawisma yang boleh mengakses data pemasukan dasawisma",
       });
     }
 
@@ -59,12 +59,13 @@ const getPemasukanDasawismaById = async (req, res) => {
 };
 
 const addPemasukanDasawisma = async (req, res) => {
+  console.log("Request body:", req.body); // Debug log untuk melihat isi request body
   try {
     const roles = req.roles;
     if (!checkRoles(roles)) {
       return res.status(403).json({
         error:
-          "hanya koordinator dasawisma dan anggota dasawisma yang boleh menambahkan data pemasukan dasawisma",
+          "hanya penanggung jawab dasawisma dan anggota dasawisma yang boleh menambahkan data pemasukan dasawisma",
       });
     }
 
@@ -77,13 +78,14 @@ const addPemasukanDasawisma = async (req, res) => {
       created_at: new Date(),
     });
 
-    const dateStatus = authController.validateDate(
+    const isValidDate = authController.validateDate(
       newPemasukanDasawisma.tanggal_penghimpunan,
     );
-    if (!dateStatus.valid) {
-      return res
-        .status(400)
-        .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
+
+    if (!isValidDate) {
+      return res.status(400).json({
+        message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
+      });
     }
 
     const insertId = await pemasukanDasawismaRepo.createPemasukanDasawisma(
@@ -111,7 +113,7 @@ const updatePemasukanDasawisma = async (req, res) => {
     if (!checkRoles(roles)) {
       return res.status(403).json({
         error:
-          "hanya koordinator dasawisma dan anggota dasawisma yang boleh mengupdate data pemasukan dasawisma",
+          "hanya penanggung jawab dasawisma dan anggota dasawisma yang boleh mengupdate data pemasukan dasawisma",
       });
     }
 
@@ -128,7 +130,9 @@ const updatePemasukanDasawisma = async (req, res) => {
     if (!dateStatus.valid) {
       return res
         .status(400)
-        .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
+        .json({
+          message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
+        });
     }
 
     const updatedPemasukanDasawisma = new PemasukanDasawismaModels({
