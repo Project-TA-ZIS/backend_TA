@@ -11,7 +11,6 @@ module.exports = {
       nama_lengkap: Sequelize.STRING,
       email: {
         type: Sequelize.STRING,
-        unique: true,
       },
       password: Sequelize.STRING,
       nomor_telpon: Sequelize.STRING,

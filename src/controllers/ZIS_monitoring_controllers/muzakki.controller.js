@@ -35,6 +35,7 @@ const getMuzakkiById = async (req, res) => {
 };
 
 const createMuzakki = async (req, res) => {
+  console.log("Request body:", req.body); // Debug log untuk melihat isi request body
   try {
     const roles = req.roles;
     if (roles != "amil zakat") {
@@ -59,11 +60,6 @@ const createMuzakki = async (req, res) => {
       });
     }
 
-    if (req.body.password.length < 6) {
-      return res.status(400).json({
-        message: "Password minimal 6 karakter",
-      });
-    }
 
     const muzakkiData = new muzakkiModel({
       nama_lengkap: req.body.nama_lengkap,

@@ -13,7 +13,6 @@ module.exports = {
       alamat: Sequelize.STRING,
       nik: {
         type: Sequelize.STRING,
-        unique: true,
       },
       tempat_lahir: Sequelize.STRING,
       tanggal_lahir: Sequelize.DATEONLY,

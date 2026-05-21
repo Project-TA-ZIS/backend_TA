@@ -4,7 +4,7 @@ const totalKasDasawismaRepo = require("../../repositories/dasawisma_monitoring_r
 const authController = require("../auth/auth.controller");
 
 const checkRoles = (roles) => {
-  if (roles != "penanggung jawab dasawisma" && roles != "anggota dasawisma") {
+  if (roles != "penanggung jawab dasawisma" && roles != "kader dasawisma") {
     return false;
   } else {
     return true;
@@ -17,7 +17,7 @@ const getAllPemasukanDasawisma = async (req, res) => {
     if (!checkRoles(roles)) {
       return res.status(403).json({
         error:
-          "hanya penanggung jawab dasawisma dan anggota dasawisma yang boleh mengakses data pemasukan dasawisma",
+          "hanya penanggung jawab dasawisma dan kader dasawisma yang boleh mengakses data pemasukan dasawisma",
       });
     }
 
@@ -41,7 +41,7 @@ const getPemasukanDasawismaById = async (req, res) => {
     if (!checkRoles(roles)) {
       return res.status(403).json({
         error:
-          "hanya penanggung jawab dasawisma dan anggota dasawisma yang boleh mengakses data pemasukan dasawisma",
+          "hanya penanggung jawab dasawisma dan kader dasawisma yang boleh mengakses data pemasukan dasawisma",
       });
     }
 
@@ -65,7 +65,7 @@ const addPemasukanDasawisma = async (req, res) => {
     if (!checkRoles(roles)) {
       return res.status(403).json({
         error:
-          "hanya penanggung jawab dasawisma dan anggota dasawisma yang boleh menambahkan data pemasukan dasawisma",
+          "hanya penanggung jawab dasawisma dan kader dasawisma yang boleh menambahkan data pemasukan dasawisma",
       });
     }
 
@@ -113,7 +113,7 @@ const updatePemasukanDasawisma = async (req, res) => {
     if (!checkRoles(roles)) {
       return res.status(403).json({
         error:
-          "hanya penanggung jawab dasawisma dan anggota dasawisma yang boleh mengupdate data pemasukan dasawisma",
+          "hanya penanggung jawab dasawisma dan kader dasawisma yang boleh mengupdate data pemasukan dasawisma",
       });
     }
 
