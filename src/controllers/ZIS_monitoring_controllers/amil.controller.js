@@ -35,9 +35,9 @@ const createAmil = async (req, res) => {
   try {
     const roles = req.roles;
 
-    if (roles !== "koordinator dasawisma") {
+    if (roles !== "penanggung jawab dasawisma") {
       return res.status(403).json({
-        message: "hanya koordinator dasawisma yang dapat membuat amil",
+        message: "hanya penanggung jawab dasawisma yang dapat membuat amil",
       });
     }
 
@@ -86,12 +86,12 @@ const deleteAmil = async (req, res) => {
     const id = req.params.id;
     const roles = req.roles;
 
-    if (roles !== "koordinator dasawisma") {
+    if (roles !== "penanggung jawab dasawisma") {
       return res
         .status(403)
 
         .json({
-          message: "hanya koordinator dasawisma yang dapat menghapus amil",
+          message: "hanya penanggung jawab dasawisma yang dapat menghapus amil",
         });
     }
     const data = await amilRepo.deleteAmil(id);

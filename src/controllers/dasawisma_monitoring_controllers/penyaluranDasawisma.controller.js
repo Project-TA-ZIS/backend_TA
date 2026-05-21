@@ -6,10 +6,10 @@ const authController = require("../auth/auth.controller");
 const getAllPengeluaranDasawisma = async (req, res) => {
   try {
     const role = req.roles;
-    if (role !== "penanggung jawab dasawisma" && role !== "anggota dasawisma") {
+    if (role !== "penanggung jawab dasawisma" && role !== "kader dasawisma") {
       return res.status(403).json({
         error:
-          "hanya koordinator dan anggota dasawisma yang boleh mengakses data pengeluaran Dasawisma",
+          "hanya koordinator dan kader dasawisma yang boleh mengakses data pengeluaran Dasawisma",
       });
     }
 
@@ -32,10 +32,10 @@ const getAllPengeluaranDasawisma = async (req, res) => {
 const getPengeluaranDasawismaById = async (req, res) => {
   try {
     const role = req.roles;
-    if (role !== "penanggung jawab dasawisma" && role !== "anggota dasawisma") {
+    if (role !== "penanggung jawab dasawisma" && role !== "kader dasawisma") {
       return res.status(403).json({
         error:
-          "hanya koordinator dan anggota dasawisma yang boleh mengakses data pengeluaran Dasawisma",
+          "hanya koordinator dan kader dasawisma yang boleh mengakses data pengeluaran Dasawisma",
       });
     }
     const { id } = req.params;

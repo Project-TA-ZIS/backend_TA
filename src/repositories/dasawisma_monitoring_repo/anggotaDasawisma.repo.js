@@ -46,13 +46,13 @@ const createAnggotaDasawisma = async (anggotaData) => {
   const hashedPassword = await bcrypt.hash(anggotaData.password, 10);
   const [result] = await conn.execute(
     `INSERT INTO anggota_dasawisma 
-    (nama_lengkap, email, password, nik, tempat_lahir, tanggal_lahir, roles, created_at)
+    (nama_lengkap, email, password, nomor_telpon,tempat_lahir, tanggal_lahir, roles, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       anggotaData.nama_lengkap,
       anggotaData.email,
       hashedPassword,
-      anggotaData.nik,
+      anggotaData.nomor_telpon,
       anggotaData.tempat_lahir,
       anggotaData.tanggal_lahir,
       anggotaData.roles,

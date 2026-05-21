@@ -11,13 +11,11 @@ module.exports = {
       nama_lengkap: Sequelize.STRING,
       email: {
         type: Sequelize.STRING,
-        unique: true,
       },
       password: Sequelize.STRING,
       nomor_telpon: Sequelize.STRING,
       nik: {
         type: Sequelize.STRING,
-        unique: true,
       },
       roles: Sequelize.ENUM('kader dasawisma', 'penanggung jawab dasawisma'),
       alamat: Sequelize.STRING,

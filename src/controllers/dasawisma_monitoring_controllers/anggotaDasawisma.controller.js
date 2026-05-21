@@ -60,6 +60,7 @@ const createAnggotaDasawisma = async (req, res) => {
     const data = new anggotaDasawismaModel({
       nama_lengkap: req.body.nama_lengkap,
       email: req.body.email,
+      nomor_telpon: req.body.nomor_telpon,
       password: req.body.password,
       roles: req.body.roles,
     });

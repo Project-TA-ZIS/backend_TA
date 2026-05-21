@@ -55,7 +55,7 @@ const addPemasukanZIS = async (req, res) => {
     });
 
     const dateStatus = authController.validateDate(
-      newPemasukanDasawisma.tanggal_penghimpunan,
+      newPemasukanZIS.tanggal_penghimpunan,
     );
     if (!dateStatus) {
       return res
