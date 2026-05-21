@@ -2,7 +2,7 @@ const totalKasDasawismaRepo = require("../../repositories/dasawisma_monitoring_r
 const totalKasDasawismaModels = require("../../models/total_kas/totalKasDasawisma.models");
 
 const checkRoles = (roles) => {
-  if (roles != "koordinator dasawisma" && roles != "anggota dasawisma") {
+  if (roles != "penanggung jawab dasawisma" && roles != "anggota dasawisma") {
     return false;
   } else {
     return true;
@@ -14,7 +14,7 @@ const getTotalKasDasawisma = async (req, res) => {
     if (!checkRoles(req.roles)) {
       return res.status(403).json({
         error:
-          "hanya koordinator dasawisma dan anggota dasawisma yang boleh mengakses data total kas dasawisma",
+          "hanya penanggung jawab dasawisma dan anggota dasawisma yang boleh mengakses data total kas dasawisma",
       });
     }
 

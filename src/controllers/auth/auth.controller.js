@@ -57,8 +57,8 @@ const getUserLoggedIn = async (req, res) => {
     if (userroles === "amil zakat") {
       userData = await amilRepo.getAmilById(userId);
     } else if (
-      userroles === "anggota dasawisma" ||
-      userroles === "koordinator dasawisma"
+      userroles === "kader dasawisma" ||
+      userroles === "penanggung jawab dasawisma"
     ) {
       userData = await dasawismaRepo.getAnggotaDasawismaById(userId);
     }

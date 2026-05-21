@@ -19,7 +19,7 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true,
       },
-      roles: Sequelize.ENUM('anggota dasawisma', 'koordinator dasawisma'),
+      roles: Sequelize.ENUM('kader dasawisma', 'penanggung jawab dasawisma'),
       alamat: Sequelize.STRING,
       tempat_lahir: Sequelize.STRING,
       tanggal_lahir: Sequelize.DATEONLY,

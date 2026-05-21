@@ -57,7 +57,7 @@ const addPemasukanZIS = async (req, res) => {
     const dateStatus = authController.validateDate(
       newPemasukanDasawisma.tanggal_penghimpunan,
     );
-    if (!dateStatus.valid) {
+    if (!dateStatus) {
       return res
         .status(400)
         .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
@@ -113,7 +113,7 @@ const updatePemasukanZIS = async (req, res) => {
     const dateStatus = authController.validateDate(
       pemasukanZIS.tanggal_penghimpunan,
     );
-    if (!dateStatus.valid) {
+    if (!dateStatus) {
       return res
         .status(400)
         .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
