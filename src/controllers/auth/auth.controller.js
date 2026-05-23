@@ -216,6 +216,24 @@ const requestPasswordReset = async (req, res) => {
   }
 };
 
+const validateResetToken = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    jwt.verify(token, process.env.JWT_SECRET);
+
+    return res.status(200).json({
+      success: true,
+      message: "Token valid",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "Token expired atau tidak valid",
+    });
+  }
+};
+
 const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 
@@ -254,4 +272,5 @@ module.exports = {
   validateDate,
   requestPasswordReset,
   resetPassword,
+  validateResetToken,
 };
