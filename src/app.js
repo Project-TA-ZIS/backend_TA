@@ -24,12 +24,10 @@ app.use(
 );
 app.use(
   "/mustahik",
-  verifyJWT,
   require("./routes/ZIS_monitoring_routes/mustahik.routes"),
 );
 app.use(
   "/muzakki",
-  verifyJWT,
   require("./routes/ZIS_monitoring_routes/muzakki.routes"),
 );
 app.use(

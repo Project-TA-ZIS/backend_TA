@@ -5,6 +5,7 @@ const amilRepo = require("../../repositories/ZIS_monitoring_repo/amil.repo");
 const dasawismaRepo = require("../../repositories/dasawisma_monitoring_repo/anggotaDasawisma.repo");
 const mustahikRepo = require("../../repositories/ZIS_monitoring_repo/mustahik.repo");
 const muzakkiRepo = require("../../repositories/ZIS_monitoring_repo/muzakki.repo");
+const transporter = require("../../config/mail.config");
 
 const login = async (req, res) => {
   try {
@@ -132,6 +133,115 @@ const validateDate = (dateString) => {
   return true;
 };
 
+const requestPasswordReset = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    let user = null;
+    let role = null;
+
+    const dasawisma = await dasawismaRepo.getAnggotaDasawismaByEmail(email);
+    if (dasawisma) {
+      user = dasawisma;
+      role = dasawisma.roles;
+    }
+
+    if (!user) {
+      const amil = await amilRepo.getAmilByEmail(email);
+      if (amil) {
+        user = amil;
+        role = amil.roles;
+      }
+    }
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Email tidak ditemukan." });
+    }
+
+    const token = jwt.sign(
+      { id: dasawisma.id, roles: dasawisma.roles },
+      process.env.JWT_SECRET,
+      { expiresIn: "30m" },
+    );
+
+    const resetLink = `${process.env.WEB_URL}/resetPassword/${token}`;
+
+    const mailOptions = {
+      from: process.env.AUTH_EMAIL,
+      to: email,
+      subject: "Permintaan Atur Ulang Password Anda",
+      headers: {
+        "X-Priority": "1",
+        "X-MSMail-Priority": "High",
+        Importance: "high",
+      },
+      html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+        <h2 style="color: #333;">Reset Password Akun Anda</h2>
+        <p>Halo,</p>
+        <p>Kami menerima permintaan untuk mengatur ulang password akun Anda. Jika Anda tidak merasa melakukan permintaan ini, abaikan saja email ini dan tidak akan terjadi perubahan apa pun.</p>
+
+        <p>Untuk melanjutkan proses pengaturan ulang password, silakan klik tombol di bawah ini:</p>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${resetLink}" style="background-color: #4CAF50; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            Reset Password
+          </a>
+        </div>
+
+        <p><strong>Catatan:</strong> Link ini hanya berlaku selama <strong>15 menit</strong> demi keamanan akun Anda.</p>
+
+        <p>Terima kasih telah menggunakan layanan kami.</p>
+
+        <hr style="margin: 30px 0;">
+        <p style="font-size: 12px; color: #888;">Email ini dikirim secara otomatis, mohon untuk tidak membalas. Jika Anda membutuhkan bantuan, silakan hubungi tim dukungan kami.</p>
+      </div>
+    `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+      success: true,
+      token: token,
+      message: "Email reset password telah dikirim.",
+    });
+  } catch (error) {
+    console.error("Error mengirim email reset password:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const hashedPassword = await hashPassword(newPassword);
+    if (decoded.roles === "amil zakat") {
+      await amilRepo.updateAmilPassword(decoded.id, hashedPassword);
+    }
+    if (
+      decoded.roles === "kader dasawisma" ||
+      decoded.roles === "penanggung jawab dasawisma"
+    ) {
+      await dasawismaRepo.updatePassword(decoded.id, hashedPassword);
+    }
+    res
+      .status(200)
+      .json({ success: true, message: "Password berhasil diperbarui." });
+  } catch (error) {
+    console.error("Error memperbarui password:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
 module.exports = {
   login,
   getUserLoggedIn,
@@ -141,5 +251,7 @@ module.exports = {
   cekNIK,
   comparePassword,
   hashPassword,
-  validateDate
+  validateDate,
+  requestPasswordReset,
+  resetPassword,
 };

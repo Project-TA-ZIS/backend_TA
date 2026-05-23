@@ -112,6 +112,7 @@ const updatePassword = async (id, newPassword) => {
   return result.affectedRows > 0;
 };
 
+
 module.exports = {
   getAllAnggotaDasawisma,
   getAnggotaDasawismaById,

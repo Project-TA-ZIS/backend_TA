@@ -2,11 +2,20 @@ const muzakkiController = require("../../controllers/ZIS_monitoring_controllers/
 
 const express = require("express");
 const router = express.Router();
+const verifyJWT = require("../../middleware/verifyToken");
 
 router.get("/get/getAllMuzakki", muzakkiController.getAllMuzakki);
-router.get("/get/getMuzakkiById/:id", muzakkiController.getMuzakkiById);
-router.post("/post/createMuzakki", muzakkiController.createMuzakki);
-router.delete("/delete/deleteMuzakki/:id", muzakkiController.deleteMuzakki);
-router.put("/put/editMuzakki/:id", muzakkiController.editMuzakki);
+router.get(
+  "/get/getMuzakkiById/:id",
+  verifyJWT,
+  muzakkiController.getMuzakkiById,
+);
+router.post("/post/createMuzakki", verifyJWT, muzakkiController.createMuzakki);
+router.delete(
+  "/delete/deleteMuzakki/:id",
+  verifyJWT,
+  muzakkiController.deleteMuzakki,
+);
+router.put("/put/editMuzakki/:id", verifyJWT, muzakkiController.editMuzakki);
 
 module.exports = router;
