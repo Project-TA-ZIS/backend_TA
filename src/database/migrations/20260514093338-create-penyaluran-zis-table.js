@@ -20,6 +20,8 @@ module.exports = {
         onDelete: "RESTRICT",
       },
 
+      nama_mustahik: Sequelize.STRING(255),
+
       kategori: Sequelize.ENUM(
         "zakat fitrah beras",
         "zakat fitrah uang",
@@ -43,7 +45,6 @@ module.exports = {
       updated_at: {
         type: Sequelize.DATE,
         allowNull: true,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
 
       deleted_at: {

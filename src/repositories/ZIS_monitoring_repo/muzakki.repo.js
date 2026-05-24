@@ -41,9 +41,6 @@ const getMuzakkiByNomorTelpon = async (nomor_telpon) => {
 };
 
 const createMuzakki = async (muzakkiData) => {
-  const muzakki = new muzakkiModel({
-    ...muzakkiData,
-  });
   const query = `
 
         INSERT INTO muzakki
@@ -66,20 +63,20 @@ const createMuzakki = async (muzakkiData) => {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
   const [result] = await conn.execute(query, [
-    muzakki.nama_lengkap,
-    muzakki.email,
-    muzakki.nomor_telpon,
-    muzakki.alamat,
-    muzakki.npwp,
-    muzakki.nik,
-    muzakki.tempat_lahir,
-    muzakki.tanggal_lahir,
-    muzakki.jenis_kelamin,
-    muzakki.pekerjaan,
-    muzakki.created_at,
-    muzakki.updated_at,
-    muzakki.deleted_at,
-    muzakki.deleted_status,
+    muzakkiData.nama_lengkap,
+    muzakkiData.email,
+    muzakkiData.nomor_telpon,
+    muzakkiData.alamat,
+    muzakkiData.npwp,
+    muzakkiData.nik,
+    muzakkiData.tempat_lahir,
+    muzakkiData.tanggal_lahir,
+    muzakkiData.jenis_kelamin,
+    muzakkiData.pekerjaan,
+    muzakkiData.created_at,
+    muzakkiData.updated_at,
+    muzakkiData.deleted_at,
+    muzakkiData.deleted_status,
   ]);
   return result.insertId;
 };
@@ -95,9 +92,6 @@ const deleteMuzakki = async (id) => {
 };
 
 const editMuzakki = async (id, muzakkiData) => {
-  const muzakki = new muzakkiModel({
-    ...muzakkiData,
-  });
   const query = `
         UPDATE muzakki
         SET
@@ -111,20 +105,21 @@ const editMuzakki = async (id, muzakkiData) => {
             tanggal_lahir = ?,
             jenis_kelamin = ?,
             pekerjaan = ?,
-            updated_at = NOW()
+            updated_at = ?
         WHERE id = ? AND deleted_status = 0
     `;
   const [result] = await conn.execute(query, [
-    muzakki.nama_lengkap,
-    muzakki.email,
-    muzakki.nomor_telpon,
-    muzakki.alamat,
-    muzakki.npwp,
-    muzakki.nik,
-    muzakki.tempat_lahir,
-    muzakki.tanggal_lahir,
-    muzakki.jenis_kelamin,
-    muzakki.pekerjaan,
+    muzakkiData.nama_lengkap,
+    muzakkiData.email,
+    muzakkiData.nomor_telpon,
+    muzakkiData.alamat,
+    muzakkiData.npwp,
+    muzakkiData.nik,
+    muzakkiData.tempat_lahir,
+    muzakkiData.tanggal_lahir,
+    muzakkiData.jenis_kelamin,
+    muzakkiData.pekerjaan,
+    muzakkiData.updated_at,
     id,
   ]);
   return result.affectedRows > 0;

@@ -52,12 +52,20 @@ const addPengeluaranZIS = async (req, res) => {
       });
     }
 
+    const mustahik = await mustahikRepo.getMustahikById(
+      req.body.mustahik_id,
+    );
+    if (!mustahik) {
+      return res.status(404).json({ message: "Mustahik not found" });
+    }
+
     const penyaluranZIS = new penyaluranZISModel({
       mustahik_id: req.body.mustahik_id,
       kategori: req.body.kategori,
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
       tanggal_penyaluran: req.body.tanggal_penyaluran,
+      nama_mustahik: mustahik.nama_lengkap,
     });
 
     const dateStatus = authController.validateDate(
@@ -66,7 +74,9 @@ const addPengeluaranZIS = async (req, res) => {
     if (!dateStatus) {
       return res
         .status(400)
-        .json({ message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini" });
+        .json({
+          message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
+        });
     }
 
     const totalZIS = await totalZISRepo.getTotalZISWhereKategori(
@@ -85,13 +95,6 @@ const addPengeluaranZIS = async (req, res) => {
         saldo_tersedia: totalZIS.jumlah_keseluruhan,
         jumlah_diminta: penyaluranZIS.jumlah,
       });
-    }
-
-    const mustahik = await mustahikRepo.getMustahikById(
-      penyaluranZIS.mustahik_id,
-    );
-    if (!mustahik) {
-      return res.status(404).json({ message: "Mustahik not found" });
     }
 
     const insertID = await pengeluaranZISRepo.addPengeluaranZIS(penyaluranZIS);
@@ -137,7 +140,9 @@ const updatePengeluaranZIS = async (req, res) => {
     if (!dateStatus) {
       return res
         .status(400)
-        .json({ message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini" });
+        .json({
+          message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
+        });
     }
 
     const mustahik = await mustahikRepo.getMustahikById(

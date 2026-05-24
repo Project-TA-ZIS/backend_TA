@@ -1,6 +1,6 @@
 const mustahikRepo = require("../../repositories/ZIS_monitoring_repo/mustahik.repo");
 const authController = require("../auth/auth.controller");
-const mustahikModel = require("../../models/mustahik/mustahik.models");
+const mustahikModel = require("../../models/users/mustahik/mustahik.models");
 
 const getAllMustahik = async (req, res) => {
   try {
@@ -56,13 +56,7 @@ const createMustahik = async (req, res) => {
         message: "Semua field wajib diisi",
       });
     }
-
-    if (req.body.password.length < 6) {
-      return res.status(400).json({
-        message: "Password minimal 6 karakter",
-      });
-    }
-
+    
     const mustahikData = new mustahikModel({
       nama_lengkap: req.body.nama_lengkap,
       nomor_telpon: req.body.nomor_telpon,
@@ -72,6 +66,10 @@ const createMustahik = async (req, res) => {
       tanggal_lahir: req.body.tanggal_lahir,
       jenis_kelamin: req.body.jenis_kelamin,
       kategori: req.body.kategori,
+      created_at: new Date(),
+      updated_at: null,
+      deleted_at: null,
+      deleted_status: 0,
     });
 
     await validateNewData(mustahikData);
@@ -85,6 +83,7 @@ const createMustahik = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Error creating mustahik:", error);
     res.status(500).json({ message: error.message });
   }
 };

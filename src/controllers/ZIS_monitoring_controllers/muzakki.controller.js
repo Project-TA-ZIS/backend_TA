@@ -35,7 +35,6 @@ const getMuzakkiById = async (req, res) => {
 };
 
 const createMuzakki = async (req, res) => {
-  console.log("Request body:", req.body); // Debug log untuk melihat isi request body
   try {
     const roles = req.roles;
     if (roles != "amil zakat") {
@@ -60,7 +59,6 @@ const createMuzakki = async (req, res) => {
       });
     }
 
-
     const muzakkiData = new muzakkiModel({
       nama_lengkap: req.body.nama_lengkap,
       email: req.body.email,
@@ -72,9 +70,13 @@ const createMuzakki = async (req, res) => {
       tanggal_lahir: req.body.tanggal_lahir,
       jenis_kelamin: req.body.jenis_kelamin,
       pekerjaan: req.body.pekerjaan,
+      created_at: new Date(),
+      updated_at: null,
+      deleted_at: null,
+      deleted_status: 0,
     });
 
-    await validateNewData(muzakkiData);
+    responseValidate = await validateNewData(muzakkiData);
 
     const newMuzakkiId = await muzakkiRepo.createMuzakki(muzakkiData);
     res.status(201).json({
@@ -85,6 +87,13 @@ const createMuzakki = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Error creating muzakki:", error);
+
+    if (error.message.includes("terdaftar")) {
+      return res.status(400).json({
+        message: error.message,
+      });
+    }
     res.status(500).json({ message: error.message });
   }
 };
@@ -125,6 +134,7 @@ const editMuzakki = async (req, res) => {
       tanggal_lahir: req.body.tanggal_lahir,
       jenis_kelamin: req.body.jenis_kelamin,
       pekerjaan: req.body.pekerjaan,
+      updated_at: new Date(),
     });
 
     await validateNewData(muzakkiData, id);
@@ -138,6 +148,11 @@ const editMuzakki = async (req, res) => {
       .status(200)
       .json({ message: "Muzakki updated successfully", data: muzakkiData });
   } catch (error) {
+    if (error.message.includes("terdaftar")) {
+      return res.status(400).json({
+        message: error.message,
+      });
+    }
     res.status(500).json({ message: error.message });
   }
 };

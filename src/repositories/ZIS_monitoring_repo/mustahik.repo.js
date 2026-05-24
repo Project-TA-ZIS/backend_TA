@@ -1,6 +1,6 @@
 const conn = require("../../config/db_connection");
 const bcrypt = require("bcrypt");
-const mustahikModel = require("../../models/mustahik/mustahik.models");
+const mustahikModel = require("../../models/users/mustahik/mustahik.models");
 
 const getAllMustahik = async () => {
   const [data] = await conn.execute(
@@ -40,16 +40,16 @@ const createMustahik = async (mustahikData) => {
       (
           nama_lengkap,
           nomor_telpon,
-            alamat,
-            nik,
-            tempat_lahir,
-            tanggal_lahir,
-            jenis_kelamin,
-            kategori,
-            created_at,
-            updated_at,
-            deleted_at,
-            deleted_status
+          alamat,
+          nik,
+          tempat_lahir,
+          tanggal_lahir,
+          jenis_kelamin,
+          kategori,
+          created_at,
+          updated_at,
+          deleted_at,
+          deleted_status
         )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
