@@ -54,6 +54,21 @@ const getPengeluaranDasawismaById = async (req, res) => {
   }
 };
 
+const validatePengeluaranDasawisma = (pengeluaranDasawisma) => {
+
+  if (!pengeluaranDasawisma.deskripsi) {
+    return { valid: false, message: "Deskripsi is required" };
+  }
+
+  if (!pengeluaranDasawisma.jumlah) {
+    return { valid: false, message: "Jumlah is required" };
+  }
+  if (!pengeluaranDasawisma.tanggal_penyaluran) {
+    return { valid: false, message: "Tanggal penyaluran is required" };
+  }
+  return { valid: true };
+};
+
 const addPengeluaranDasawisma = async (req, res) => {
   try {
     const role = req.roles;
@@ -64,8 +79,12 @@ const addPengeluaranDasawisma = async (req, res) => {
       });
     }
 
+    const validation = validatePengeluaranDasawisma(req.body);
+    if (!validation.valid) {
+      return res.status(400).json({ message: validation.message });
+    }
+
     const totalDasawisma = await totalDasawismaRepos.getAllTotalDasawisma();
-    console.log(totalDasawisma);
     if (totalDasawisma.jumlah_keseluruhan < req.body.jumlah) {
       return res.status(400).json({
         message: "Total Kas Dasawisma tidak mencukupi untuk pengeluaran ini",

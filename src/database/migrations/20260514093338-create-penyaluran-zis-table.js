@@ -34,9 +34,22 @@ module.exports = {
 
       tanggal_penyaluran: Sequelize.DATEONLY,
 
-      created_at: Sequelize.DATE,
-      updated_at: Sequelize.DATE,
-      deleted_at: Sequelize.DATE,
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+
+      deleted_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
 
       deleted_status: {
         type: Sequelize.BOOLEAN,
