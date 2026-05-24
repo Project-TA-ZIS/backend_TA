@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('pemasukan_zis', {
+    await queryInterface.createTable("pemasukan_zis", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -13,19 +13,19 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'muzakki',
-          key: 'id',
+          model: "muzakki",
+          key: "id",
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT',
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
       },
 
       kategori: Sequelize.ENUM(
-        'zakat fitrah beras',
-        'zakat fitrah uang',
-        'zakat mal',
-        'infaq',
-        'shodaqoh'
+        "zakat fitrah beras",
+        "zakat fitrah uang",
+        "zakat mal",
+        "infaq",
+        "shodaqoh",
       ),
 
       jumlah: Sequelize.DECIMAL(12, 2),
@@ -34,9 +34,22 @@ module.exports = {
 
       tanggal_penghimpunan: Sequelize.DATEONLY,
 
-      created_at: Sequelize.DATE,
-      updated_at: Sequelize.DATE,
-      deleted_at: Sequelize.DATE,
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+
+      deleted_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
 
       deleted_status: {
         type: Sequelize.BOOLEAN,
@@ -46,6 +59,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable('pemasukan_zis');
+    await queryInterface.dropTable("pemasukan_zis");
   },
 };

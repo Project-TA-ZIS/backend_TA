@@ -3,7 +3,6 @@ const User = require("../users.models");
 class Muzakki extends User {
   constructor(data) {
     super(data);
-    this.id = data.id ?? null;
     this.npwp = data.npwp ?? null;
     this.nik = data.nik ?? null;
     this.tempat_lahir = data.tempat_lahir ?? null;

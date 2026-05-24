@@ -39,13 +39,14 @@ const createPemasukanDasawisma = async (pemasukanDasawisma) => {
 
 const updatePemasukanDasawisma = async (id, pemasukanDasawisma) => {
   await conn.execute(
-    "UPDATE pemasukan_dasawisma SET jumlah = ?, sumber = ?, deskripsi = ?, tanggal_penghimpunan = ?, dasawisma_id = ? WHERE id = ? AND deleted_status = 0",
+    "UPDATE pemasukan_dasawisma SET jumlah = ?, sumber = ?, deskripsi = ?, tanggal_penghimpunan = ?, anggota_dasawisma_id = ?, updated_at = ? WHERE id = ? AND deleted_status = 0",
     [
       pemasukanDasawisma.jumlah,
       pemasukanDasawisma.sumber,
       pemasukanDasawisma.deskripsi,
       pemasukanDasawisma.tanggal_penghimpunan,
-      pemasukanDasawisma.dasawisma_id,
+      pemasukanDasawisma.anggota_dasawisma_id,
+      new Date(),
       id,
     ],
   );
