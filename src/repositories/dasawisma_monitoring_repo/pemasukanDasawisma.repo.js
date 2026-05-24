@@ -1,15 +1,7 @@
 const conn = require("../../config/db_connection");
 
 const getAllPemasukanDasawisma = async () => {
-  const [data] = await conn.execute(`
-    SELECT 
-      pd.*,
-      ad.nama_lengkap AS nama_anggota
-    FROM pemasukan_dasawisma pd
-    LEFT JOIN anggota_dasawisma ad
-      ON pd.anggota_dasawisma_id = ad.id
-    WHERE pd.deleted_status = 0
-  `);
+  const [data] = await conn.execute("SELECT * FROM pemasukan_dasawisma WHERE deleted_status = 0");
 
   return data;
 };
@@ -24,9 +16,10 @@ const getPemasukanDasawismaById = async (id) => {
 
 const createPemasukanDasawisma = async (pemasukanDasawisma) => {
   const [result] = await conn.execute(
-    "INSERT INTO pemasukan_dasawisma (anggota_dasawisma_id,sumber,  jumlah, deskripsi, tanggal_penghimpunan, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+    "INSERT INTO pemasukan_dasawisma (anggota_dasawisma_id, nama_anggota, sumber,  jumlah, deskripsi, tanggal_penghimpunan, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
     [
       pemasukanDasawisma.anggota_dasawisma_id,
+      pemasukanDasawisma.nama_anggota,
       pemasukanDasawisma.sumber,
       pemasukanDasawisma.jumlah,
       pemasukanDasawisma.deskripsi,

@@ -20,6 +20,8 @@ module.exports = {
         onDelete: "SET NULL",
       },
 
+      nama_anggota: Sequelize.STRING(255),
+
       sumber: {
         type: Sequelize.ENUM("IURAN", "LAINNYA"),
         allowNull: false,
@@ -50,7 +52,6 @@ module.exports = {
       updated_at: {
         type: Sequelize.DATE,
         allowNull: true,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
 
       deleted_at: {

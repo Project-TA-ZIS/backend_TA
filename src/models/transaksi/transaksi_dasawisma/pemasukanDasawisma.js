@@ -6,10 +6,6 @@ class PemasukanDasawisma extends transaksi {
     this.anggota_dasawisma_id = data.anggota_dasawisma_id ?? null;
     this.sumber = data.sumber ?? null;
     this.nama_anggota = data.nama_anggota ?? null;
-    this.created_at = data.created_at ?? new Date();
-    this.updated_at = data.updated_at ?? null;
-    this.deleted_at = data.deleted_at ?? null;
-    this.deleted_status = 0;
   }
 }
 

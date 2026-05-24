@@ -18,9 +18,10 @@ const getPengeluaranZISById = async (id) => {
 
 const addPengeluaranZIS = async (pengeluaranZIS) => {
   const [result] = await conn.execute(
-    "INSERT INTO penyaluran_zis (mustahik_id, jumlah, kategori, deskripsi, tanggal_penyaluran, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+    "INSERT INTO penyaluran_zis (mustahik_id, nama_mustahik, jumlah, kategori, deskripsi, tanggal_penyaluran, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
     [
       pengeluaranZIS.mustahik_id,
+      pengeluaranZIS.nama_mustahik,
       pengeluaranZIS.jumlah,
       pengeluaranZIS.kategori,
       pengeluaranZIS.deskripsi,

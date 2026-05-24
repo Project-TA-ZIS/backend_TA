@@ -1,16 +1,14 @@
-const User = require("../users.models");
+const User = require('../users.models');
 
-class Muzakki extends User {
+class mustahik extends User {
   constructor(data) {
     super(data);
-    this.email = data.email ?? null;
-    this.npwp = data.npwp ?? null;
     this.nik = data.nik ?? null;
     this.tempat_lahir = data.tempat_lahir ?? null;
     this.tanggal_lahir = data.tanggal_lahir ?? null;
     this.jenis_kelamin = data.jenis_kelamin ?? null;
-    this.pekerjaan = data.pekerjaan ?? null;
+    this.kategori = data.kategori ?? null;
   }
 }
 
-module.exports = Muzakki;
+module.exports = mustahik;

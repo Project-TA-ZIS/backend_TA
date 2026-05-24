@@ -1,15 +1,7 @@
 const conn = require("../../config/db_connection");
 
 const getAllPemasukanZIS = async () => {
-  const [data] = await conn.execute(`
-      SELECT 
-        pz.*,
-        mz.nama_lengkap AS nama_muzakki
-      FROM pemasukan_zis pz
-      LEFT JOIN muzakki mz
-        ON pz.muzakki_id = mz.id
-      WHERE pz.deleted_status = 0
-    `);
+  const [data] = await conn.execute("SELECT * FROM pemasukan_zis WHERE deleted_status = 0");
   return data;
 };
 
@@ -23,9 +15,10 @@ const getPemasukanZISById = async (id) => {
 
 const addPemasukanZIS = async (pemasukanZIS) => {
   const [result] = await conn.execute(
-    "INSERT INTO pemasukan_zis (muzakki_id, kategori, jumlah, deskripsi, tanggal_penghimpunan, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+    "INSERT INTO pemasukan_zis (muzakki_id,nama_muzakki, kategori, jumlah, deskripsi, tanggal_penghimpunan, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
     [
       pemasukanZIS.muzakki_id,
+      pemasukanZIS.nama_muzakki,
       pemasukanZIS.kategori,
       pemasukanZIS.jumlah,
       pemasukanZIS.deskripsi,
@@ -37,12 +30,13 @@ const addPemasukanZIS = async (pemasukanZIS) => {
 };
 
 const updatePemasukanZIS = async (id, pemasukanZIS) => {
-  const { muzakki_id, kategori, jumlah, deskripsi, tanggal_penghimpunan } =
+  const { muzakki_id, nama_muzakki, kategori, jumlah, deskripsi, tanggal_penghimpunan } =
     pemasukanZIS;
   const [result] = await conn.execute(
-    "UPDATE pemasukan_zis SET muzakki_id = ?, kategori = ?, jumlah = ?, deskripsi = ?, tanggal_penghimpunan = ?, updated_at = ? WHERE id = ? AND deleted_status = 0",
+    "UPDATE pemasukan_zis SET muzakki_id = ?, nama_muzakki = ?, kategori = ?, jumlah = ?, deskripsi = ?, tanggal_penghimpunan = ?, updated_at = ? WHERE id = ? AND deleted_status = 0",
     [
       muzakki_id,
+      nama_muzakki,
       kategori,
       jumlah,
       deskripsi,
@@ -75,7 +69,7 @@ const getPemasukanZISByMuzakkiId = async (muzakki_id) => {
       AND pemasukan_zis.deleted_status = 0
       ORDER BY pemasukan_zis.created_at DESC
     `,
-    [muzakki_id]
+    [muzakki_id],
   );
 
   return data;
@@ -87,5 +81,5 @@ module.exports = {
   addPemasukanZIS,
   updatePemasukanZIS,
   deletePemasukanZIS,
-  getPemasukanZISByMuzakkiId
+  getPemasukanZISByMuzakkiId,
 };

@@ -60,10 +60,6 @@ const getPemasukanDasawismaById = async (req, res) => {
 };
 
 const validatePemasukanDasawisma = (pemasukanDasawisma) => {
-  if (!pemasukanDasawisma.anggota_dasawisma_id) {
-    return { valid: false, message: "Anggota dasawisma ID is required" };
-  }
-
   if (!pemasukanDasawisma.sumber) {
     return { valid: false, message: "Sumber is required" };
   }
@@ -84,28 +80,33 @@ const validatePemasukanDasawisma = (pemasukanDasawisma) => {
 const addPemasukanDasawisma = async (req, res) => {
   try {
     const roles = req.roles;
+    const existingAnggota = null;
     if (!checkRoles(roles)) {
       return res.status(403).json({
         error:
           "hanya penanggung jawab dasawisma dan kader dasawisma yang boleh menambahkan data pemasukan dasawisma",
       });
     }
+
+    if (req.body.anggota_dasawisma_id) {
+      existingAnggota = await anggotaDasawismaRepo.getAnggotaDasawismaById(
+        req.body.anggota_dasawisma_id,
+      );
+      if (!existingAnggota) {
+        return res.status(404).json({ message: "Anggota dasawisma not found" });
+      }
+    }
+
     const validation = validatePemasukanDasawisma(req.body);
     if (!validation.valid) {
       return res.status(400).json({ message: validation.message });
-    }
-
-    const existingAnggota = anggotaDasawismaRepo.getAnggotaDasawismaById(
-      req.body.anggota_dasawisma_id,
-    );
-    if (!existingAnggota) {
-      return res.status(404).json({ message: "Anggota dasawisma not found" });
     }
 
     const newPemasukanDasawisma = new PemasukanDasawismaModels({
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
       sumber: req.body.sumber,
+      nama_anggota: existingAnggota ? existingAnggota.nama_lengkap : null,
       tanggal_penghimpunan: req.body.tanggal_penghimpunan,
       anggota_dasawisma_id: req.body.anggota_dasawisma_id,
       created_at: new Date(),
@@ -132,8 +133,10 @@ const addPemasukanDasawisma = async (req, res) => {
     res.status(200).json({
       message: "Pemasukan dasawisma created",
       data: { ...newPemasukanDasawisma, id: insertId },
+      // data: { ...newPemasukanDasawisma},
     });
   } catch (error) {
+    console.error("Error in addPemasukanDasawisma:", error);
     res
       .status(500)
       .json({ message: "Error creating data", error: error.message });
@@ -182,11 +185,21 @@ const updatePemasukanDasawisma = async (req, res) => {
       await totalKasDasawismaRepo.tambahTotalDasawisma(jumlahDifference);
     }
 
+    const existingAnggota = null;
+    if (req.body.anggota_dasawisma_id) {
+      existingAnggota = await anggotaDasawismaRepo.getAnggotaDasawismaById(
+        req.body.anggota_dasawisma_id,
+      );
+    } else {
+      return res.status(404).json({ message: "Anggota dasawisma not found" });
+    }
+
     const updatedPemasukanDasawisma = new PemasukanDasawismaModels({
       jumlah: newJumlah,
       sumber: req.body.sumber,
       deskripsi: req.body.deskripsi,
       tanggal_penghimpunan: req.body.tanggal_penghimpunan,
+      nama_anggota: existingAnggota.nama_lengkap,
       anggota_dasawisma_id: req.body.anggota_dasawisma_id,
     });
 

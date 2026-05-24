@@ -46,12 +46,20 @@ const addPemasukanZIS = async (req, res) => {
       });
     }
 
+    const existingMuzakki = await muzakkiRepo.getMuzakkiById(
+      req.body.muzakki_id,
+    );
+    if (!existingMuzakki) {
+      return res.status(404).json({ message: "Muzakki not found" });
+    }
+
     const newPemasukanZIS = new PemasukanZIS({
       muzakki_id: req.body.muzakki_id,
       kategori: req.body.kategori,
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
       tanggal_penghimpunan: req.body.tanggal_penghimpunan,
+      nama_muzakki: existingMuzakki.nama_lengkap,
     });
 
     const dateStatus = authController.validateDate(
@@ -60,14 +68,9 @@ const addPemasukanZIS = async (req, res) => {
     if (!dateStatus) {
       return res
         .status(400)
-        .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
-    }
-
-    const muzakki = await muzakkiRepo.getMuzakkiById(
-      newPemasukanZIS.muzakki_id,
-    );
-    if (!muzakki) {
-      return res.status(404).json({ message: "Muzakki not found" });
+        .json({
+          message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
+        });
     }
 
     const insertId = await pemasukanZISRepo.addPemasukanZIS(newPemasukanZIS);
@@ -100,7 +103,7 @@ const updatePemasukanZIS = async (req, res) => {
         .json({ error: "hanya amil zakat yang boleh mengedit pemasukan ZIS" });
     }
 
-    const { id } = req.params.id;
+    const { id } = req.params;
 
     const pemasukanZIS = new PemasukanZIS({
       muzakki_id: req.body.muzakki_id,
@@ -116,10 +119,12 @@ const updatePemasukanZIS = async (req, res) => {
     if (!dateStatus) {
       return res
         .status(400)
-        .json({ message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini" });
+        .json({
+          message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
+        });
     }
 
-    const muzakki = await muzakkiRepo.getMuzakkiById(PemasukanZIS.muzakki_id);
+    const muzakki = await muzakkiRepo.getMuzakkiById(pemasukanZIS.muzakki_id);
     if (!muzakki) {
       return res.status(404).json({ message: "Muzakki not found" });
     }
@@ -129,8 +134,8 @@ const updatePemasukanZIS = async (req, res) => {
       return res.status(404).json({ message: "Pemasukan ZIS not found" });
     }
 
-    const isJumlahChanged = jumlah !== existingData.jumlah;
-    const isKategoriChanged = kategori !== existingData.kategori;
+    const isJumlahChanged = pemasukanZIS.jumlah !== existingData.jumlah;
+    const isKategoriChanged = pemasukanZIS.kategori !== existingData.kategori;
 
     if (isJumlahChanged || isKategoriChanged) {
       if (isKategoriChanged) {
@@ -139,11 +144,11 @@ const updatePemasukanZIS = async (req, res) => {
           -existingData.jumlah,
         );
 
-        await totalZISRepo.updateTotalZIS(kategori, jumlah);
+        await totalZISRepo.updateTotalZIS(pemasukanZIS.kategori, pemasukanZIS.jumlah);
       } else {
-        const selisih = jumlah - existingData.jumlah;
+        const selisih = pemasukanZIS.jumlah - existingData.jumlah;
 
-        await totalZISRepo.updateTotalZIS(kategori, selisih);
+        await totalZISRepo.updateTotalZIS(pemasukanZIS.kategori, selisih);
       }
     }
     await pemasukanZISRepo.updatePemasukanZIS(id, pemasukanZIS);
