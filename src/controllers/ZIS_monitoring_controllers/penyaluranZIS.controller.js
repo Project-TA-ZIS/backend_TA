@@ -52,9 +52,7 @@ const addPengeluaranZIS = async (req, res) => {
       });
     }
 
-    const mustahik = await mustahikRepo.getMustahikById(
-      req.body.mustahik_id,
-    );
+    const mustahik = await mustahikRepo.getMustahikById(req.body.mustahik_id);
     if (!mustahik) {
       return res.status(404).json({ message: "Mustahik not found" });
     }
@@ -72,11 +70,9 @@ const addPengeluaranZIS = async (req, res) => {
       penyaluranZIS.tanggal_penyaluran,
     );
     if (!dateStatus) {
-      return res
-        .status(400)
-        .json({
-          message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
-        });
+      return res.status(400).json({
+        message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
+      });
     }
 
     const totalZIS = await totalZISRepo.getTotalZISWhereKategori(
@@ -112,6 +108,15 @@ const addPengeluaranZIS = async (req, res) => {
       },
     });
   } catch (error) {
+    if (error?.code === "SALDO_TIDAK_CUKUP") {
+      return res.status(400).json({
+        message: error.message,
+        kategori: error.kategori,
+        saldo_tersedia: error.saldo_tersedia,
+        perubahan_diminta: error.perubahan_diminta,
+      });
+    }
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -138,11 +143,9 @@ const updatePengeluaranZIS = async (req, res) => {
       penyaluranZIS.tanggal_penyaluran,
     );
     if (!dateStatus) {
-      return res
-        .status(400)
-        .json({
-          message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
-        });
+      return res.status(400).json({
+        message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
+      });
     }
 
     const mustahik = await mustahikRepo.getMustahikById(
@@ -163,18 +166,21 @@ const updatePengeluaranZIS = async (req, res) => {
 
     const jumlahBerubah = existingData.jumlah != penyaluranZIS.jumlah;
 
-    if (kategoriBerubah) {
-      await totalZISRepo.tambahTotalZIS(
-        existingData.kategori,
-        existingData.jumlah,
-      );
+    const oldJumlah = Number(existingData.jumlah);
+    const newJumlah = Number(penyaluranZIS.jumlah);
 
-      await totalZISRepo.kurangTotalZIS(
-        penyaluranZIS.kategori,
-        penyaluranZIS.jumlah,
-      );
+    if (kategoriBerubah) {
+      // Pindah kategori pengeluaran: kembalikan saldo kategori lama, kurangi kategori baru.
+      await totalZISRepo.tambahTotalZIS(existingData.kategori, oldJumlah);
+      try {
+        await totalZISRepo.kurangTotalZIS(penyaluranZIS.kategori, newJumlah);
+      } catch (err) {
+        // Rollback best-effort
+        await totalZISRepo.kurangTotalZIS(existingData.kategori, oldJumlah);
+        throw err;
+      }
     } else if (jumlahBerubah) {
-      const selisih = penyaluranZIS.jumlah - existingData.jumlah;
+      const selisih = newJumlah - oldJumlah;
 
       await totalZISRepo.kurangTotalZIS(penyaluranZIS.kategori, selisih);
     }
@@ -183,6 +189,15 @@ const updatePengeluaranZIS = async (req, res) => {
 
     res.status(200).json({ message: "Penyaluran ZIS berhasil diperbarui" });
   } catch (error) {
+    if (error?.code === "SALDO_TIDAK_CUKUP") {
+      return res.status(400).json({
+        message: error.message,
+        kategori: error.kategori,
+        saldo_tersedia: error.saldo_tersedia,
+        perubahan_diminta: error.perubahan_diminta,
+      });
+    }
+
     res.status(500).json({ message: error.message });
   }
 };

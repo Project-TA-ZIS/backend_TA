@@ -80,7 +80,7 @@ const validatePemasukanDasawisma = (pemasukanDasawisma) => {
 const addPemasukanDasawisma = async (req, res) => {
   try {
     const roles = req.roles;
-    const existingAnggota = null;
+    let existingAnggota = null;
     if (!checkRoles(roles)) {
       return res.status(403).json({
         error:
@@ -154,7 +154,7 @@ const updatePemasukanDasawisma = async (req, res) => {
       });
     }
 
-    const id = req.params.id;
+    const { id } = req.params;
 
     const existingData =
       await pemasukanDasawismaRepo.getPemasukanDasawismaById(id);
@@ -182,25 +182,19 @@ const updatePemasukanDasawisma = async (req, res) => {
     if (newJumlah !== oldJumlah) {
       const jumlahDifference = newJumlah - oldJumlah;
 
-      await totalKasDasawismaRepo.tambahTotalDasawisma(jumlahDifference);
-    }
-
-    const existingAnggota = null;
-    if (req.body.anggota_dasawisma_id) {
-      existingAnggota = await anggotaDasawismaRepo.getAnggotaDasawismaById(
-        req.body.anggota_dasawisma_id,
-      );
-    } else {
-      return res.status(404).json({ message: "Anggota dasawisma not found" });
+      if (jumlahDifference > 0) {
+        await totalKasDasawismaRepo.tambahTotalDasawisma(jumlahDifference);
+      } else {
+        await totalKasDasawismaRepo.kurangiTotalDasawisma(
+          Math.abs(jumlahDifference),
+        );
+      }
     }
 
     const updatedPemasukanDasawisma = new PemasukanDasawismaModels({
       jumlah: newJumlah,
-      sumber: req.body.sumber,
       deskripsi: req.body.deskripsi,
       tanggal_penghimpunan: req.body.tanggal_penghimpunan,
-      nama_anggota: existingAnggota.nama_lengkap,
-      anggota_dasawisma_id: req.body.anggota_dasawisma_id,
     });
 
     await pemasukanDasawismaRepo.updatePemasukanDasawisma(
@@ -216,6 +210,17 @@ const updatePemasukanDasawisma = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Error in updatePemasukanDasawisma:", error);
+
+    if (error?.code === "SALDO_TIDAK_CUKUP") {
+      return res.status(400).json({
+        message: error.message,
+        kategori: error.kategori,
+        saldo_tersedia: error.saldo_tersedia,
+        perubahan_diminta: error.perubahan_diminta,
+      });
+    }
+
     return res.status(500).json({
       message: "Error updating data",
       error: error.message,

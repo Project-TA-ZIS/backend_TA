@@ -95,6 +95,7 @@ const addPemasukanZIS = async (req, res) => {
 };
 
 const updatePemasukanZIS = async (req, res) => {
+  console.log(req.body);
   try {
     const roles = req.roles;
     if (roles != "amil zakat") {
@@ -111,6 +112,7 @@ const updatePemasukanZIS = async (req, res) => {
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
       tanggal_penghimpunan: req.body.tanggal_penghimpunan,
+      nama_muzakki: req.body.nama_muzakki,
     });
 
     const dateStatus = authController.validateDate(
@@ -129,32 +131,50 @@ const updatePemasukanZIS = async (req, res) => {
       return res.status(404).json({ message: "Muzakki not found" });
     }
 
+    pemasukanZIS.nama_muzakki = muzakki.nama_lengkap;
+
     const existingData = await pemasukanZISRepo.getPemasukanZISById(id);
     if (!existingData) {
       return res.status(404).json({ message: "Pemasukan ZIS not found" });
     }
 
-    const isJumlahChanged = pemasukanZIS.jumlah !== existingData.jumlah;
+    const oldJumlah = Number(existingData.jumlah);
+    const newJumlah = Number(pemasukanZIS.jumlah);
+    const isJumlahChanged = newJumlah !== oldJumlah;
     const isKategoriChanged = pemasukanZIS.kategori !== existingData.kategori;
 
     if (isJumlahChanged || isKategoriChanged) {
       if (isKategoriChanged) {
-        await totalZISRepo.updateTotalZIS(
-          existingData.kategori,
-          -existingData.jumlah,
-        );
-
-        await totalZISRepo.updateTotalZIS(pemasukanZIS.kategori, pemasukanZIS.jumlah);
+        // Pindah kategori pemasukan: kurangi kategori lama, tambah kategori baru.
+        // Jika pengurangan kategori lama membuat saldo minus, repo akan melempar error.
+        await totalZISRepo.tambahTotalZIS(existingData.kategori, -oldJumlah);
+        try {
+          await totalZISRepo.tambahTotalZIS(pemasukanZIS.kategori, newJumlah);
+        } catch (err) {
+          // Rollback best-effort
+          await totalZISRepo.tambahTotalZIS(existingData.kategori, oldJumlah);
+          throw err;
+        }
       } else {
-        const selisih = pemasukanZIS.jumlah - existingData.jumlah;
+        const selisih = newJumlah - oldJumlah;
 
-        await totalZISRepo.updateTotalZIS(pemasukanZIS.kategori, selisih);
+        await totalZISRepo.tambahTotalZIS(pemasukanZIS.kategori, selisih);
       }
     }
     await pemasukanZISRepo.updatePemasukanZIS(id, pemasukanZIS);
 
     res.status(200).json({ message: "Pemasukan ZIS updated successfully" });
   } catch (error) {
+    if (error?.code === "SALDO_TIDAK_CUKUP") {
+      return res.status(400).json({
+        message: error.message,
+        kategori: error.kategori,
+        saldo_tersedia: error.saldo_tersedia,
+        perubahan_diminta: error.perubahan_diminta,
+      });
+    }
+
+    console.error(error);
     res.status(500).json({
       message: "Error updating data",
       error: error.message,
@@ -180,12 +200,21 @@ const deletePemasukanZIS = async (req, res) => {
     }
 
     await pemasukanZISRepo.deletePemasukanZIS(id);
-    await totalZISRepo.updateTotalZIS(
+    await totalZISRepo.tambahTotalZIS(
       existingData.kategori,
-      -existingData.jumlah,
+      -Number(existingData.jumlah),
     );
     res.status(200).json({ message: "Pemasukan ZIS deleted successfully" });
   } catch (error) {
+    if (error?.code === "SALDO_TIDAK_CUKUP") {
+      return res.status(400).json({
+        message: error.message,
+        kategori: error.kategori,
+        saldo_tersedia: error.saldo_tersedia,
+        perubahan_diminta: error.perubahan_diminta,
+      });
+    }
+
     res.status(500).json({
       message: "Error deleting data",
       error: error.message,

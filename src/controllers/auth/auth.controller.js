@@ -112,25 +112,20 @@ const hashPassword = async (password) => {
 };
 
 const validateDate = (dateString) => {
-  // cek format valid
-  if (dateString !== new Date(dateString).toISOString().split("T")[0]) {
+  if (!dateString) return false;
+
+  const inputDate = new Date(dateString);
+
+  if (isNaN(inputDate.getTime())) {
     return false;
   }
 
-  // tanggal hari ini
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
 
-  // tanggal input
-  const inputDate = new Date(dateString);
+  today.setHours(0, 0, 0, 0);
   inputDate.setHours(0, 0, 0, 0);
 
-  // tidak boleh lebih dari hari ini
-  if (inputDate > today) {
-    return false;
-  }
-
-  return true;
+  return inputDate <= today;
 };
 
 const requestPasswordReset = async (req, res) => {

@@ -55,7 +55,6 @@ const getPengeluaranDasawismaById = async (req, res) => {
 };
 
 const validatePengeluaranDasawisma = (pengeluaranDasawisma) => {
-
   if (!pengeluaranDasawisma.deskripsi) {
     return { valid: false, message: "Deskripsi is required" };
   }
@@ -84,13 +83,6 @@ const addPengeluaranDasawisma = async (req, res) => {
       return res.status(400).json({ message: validation.message });
     }
 
-    const totalDasawisma = await totalDasawismaRepos.getAllTotalDasawisma();
-    if (totalDasawisma.jumlah_keseluruhan < req.body.jumlah) {
-      return res.status(400).json({
-        message: "Total Kas Dasawisma tidak mencukupi untuk pengeluaran ini",
-      });
-    }
-
     const penyaluranDasawisma = new penyaluranDasawismaModel({
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
@@ -101,19 +93,28 @@ const addPengeluaranDasawisma = async (req, res) => {
       penyaluranDasawisma.tanggal_penyaluran,
     );
     if (!dateStatus) {
-      return res
-        .status(400)
-        .json({
-          message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
-        });
+      return res.status(400).json({
+        message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
+      });
     }
 
-    const insertedId =
-      await pengeluaranDasawismaRepo.addPengeluaranDasawisma(
+    // Kurangi saldo dulu agar tidak ada transaksi yang tersimpan saat saldo tidak cukup
+    await totalDasawismaRepos.kurangiTotalDasawisma(penyaluranDasawisma.jumlah);
+
+    let insertedId;
+    try {
+      insertedId = await pengeluaranDasawismaRepo.addPengeluaranDasawisma(
         penyaluranDasawisma,
       );
-
-    await totalDasawismaRepos.kurangiTotalDasawisma(penyaluranDasawisma.jumlah);
+    } catch (e) {
+      // rollback best-effort
+      try {
+        await totalDasawismaRepos.tambahTotalDasawisma(penyaluranDasawisma.jumlah);
+      } catch (_) {
+        // ignore
+      }
+      throw e;
+    }
 
     res.status(200).json({
       message: "Pengeluaran Dasawisma berhasil ditambahkan",
@@ -123,6 +124,15 @@ const addPengeluaranDasawisma = async (req, res) => {
       },
     });
   } catch (error) {
+    if (error?.code === "SALDO_TIDAK_CUKUP") {
+      return res.status(400).json({
+        message: error.message,
+        kategori: error.kategori,
+        saldo_tersedia: error.saldo_tersedia,
+        perubahan_diminta: error.perubahan_diminta,
+      });
+    }
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -137,28 +147,56 @@ const updatePengeluaranDasawisma = async (req, res) => {
       });
     }
     const { id } = req.params;
-    const penyaluranDasawisma = new penyaluranDasawismaModel({
+    const existingData =
+      await pengeluaranDasawismaRepo.getPengeluaranDasawismaById(id);
+    if (!existingData) {
+      return res
+        .status(404)
+        .json({ message: "Data pengeluaran Dasawisma tidak ditemukan" });
+    }
+
+    const dateStatus = authController.validateDate(req.body.tanggal_penyaluran);
+    if (!dateStatus) {
+      return res.status(400).json({
+        message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
+      });
+    }
+    
+    const newJumlah = Number(req.body.jumlah);
+    const oldJumlah = Number(existingData.jumlah);
+
+    const diff = newJumlah - oldJumlah;
+    if (diff > 0) {
+      // pengeluaran naik -> saldo turun
+      await totalDasawismaRepos.kurangiTotalDasawisma(diff);
+    } else if (diff < 0) {
+      // pengeluaran turun -> saldo naik
+      await totalDasawismaRepos.tambahTotalDasawisma(Math.abs(diff));
+    }
+
+    const newPengeluaranDasawisma = new penyaluranDasawismaModel({
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
       tanggal_penyaluran: req.body.tanggal_penyaluran,
     });
 
-    const dateStatus = authController.validateDate(
-      penyaluranDasawisma.tanggal_penyaluran,
-    );
-    if (!dateStatus) {
-      return res
-        .status(400)
-        .json({
-          message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
-        });
-    }
-
     const result = await pengeluaranDasawismaRepo.updatePengeluaranDasawisma(
       id,
-      penyaluranDasawisma,
+      newPengeluaranDasawisma,
     );
+
     if (result.affectedRows === 0) {
+      // rollback best-effort bila update transaksi gagal
+      try {
+        if (diff > 0) {
+          await totalDasawismaRepos.tambahTotalDasawisma(diff);
+        } else if (diff < 0) {
+          await totalDasawismaRepos.kurangiTotalDasawisma(Math.abs(diff));
+        }
+      } catch (_) {
+        // ignore
+      }
+
       return res.status(404).json({
         message:
           "Data pengeluaran Dasawisma tidak ditemukan atau tidak dapat diupdate",
@@ -168,6 +206,15 @@ const updatePengeluaranDasawisma = async (req, res) => {
       .status(200)
       .json({ message: "Pengeluaran Dasawisma berhasil diupdate" });
   } catch (error) {
+    if (error?.code === "SALDO_TIDAK_CUKUP") {
+      return res.status(400).json({
+        message: error.message,
+        kategori: error.kategori,
+        saldo_tersedia: error.saldo_tersedia,
+        perubahan_diminta: error.perubahan_diminta,
+      });
+    }
+
     res.status(500).json({ message: error.message });
   }
 };
