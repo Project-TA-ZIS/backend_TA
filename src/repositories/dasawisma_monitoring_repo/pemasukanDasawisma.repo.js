@@ -1,7 +1,9 @@
 const conn = require("../../config/db_connection");
 
 const getAllPemasukanDasawisma = async () => {
-  const [data] = await conn.execute("SELECT * FROM pemasukan_dasawisma WHERE deleted_status = 0");
+  const [data] = await conn.execute(
+    "SELECT * FROM pemasukan_dasawisma WHERE deleted_status = 0",
+  );
 
   return data;
 };
