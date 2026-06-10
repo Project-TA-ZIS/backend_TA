@@ -1,6 +1,7 @@
 const muzakkiRepo = require("../../repositories/ZIS_monitoring_repo/muzakki.repo");
 const authController = require("../auth/auth.controller");
 const muzakkiModel = require("../../models/users/muzakki/muzakki.models");
+const { formatDateInput } = require("../../utils/formatDateInput");
 
 const getAllMuzakki = async (req, res) => {
   try {
@@ -58,7 +59,7 @@ const createMuzakki = async (req, res) => {
         message: "Semua field wajib diisi",
       });
     }
-
+    
     const muzakkiData = new muzakkiModel({
       nama_lengkap: req.body.nama_lengkap,
       email: req.body.email,
@@ -67,7 +68,7 @@ const createMuzakki = async (req, res) => {
       npwp: req.body.npwp,
       nik: req.body.nik,
       tempat_lahir: req.body.tempat_lahir,
-      tanggal_lahir: req.body.tanggal_lahir,
+      tanggal_lahir: formatDateInput(req.body.tanggal_lahir),
       jenis_kelamin: req.body.jenis_kelamin,
       pekerjaan: req.body.pekerjaan,
       created_at: new Date(),
@@ -131,7 +132,7 @@ const editMuzakki = async (req, res) => {
       npwp: req.body.npwp,
       nik: req.body.nik,
       tempat_lahir: req.body.tempat_lahir,
-      tanggal_lahir: req.body.tanggal_lahir,
+      tanggal_lahir: formatDateInput(req.body.tanggal_lahir),
       jenis_kelamin: req.body.jenis_kelamin,
       pekerjaan: req.body.pekerjaan,
       updated_at: new Date(),

@@ -130,6 +130,11 @@ const addPemasukanDasawisma = async (req, res) => {
       newPemasukanDasawisma.jumlah,
     );
 
+    console.log(
+      "New pemasukan dasawisma added with ID:",
+      newPemasukanDasawisma,
+    );
+
     res.status(200).json({
       message: "Pemasukan dasawisma created",
       data: { ...newPemasukanDasawisma, id: insertId },
@@ -165,6 +170,18 @@ const updatePemasukanDasawisma = async (req, res) => {
       });
     }
 
+    let existingAnggota = null;
+    if (req.body.sumber === "IURAN" && req.body.anggota_dasawisma_id) {
+      existingAnggota = await anggotaDasawismaRepo.getAnggotaDasawismaById(
+        req.body.anggota_dasawisma_id,
+      );
+    } else {
+      return res.status(400).json({
+        message:
+          "Untuk sumber IURAN, anggota_dasawisma_id harus disertakan dan valid",
+      });
+    }
+
     // VALIDASI TANGGAL
     const dateStatus = authController.validateDate(
       req.body.tanggal_penghimpunan,
@@ -175,6 +192,10 @@ const updatePemasukanDasawisma = async (req, res) => {
         message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
       });
     }
+
+    const tanggalPenghimpunan = new Date(req.body.tanggal_penghimpunan)
+      .toISOString()
+      .split("T")[0];
 
     const newJumlah = Number(req.body.jumlah);
     const oldJumlah = Number(existingData.jumlah);
@@ -193,8 +214,11 @@ const updatePemasukanDasawisma = async (req, res) => {
 
     const updatedPemasukanDasawisma = new PemasukanDasawismaModels({
       jumlah: newJumlah,
+      sumber: req.body.sumber,
       deskripsi: req.body.deskripsi,
-      tanggal_penghimpunan: req.body.tanggal_penghimpunan,
+      tanggal_penghimpunan: tanggalPenghimpunan,
+      anggota_dasawisma_id: req.body.anggota_dasawisma_id,
+      nama_anggota: existingAnggota ? existingAnggota.nama_lengkap : null,
     });
 
     await pemasukanDasawismaRepo.updatePemasukanDasawisma(

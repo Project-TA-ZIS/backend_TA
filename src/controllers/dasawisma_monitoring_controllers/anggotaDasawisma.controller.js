@@ -2,6 +2,7 @@ const anggotaRepo = require("../../repositories/dasawisma_monitoring_repo/anggot
 const amilRepo = require("../../repositories/ZIS_monitoring_repo/amil.repo");
 const authController = require("../auth/auth.controller");
 const anggotaDasawismaModel = require("../../models/users/dasawisma/dasawisma.models");
+const { formatDateInput } = require("../../utils/formatDateInput");
 
 const getAllAnggotaDasawisma = async (req, res) => {
   try {
@@ -101,9 +102,10 @@ const deleteAnggotaDasawisma = async (req, res) => {
   }
 };
 
-const updateAnggotaDasawisma = async (req, res) => {
+const updateProfileAnggota = async (req, res) => {
   try {
     const id = req.params.id;
+    const tanggal_lahir = formatDateInput(req.body.tanggal_lahir);
 
     const newData = new anggotaDasawismaModel({
       nama_lengkap: req.body.nama_lengkap,
@@ -113,7 +115,7 @@ const updateAnggotaDasawisma = async (req, res) => {
       nik: req.body.nik,
       roles: req.body.roles,
       tempat_lahir: req.body.tempat_lahir,
-      tanggal_lahir: req.body.tanggal_lahir,
+      tanggal_lahir: tanggal_lahir,
     });
 
     await validateNewData(newData, id);
@@ -126,6 +128,42 @@ const updateAnggotaDasawisma = async (req, res) => {
       .status(200)
       .json({ message: "Anggota berhasil diupdate", data: updated });
   } catch (error) {
+    console.error("Error updating anggota dasawisma:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const updateAnggotaByPJ = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const roles = req.roles;
+
+    if (roles !== "penanggung jawab dasawisma") {
+      return res.status(403).json({
+        message:
+          "hanya penanggung jawab dasawisma yang dapat mengupdate anggota atau penanggung jawab dasawisma",
+      });
+    }
+
+    const newData = new anggotaDasawismaModel({
+      nama_lengkap: req.body.nama_lengkap,
+      email: req.body.email,
+      nomor_telpon: req.body.nomor_telpon,
+      roles: req.body.roles,
+    });
+
+    await validateNewData(newData, id);
+
+    const updated = await anggotaRepo.updateAnggotaByPJ(id, newData);
+    if (!updated) {
+      return res.status(404).json({ message: "Anggota not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Anggota berhasil diupdate", data: updated });
+  } catch (error) {
+    console.error("Error updating anggota dasawisma:", error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -197,6 +235,7 @@ module.exports = {
   getAnggotaDasawismaById,
   createAnggotaDasawisma,
   deleteAnggotaDasawisma,
-  updateAnggotaDasawisma,
+  updateProfileAnggota,
+  updateAnggotaByPJ,
   updatePassword,
 };

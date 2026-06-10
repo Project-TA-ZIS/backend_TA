@@ -4,6 +4,9 @@ const totalZISRepo = require("../../repositories/ZIS_monitoring_repo/totalZIS.re
 const PemasukanZIS = require("../../models/transaksi/transaksi_zis/pemasukanZIS.models");
 const totalZIS = require("../../models/total_kas/totalZIS.models");
 const authController = require("../auth/auth.controller");
+const {
+  formatDateInput,
+} = require("../../../../Frontend-TA/src/utils/formattedDate");
 
 const getAllPemasukanZIS = async (req, res) => {
   try {
@@ -66,11 +69,9 @@ const addPemasukanZIS = async (req, res) => {
       newPemasukanZIS.tanggal_penghimpunan,
     );
     if (!dateStatus) {
-      return res
-        .status(400)
-        .json({
-          message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
-        });
+      return res.status(400).json({
+        message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
+      });
     }
 
     const insertId = await pemasukanZISRepo.addPemasukanZIS(newPemasukanZIS);
@@ -95,7 +96,6 @@ const addPemasukanZIS = async (req, res) => {
 };
 
 const updatePemasukanZIS = async (req, res) => {
-  console.log(req.body);
   try {
     const roles = req.roles;
     if (roles != "amil zakat") {
@@ -106,25 +106,23 @@ const updatePemasukanZIS = async (req, res) => {
 
     const { id } = req.params;
 
+    const dateStatus = authController.validateDate(
+      req.body.tanggal_penghimpunan,
+    );
+    if (!dateStatus) {
+      return res.status(400).json({
+        message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
+      });
+    }
+
     const pemasukanZIS = new PemasukanZIS({
       muzakki_id: req.body.muzakki_id,
       kategori: req.body.kategori,
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
-      tanggal_penghimpunan: req.body.tanggal_penghimpunan,
+      tanggal_penghimpunan: formatDateInput(req.body.tanggal_penghimpunan),
       nama_muzakki: req.body.nama_muzakki,
     });
-
-    const dateStatus = authController.validateDate(
-      pemasukanZIS.tanggal_penghimpunan,
-    );
-    if (!dateStatus) {
-      return res
-        .status(400)
-        .json({
-          message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
-        });
-    }
 
     const muzakki = await muzakkiRepo.getMuzakkiById(pemasukanZIS.muzakki_id);
     if (!muzakki) {

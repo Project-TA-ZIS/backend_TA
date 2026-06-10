@@ -14,6 +14,8 @@ module.exports = {
       deskripsi: Sequelize.TEXT,
 
       tanggal_penyaluran: Sequelize.DATEONLY,
+      
+      nama_anggota: Sequelize.STRING(255),
 
       created_at: {
         type: Sequelize.DATE,
