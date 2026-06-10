@@ -18,11 +18,12 @@ const getPengeluaranDasawismaById = async (id) => {
 
 const addPengeluaranDasawisma = async (pengeluaranDasawisma) => {
   const [result] = await conn.execute(
-    "INSERT INTO penyaluran_dasawisma (jumlah, deskripsi, tanggal_penyaluran, created_at) VALUES (?, ?, ?, ?)",
+    "INSERT INTO penyaluran_dasawisma (jumlah, deskripsi, tanggal_penyaluran, nama_anggota, created_at) VALUES (?, ?, ?, ?, ?)",
     [
       pengeluaranDasawisma.jumlah,
       pengeluaranDasawisma.deskripsi,
       pengeluaranDasawisma.tanggal_penyaluran,
+      pengeluaranDasawisma.nama_anggota,
       new Date(),
     ],
   );

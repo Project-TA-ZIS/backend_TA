@@ -2,6 +2,7 @@ const pengeluaranDasawismaRepo = require("../../repositories/dasawisma_monitorin
 const totalDasawismaRepos = require("../../repositories/dasawisma_monitoring_repo/totalKasDasawisma.repo");
 const penyaluranDasawismaModel = require("../../models/transaksi/transaksi_dasawisma/pengeluaranDasawisma");
 const authController = require("../auth/auth.controller");
+const { formatDateInput } = require("../../utils/formatDateInput");
 
 const getAllPengeluaranDasawisma = async (req, res) => {
   try {
@@ -87,11 +88,13 @@ const addPengeluaranDasawisma = async (req, res) => {
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
       tanggal_penyaluran: req.body.tanggal_penyaluran,
+      nama_anggota: req.body.nama_anggota,
     });
 
     const dateStatus = authController.validateDate(
       penyaluranDasawisma.tanggal_penyaluran,
     );
+
     if (!dateStatus) {
       return res.status(400).json({
         message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
@@ -103,13 +106,16 @@ const addPengeluaranDasawisma = async (req, res) => {
 
     let insertedId;
     try {
-      insertedId = await pengeluaranDasawismaRepo.addPengeluaranDasawisma(
-        penyaluranDasawisma,
-      );
+      insertedId =
+        await pengeluaranDasawismaRepo.addPengeluaranDasawisma(
+          penyaluranDasawisma,
+        );
     } catch (e) {
       // rollback best-effort
       try {
-        await totalDasawismaRepos.tambahTotalDasawisma(penyaluranDasawisma.jumlah);
+        await totalDasawismaRepos.tambahTotalDasawisma(
+          penyaluranDasawisma.jumlah,
+        );
       } catch (_) {
         // ignore
       }
@@ -161,7 +167,8 @@ const updatePengeluaranDasawisma = async (req, res) => {
         message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
       });
     }
-    
+
+    const tanggal_penyaluran = formatDateInput(req.body.tanggal_penyaluran);
     const newJumlah = Number(req.body.jumlah);
     const oldJumlah = Number(existingData.jumlah);
 
@@ -177,7 +184,8 @@ const updatePengeluaranDasawisma = async (req, res) => {
     const newPengeluaranDasawisma = new penyaluranDasawismaModel({
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
-      tanggal_penyaluran: req.body.tanggal_penyaluran,
+      tanggal_penyaluran: tanggal_penyaluran,
+      nama_anggota: req.body.nama_anggota,
     });
 
     const result = await pengeluaranDasawismaRepo.updatePengeluaranDasawisma(

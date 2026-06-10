@@ -7,6 +7,7 @@ const totalZIS = require("../../models/total_kas/totalZIS.models");
 const mustahikRepo = require("../../repositories/ZIS_monitoring_repo/mustahik.repo");
 const penyaluranZISModel = require("../../models/transaksi/transaksi_zis/penyaluranZIS.models");
 const authController = require("../auth/auth.controller");
+const { formatDateInput } = require("../../../../Frontend-TA/src/utils/formattedDate");
 
 const getAllPengeluaranZIS = async (req, res) => {
   try {
@@ -136,7 +137,7 @@ const updatePengeluaranZIS = async (req, res) => {
       kategori: req.body.kategori,
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
-      tanggal_penyaluran: req.body.tanggal_penyaluran,
+      tanggal_penyaluran: formatDateInput(req.body.tanggal_penyaluran),
     });
 
     const dateStatus = authController.validateDate(

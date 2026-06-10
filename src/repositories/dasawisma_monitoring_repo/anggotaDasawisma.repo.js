@@ -28,7 +28,7 @@ const getAnggotaDasawismaByEmail = async (email) => {
 const getAnggotaDasawismaByPhone = async (nomor_telpon) => {
   const [data] = await conn.execute(
     "SELECT * FROM anggota_dasawisma WHERE nomor_telpon = ? AND deleted_status = 0",
-    [nomor_telpon]
+    [nomor_telpon],
   );
 
   return data[0];
@@ -101,6 +101,24 @@ const updateAnggotaDasawisma = async (id, anggotaData) => {
   return result.affectedRows > 0;
 };
 
+const updateAnggotaByPJ = async (id, anggotaData) => {
+  const [result] = await conn.execute(
+    `UPDATE anggota_dasawisma
+    SET nama_lengkap = ?, email = ?, nomor_telpon = ?, roles = ?, updated_at = ?
+    WHERE id = ? AND deleted_status = 0`,
+    [
+      anggotaData.nama_lengkap,
+      anggotaData.email,
+      anggotaData.nomor_telpon,
+      anggotaData.roles,
+      new Date(),
+      id,
+    ],
+  );
+
+  return result.affectedRows > 0;
+};
+
 const updatePassword = async (id, newPassword) => {
   const [result] = await conn.execute(
     `UPDATE anggota_dasawisma
@@ -112,7 +130,6 @@ const updatePassword = async (id, newPassword) => {
   return result.affectedRows > 0;
 };
 
-
 module.exports = {
   getAllAnggotaDasawisma,
   getAnggotaDasawismaById,
@@ -122,5 +139,6 @@ module.exports = {
   createAnggotaDasawisma,
   deleteAnggotaDasawisma,
   updateAnggotaDasawisma,
-  updatePassword
+  updateAnggotaByPJ,  
+  updatePassword,
 };
