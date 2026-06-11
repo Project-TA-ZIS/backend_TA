@@ -5,6 +5,11 @@ const app = express();
 const verifyJWT = require("./middleware/verifyToken");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
+const helmet = require("helmet");
+
+// Disable Express signature
+app.disable("x-powered-by");
+app.use(helmet());
 
 app.use(cors());
 app.use(express.json());
