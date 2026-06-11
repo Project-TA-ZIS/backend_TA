@@ -77,7 +77,7 @@ const createMuzakki = async (req, res) => {
       deleted_status: 0,
     });
 
-    responseValidate = await validateNewData(muzakkiData);
+    let responseValidate = await validateNewData(muzakkiData);
 
     const newMuzakkiId = await muzakkiRepo.createMuzakki(muzakkiData);
     res.status(201).json({

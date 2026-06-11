@@ -15,7 +15,9 @@ const login = async (req, res) => {
     if (amil) {
       const isPasswordValid = await bcrypt.compare(password, amil.password);
       if (!isPasswordValid) {
-        return res.status(401).json({ message: "password salah" });
+        return res
+          .status(401)
+          .json({ message: "username atau password salah" });
       }
       const token = jwt.sign(
         { id: amil.id, roles: amil.roles },
@@ -32,7 +34,9 @@ const login = async (req, res) => {
         dasawisma.password,
       );
       if (!isPasswordValid) {
-        return res.status(401).json({ message: "password salah" });
+        return res
+          .status(401)
+          .json({ message: "username atau password salah" });
       }
       const token = jwt.sign(
         { id: dasawisma.id, roles: dasawisma.roles },
@@ -42,7 +46,7 @@ const login = async (req, res) => {
       return res.json({ message: "login berhasil", token });
     }
 
-    res.status(400).json({ message: "username atau password salah" });
+    res.status(400).json({ message: "Akun belum terdaftar" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
