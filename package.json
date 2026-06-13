@@ -7,7 +7,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest ./src/test",
+    "test:watch": "jest --watch",
+    "coverage": "jest --coverage",
     "start": "nodemon ./src/index.js"
   },
   "dependencies": {
@@ -26,5 +28,8 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2"
   }
 }
