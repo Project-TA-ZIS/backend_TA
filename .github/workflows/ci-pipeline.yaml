@@ -1,0 +1,46 @@
+name: Backend CI Pipeline
+
+on:
+  push:
+    branches: [ main, rafif ]
+  pull_request:
+    branches: [ main, rafif ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+
+        - name: Set up Node.js ${{ matrix.node-version }}
+          uses: actions/setup-node@v4
+
+        - name: Setup Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: ${{ matrix.node-version }}
+            cache: 'npm'
+
+        - name: Install Dependencies
+          run: npm ci
+
+        - name: Create .env
+          run: |
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "AUTH_EMAIL=${{ secrets.AUTH_EMAIL }}" >> .env
+            echo "AUTH_PASSWORD=${{ secrets.AUTH_PASSWORD }}" >> .env
+
+        - name: Run Unit Test
+          run: npm test -- --coverage
+        
+        - name: Upload Coverage Report
+          if: always()
+          uses: actions/upload-artifact@v4
+          with:
+            name: coverage-report
+            path: coverage/
