@@ -30,10 +30,14 @@ jobs:
           run: npm install
 
         - name: Create .env
+          env:
+            JWT_SECRET: ${{ secrets.JWT_SECRET }}
+            AUTH_EMAIL: ${{ secrets.AUTH_EMAIL }}
+            AUTH_PASSWORD: ${{ secrets.AUTH_PASSWORD }}
           run: |
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-            echo "AUTH_EMAIL=${{ secrets.AUTH_EMAIL }}" >> .env
-            echo "AUTH_PASSWORD=${{ secrets.AUTH_PASSWORD }}" >> .env
+            echo "JWT_SECRET=$JWT_SECRET" > .env
+            echo "AUTH_EMAIL=$AUTH_EMAIL" >> .env
+            echo "AUTH_PASSWORD=$AUTH_PASSWORD" >> .env
 
         - name: Run Unit Test
           run: npm test -- --coverage
