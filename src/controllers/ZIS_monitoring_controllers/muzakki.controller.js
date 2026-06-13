@@ -35,6 +35,24 @@ const getMuzakkiById = async (req, res) => {
   }
 };
 
+const getMuzakkiByNik = async (req, res) => {
+  try {
+    const { nik } = req.params;
+    const muzakki = await muzakkiRepo.getMuzakkiByNik(nik);
+    if (!muzakki) {
+      return res
+        .status(404)
+        .json({ status: false, message: "Data NIK tidak ditemukan." });
+    }
+    res.status(200).json({
+      status: true,
+      data: new muzakkiModel(muzakki),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const createMuzakki = async (req, res) => {
   try {
     const roles = req.roles;
@@ -59,7 +77,7 @@ const createMuzakki = async (req, res) => {
         message: "Semua field wajib diisi",
       });
     }
-    
+
     const muzakkiData = new muzakkiModel({
       nama_lengkap: req.body.nama_lengkap,
       email: req.body.email,
@@ -188,6 +206,7 @@ const validateNewData = async (data, currentId = null) => {
 module.exports = {
   getAllMuzakki,
   getMuzakkiById,
+  getMuzakkiByNik,
   createMuzakki,
   deleteMuzakki,
   editMuzakki,

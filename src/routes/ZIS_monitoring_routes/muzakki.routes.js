@@ -10,6 +10,10 @@ router.get(
   verifyJWT,
   muzakkiController.getMuzakkiById,
 );
+router.get(
+  "/get/getMuzakkiByNik/:nik",
+  muzakkiController.getMuzakkiByNik,
+);
 router.post("/post/createMuzakki", verifyJWT, muzakkiController.createMuzakki);
 router.delete(
   "/delete/deleteMuzakki/:id",

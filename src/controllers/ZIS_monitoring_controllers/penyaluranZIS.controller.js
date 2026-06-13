@@ -137,6 +137,7 @@ const updatePengeluaranZIS = async (req, res) => {
       kategori: req.body.kategori,
       jumlah: req.body.jumlah,
       deskripsi: req.body.deskripsi,
+      nama_mustahik: req.body.nama_mustahik,
       tanggal_penyaluran: formatDateInput(req.body.tanggal_penyaluran),
     });
 
