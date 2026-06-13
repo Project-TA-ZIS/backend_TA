@@ -124,12 +124,12 @@ const updatePemasukanZIS = async (req, res) => {
       nama_muzakki: req.body.nama_muzakki,
     });
 
-    const muzakki = await muzakkiRepo.getMuzakkiById(pemasukanZIS.muzakki_id);
-    if (!muzakki) {
-      return res.status(404).json({ message: "Muzakki not found" });
-    }
+    // const muzakki = await muzakkiRepo.getMuzakkiById(pemasukanZIS.muzakki_id);
+    // if (!muzakki) {
+    //   return res.status(404).json({ message: "Muzakki not found" });
+    // }
 
-    pemasukanZIS.nama_muzakki = muzakki.nama_lengkap;
+    // pemasukanZIS.nama_muzakki = muzakki.nama_lengkap;
 
     const existingData = await pemasukanZISRepo.getPemasukanZISById(id);
     if (!existingData) {

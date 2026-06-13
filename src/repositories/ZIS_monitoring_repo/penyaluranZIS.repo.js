@@ -35,9 +35,10 @@ const addPengeluaranZIS = async (pengeluaranZIS) => {
 
 const updatePengeluaranZIS = async (id, pengeluaranZIS) => {
   const [result] = await conn.execute(
-    "UPDATE penyaluran_zis SET mustahik_id = ?, kategori = ?, jumlah = ?, deskripsi = ?, tanggal_penyaluran = ?, updated_at = ? WHERE id = ? AND deleted_status = 0",
+    "UPDATE penyaluran_zis SET mustahik_id = ?, nama_mustahik = ?, kategori = ?, jumlah = ?, deskripsi = ?, tanggal_penyaluran = ?, updated_at = ? WHERE id = ? AND deleted_status = 0",
     [
       pengeluaranZIS.mustahik_id,
+      pengeluaranZIS.nama_mustahik,
       pengeluaranZIS.kategori,
       pengeluaranZIS.jumlah,
       pengeluaranZIS.deskripsi,
