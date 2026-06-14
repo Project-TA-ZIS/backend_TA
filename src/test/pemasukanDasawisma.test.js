@@ -215,6 +215,8 @@ describe("Pemasukan Dasawisma Controller", () => {
 
       req.body = {
         sumber: "IURAN",
+        jumlah: 100000,
+        deskripsi: "Kas",
         anggota_dasawisma_id: 1,
         tanggal_penghimpunan: "2099-01-01",
       };
@@ -295,6 +297,41 @@ describe("Pemasukan Dasawisma Controller", () => {
 
       expect(totalKasRepo.kurangiTotalDasawisma).toHaveBeenCalledWith(50000);
 
+      expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    test("updatePemasukanDasawisma sumber lainnya clears anggota", async () => {
+      req.roles = "kader dasawisma";
+      req.params = { id: 1 };
+
+      req.body = {
+        jumlah: 100000,
+        sumber: "LAINNYA",
+        deskripsi: "Donasi umum",
+        tanggal_penghimpunan: "2026-01-01",
+        anggota_dasawisma_id: 1,
+      };
+
+      pemasukanRepo.getPemasukanDasawismaById.mockResolvedValue({
+        id: 1,
+        jumlah: 100000,
+        anggota_dasawisma_id: 1,
+        nama_anggota: "Rafif",
+      });
+
+      authController.validateDate.mockReturnValue(true);
+
+      await controller.updatePemasukanDasawisma(req, res);
+
+      expect(anggotaRepo.getAnggotaDasawismaById).not.toHaveBeenCalled();
+      expect(pemasukanRepo.updatePemasukanDasawisma).toHaveBeenCalledWith(
+        1,
+        expect.objectContaining({
+          sumber: "LAINNYA",
+          anggota_dasawisma_id: null,
+          nama_anggota: null,
+        }),
+      );
       expect(res.status).toHaveBeenCalledWith(200);
     });
   });

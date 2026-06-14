@@ -170,16 +170,25 @@ const updatePemasukanDasawisma = async (req, res) => {
       });
     }
 
-    let existingAnggota = null;
-    if (req.body.sumber === "IURAN" && req.body.anggota_dasawisma_id) {
-      existingAnggota = await anggotaDasawismaRepo.getAnggotaDasawismaById(
-        req.body.anggota_dasawisma_id,
-      );
-    } else {
-      return res.status(400).json({
-        message:
-          "Untuk sumber IURAN, anggota_dasawisma_id harus disertakan dan valid",
-      });
+    // let existingAnggota = null;
+    // let anggotaDasawismaId = null;
+    // if (req.body.sumber === "IURAN" && req.body.anggota_dasawisma_id) {
+    //   existingAnggota = await anggotaDasawismaRepo.getAnggotaDasawismaById(
+    //     req.body.anggota_dasawisma_id,
+    //   );
+    //   if (!existingAnggota) {
+    //     return res.status(404).json({ message: "Anggota dasawisma not found" });
+    //   }
+    //   anggotaDasawismaId = req.body.anggota_dasawisma_id;
+    // } else if (req.body.sumber === "IURAN" && !req.body.anggota_dasawisma_id) {
+    //   return res.status(400).json({
+    //     message: "Anggota dasawisma ID is required when sumber is IURAN",
+    //   });
+    // }
+
+    const validation = validatePemasukanDasawisma(req.body);
+    if (!validation.valid) {
+      return res.status(400).json({ message: validation.message });
     }
 
     // VALIDASI TANGGAL
@@ -217,8 +226,8 @@ const updatePemasukanDasawisma = async (req, res) => {
       sumber: req.body.sumber,
       deskripsi: req.body.deskripsi,
       tanggal_penghimpunan: tanggalPenghimpunan,
-      anggota_dasawisma_id: req.body.anggota_dasawisma_id,
-      nama_anggota: existingAnggota ? existingAnggota.nama_lengkap : null,
+      anggota_dasawisma_id: req.body.anggota_dasawisma_id ? req.body.anggota_dasawisma_id : null,
+      nama_anggota: req.body.nama_anggota ? req.body.nama_anggota : existingData.nama_anggota,
     });
 
     await pemasukanDasawismaRepo.updatePemasukanDasawisma(
