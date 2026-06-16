@@ -1,33 +1,25 @@
 "use strict";
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("penyaluran_dasawisma", {
+    await queryInterface.createTable("rw", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
 
-      rw_id: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-          model: "rw",
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
+      nama_rw: {
+        type: Sequelize.STRING(3),
+        allowNull: false,
+        unique: true,
       },
 
-      jumlah: Sequelize.DECIMAL(12, 2),
-
-      deskripsi: Sequelize.TEXT,
-
-      tanggal_penyaluran: Sequelize.DATEONLY,
-
-      nama_anggota: Sequelize.STRING(255),
-
+      tipe_pengelolaan_kas: {
+        type: Sequelize.ENUM("RW", "NONAKTIF"),
+        defaultValue: "RW",
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -51,7 +43,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface) {
-    await queryInterface.dropTable("penyaluran_dasawisma");
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable("rw");
   },
 };

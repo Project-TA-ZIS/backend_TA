@@ -44,6 +44,7 @@ describe("Pemasukan Dasawisma Controller", () => {
       body: {},
       params: {},
       roles: "",
+      rw: 1,
     };
 
     res = {
@@ -173,7 +174,7 @@ describe("Pemasukan Dasawisma Controller", () => {
 
       await controller.addPemasukanDasawisma(req, res);
 
-      expect(totalKasRepo.tambahTotalDasawisma).toHaveBeenCalledWith(100000);
+      expect(totalKasRepo.tambahTotalDasawisma).toHaveBeenCalledWith(100000, 1);
 
       expect(res.status).toHaveBeenCalledWith(200);
     });
@@ -264,7 +265,7 @@ describe("Pemasukan Dasawisma Controller", () => {
 
       await controller.updatePemasukanDasawisma(req, res);
 
-      expect(totalKasRepo.tambahTotalDasawisma).toHaveBeenCalledWith(50000);
+      expect(totalKasRepo.tambahTotalDasawisma).toHaveBeenCalledWith(50000, 1);
 
       expect(res.status).toHaveBeenCalledWith(200);
     });
@@ -295,7 +296,7 @@ describe("Pemasukan Dasawisma Controller", () => {
 
       await controller.updatePemasukanDasawisma(req, res);
 
-      expect(totalKasRepo.kurangiTotalDasawisma).toHaveBeenCalledWith(50000);
+      expect(totalKasRepo.kurangiTotalDasawisma).toHaveBeenCalledWith(50000, 1);
 
       expect(res.status).toHaveBeenCalledWith(200);
     });
@@ -328,8 +329,8 @@ describe("Pemasukan Dasawisma Controller", () => {
         1,
         expect.objectContaining({
           sumber: "LAINNYA",
-          anggota_dasawisma_id: null,
-          nama_anggota: null,
+          anggota_dasawisma_id: 1,
+          nama_anggota: "Rafif",
         }),
       );
       expect(res.status).toHaveBeenCalledWith(200);

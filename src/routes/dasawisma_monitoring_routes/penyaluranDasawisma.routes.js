@@ -10,6 +10,10 @@ router.get(
   "/get/getPengeluaran/:id",
   pengeluaranDasawismaControllers.getPengeluaranDasawismaById,
 );
+router.get(
+  "/get/getPengeluaranByRW",
+  pengeluaranDasawismaControllers.getPengeluaranDasawismaByRWid,
+);
 router.post(
   "/post/createPengeluaran",
   pengeluaranDasawismaControllers.addPengeluaranDasawisma,

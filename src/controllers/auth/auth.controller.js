@@ -39,7 +39,7 @@ const login = async (req, res) => {
           .json({ message: "username atau password salah" });
       }
       const token = jwt.sign(
-        { id: dasawisma.id, roles: dasawisma.roles },
+        { id: dasawisma.id, roles: dasawisma.roles, rw: dasawisma.rw_id },
         process.env.JWT_SECRET,
         { expiresIn: "1h" },
       );

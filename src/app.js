@@ -27,23 +27,14 @@ app.use(
   verifyJWT,
   require("./routes/dasawisma_monitoring_routes/anggotaDasawisma.routes"),
 );
-app.use(
-  "/mustahik",
-  require("./routes/ZIS_monitoring_routes/mustahik.routes"),
-);
-app.use(
-  "/muzakki",
-  require("./routes/ZIS_monitoring_routes/muzakki.routes"),
-);
+app.use("/mustahik", require("./routes/ZIS_monitoring_routes/mustahik.routes"));
+app.use("/muzakki", require("./routes/ZIS_monitoring_routes/muzakki.routes"));
 app.use(
   "/pemasukanZIS",
   require("./routes/ZIS_monitoring_routes/pemasukanZIS.routes"),
 );
 
-app.use(
-  "/totalZIS",
-  require("./routes/ZIS_monitoring_routes/totalZIS.routes"),
-);
+app.use("/totalZIS", require("./routes/ZIS_monitoring_routes/totalZIS.routes"));
 app.use(
   "/pengeluaranZIS",
   require("./routes/ZIS_monitoring_routes/penyaluranZIS.routes"),
@@ -63,5 +54,6 @@ app.use(
   verifyJWT,
   require("./routes/dasawisma_monitoring_routes/penyaluranDasawisma.routes"),
 );
+app.use("/rw", verifyJWT, require("./routes/rw_routes/rw.routes"));
 
 module.exports = app;

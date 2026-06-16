@@ -36,6 +36,7 @@ describe("Penyaluran Dasawisma Controller", () => {
       params: {},
       roles: "",
       id: null,
+      rw: 1,
     };
     res = {
       status: jest.fn().mockReturnThis(),
@@ -150,7 +151,7 @@ describe("Penyaluran Dasawisma Controller", () => {
 
       await controller.addPengeluaranDasawisma(req, res);
 
-      expect(totalKasRepo.kurangiTotalDasawisma).toHaveBeenCalledWith(100000);
+      expect(totalKasRepo.kurangiTotalDasawisma).toHaveBeenCalledWith(100000, 1);
 
       expect(res.status).toHaveBeenCalledWith(200);
     });

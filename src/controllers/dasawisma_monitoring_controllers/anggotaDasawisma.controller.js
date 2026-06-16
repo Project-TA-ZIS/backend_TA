@@ -24,11 +24,45 @@ const getAllAnggotaDasawisma = async (req, res) => {
 const getAnggotaDasawismaById = async (req, res) => {
   try {
     const id = req.params.id;
+    const rw_id = req.rw;
 
     const data = await anggotaRepo.getAnggotaDasawismaById(id);
     if (!data) {
       return res.status(404).json({ message: "Anggota not found" });
     }
+    return res.status(200).json({ data: new anggotaDasawismaModel(data) });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getAnggotaDasawismaByRWid = async (req, res) => {
+  try {
+    const rw_id = req.rw;
+    const data = (await anggotaRepo.getAnggotaDasawismaByRWid(rw_id)).map(
+      (item) => new anggotaDasawismaModel(item),
+    );
+    if (data.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Tidak ada kader dasawisma ditemukan untuk RW ini" });
+    }
+    return res.status(200).json({ data: data });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getPenanggungJawabByRWid = async (req, res) => {
+  try {
+    const rw_id = req.rw;
+    const data = await anggotaRepo.getPenanggungJawabByRWid(rw_id);
+    if (!data) {
+      return res.status(404).json({
+        message: "Tidak ada penanggung jawab dasawisma ditemukan untuk RW ini",
+      });
+    }
+
     return res.status(200).json({ data: new anggotaDasawismaModel(data) });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -60,6 +94,7 @@ const createAnggotaDasawisma = async (req, res) => {
 
     const data = new anggotaDasawismaModel({
       nama_lengkap: req.body.nama_lengkap,
+      rw_id: req.body.rw_id,
       email: req.body.email,
       nomor_telpon: req.body.nomor_telpon,
       password: req.body.password,
@@ -150,6 +185,7 @@ const updateAnggotaByPJ = async (req, res) => {
       email: req.body.email,
       nomor_telpon: req.body.nomor_telpon,
       roles: req.body.roles,
+      rw_id: req.body.rw_id,
     });
 
     await validateNewData(newData, id);
@@ -233,9 +269,11 @@ const updatePassword = async (req, res) => {
 module.exports = {
   getAllAnggotaDasawisma,
   getAnggotaDasawismaById,
+  getAnggotaDasawismaByRWid,
   createAnggotaDasawisma,
   deleteAnggotaDasawisma,
   updateProfileAnggota,
   updateAnggotaByPJ,
   updatePassword,
+  getPenanggungJawabByRWid,
 };

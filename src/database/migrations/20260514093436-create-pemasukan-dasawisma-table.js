@@ -16,7 +16,16 @@ module.exports = {
           model: "anggota_dasawisma",
           key: "id",
         },
-        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      },
+
+      rw_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "rw",
+          key: "id",
+        },
         onDelete: "SET NULL",
       },
 

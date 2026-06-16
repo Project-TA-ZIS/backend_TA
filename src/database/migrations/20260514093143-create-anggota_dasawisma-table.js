@@ -1,29 +1,52 @@
-'use strict';
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('anggota_dasawisma', {
+    await queryInterface.createTable("anggota_dasawisma", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
+
+      rw_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "rw",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      },
+
       nama_lengkap: Sequelize.STRING,
+
       email: {
         type: Sequelize.STRING,
       },
+
       password: Sequelize.STRING,
+
       nomor_telpon: Sequelize.STRING,
+
       nik: {
         type: Sequelize.STRING,
       },
-      roles: Sequelize.ENUM('kader dasawisma', 'penanggung jawab dasawisma'),
+      roles: Sequelize.ENUM("kader dasawisma", "penanggung jawab dasawisma"),
+
       alamat: Sequelize.STRING,
+
       tempat_lahir: Sequelize.STRING,
+
       tanggal_lahir: Sequelize.DATEONLY,
+
       created_at: Sequelize.DATE,
+
       updated_at: Sequelize.DATE,
+      
       deleted_at: Sequelize.DATE,
+
       deleted_status: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
@@ -32,6 +55,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable('anggota_dasawisma');
+    await queryInterface.dropTable("anggota_dasawisma");
   },
 };

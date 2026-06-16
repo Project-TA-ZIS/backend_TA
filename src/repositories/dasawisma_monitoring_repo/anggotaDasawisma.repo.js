@@ -11,7 +11,15 @@ const getAllAnggotaDasawisma = async () => {
 
 const getAnggotaDasawismaById = async (id) => {
   const [data] = await conn.execute(
-    "SELECT * FROM anggota_dasawisma WHERE id = ? AND deleted_status = 0",
+    `
+    SELECT
+      ad.*,
+      rw.nama_rw
+    FROM anggota_dasawisma ad
+    JOIN rw ON ad.rw_id = rw.id
+    WHERE ad.id = ?
+      AND ad.deleted_status = 0
+    `,
     [id],
   );
   return data[0];
@@ -42,13 +50,48 @@ const getAnggotaDasawismaByNik = async (nik) => {
   return data[0];
 };
 
+const getAnggotaDasawismaByRWid = async (rw_id) => {
+  const [data] = await conn.execute(
+    `
+    SELECT
+      ad.*,
+      rw.nama_rw
+    FROM anggota_dasawisma ad
+    JOIN rw ON ad.rw_id = rw.id
+    WHERE ad.rw_id = ?
+      AND ad.deleted_status = 0
+    `,
+    [rw_id],
+  );
+
+  return data;
+};
+
+const getPenanggungJawabByRWid = async (rw_id) => {
+  const [data] = await conn.execute(
+     `
+    SELECT
+      ad.*,
+      rw.nama_rw
+    FROM anggota_dasawisma ad
+    JOIN rw ON ad.rw_id = rw.id
+    WHERE ad.rw_id = ?
+      AND ad.roles = 'penanggung jawab dasawisma'
+      AND ad.deleted_status = 0
+    `,
+    [rw_id],
+  );
+  return data[0];
+};
+
 const createAnggotaDasawisma = async (anggotaData) => {
   const hashedPassword = await bcrypt.hash(anggotaData.password, 10);
   const [result] = await conn.execute(
     `INSERT INTO anggota_dasawisma 
-    (nama_lengkap, email, password, nomor_telpon,tempat_lahir, tanggal_lahir, roles, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    (rw_id, nama_lengkap, email, password, nomor_telpon,tempat_lahir, tanggal_lahir, roles, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
+      anggotaData.rw_id,
       anggotaData.nama_lengkap,
       anggotaData.email,
       hashedPassword,
@@ -56,7 +99,7 @@ const createAnggotaDasawisma = async (anggotaData) => {
       anggotaData.tempat_lahir,
       anggotaData.tanggal_lahir,
       anggotaData.roles,
-      anggotaData.created_at,
+      new Date(),
     ],
   );
 
@@ -104,9 +147,10 @@ const updateAnggotaDasawisma = async (id, anggotaData) => {
 const updateAnggotaByPJ = async (id, anggotaData) => {
   const [result] = await conn.execute(
     `UPDATE anggota_dasawisma
-    SET nama_lengkap = ?, email = ?, nomor_telpon = ?, roles = ?, updated_at = ?
+    SET rw_id = ?, nama_lengkap = ?, email = ?, nomor_telpon = ?, roles = ?, updated_at = ?
     WHERE id = ? AND deleted_status = 0`,
     [
+      anggotaData.rw_id,
       anggotaData.nama_lengkap,
       anggotaData.email,
       anggotaData.nomor_telpon,
@@ -136,9 +180,11 @@ module.exports = {
   getAnggotaDasawismaByEmail,
   getAnggotaDasawismaByNik,
   getAnggotaDasawismaByPhone,
+  getAnggotaDasawismaByRWid,
+  getPenanggungJawabByRWid,
   createAnggotaDasawisma,
   deleteAnggotaDasawisma,
   updateAnggotaDasawisma,
-  updateAnggotaByPJ,  
+  updateAnggotaByPJ,
   updatePassword,
 };

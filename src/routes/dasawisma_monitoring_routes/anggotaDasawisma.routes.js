@@ -4,6 +4,8 @@ const router = express.Router();
 
 router.get("/get/getAllAnggota", dasawismaController.getAllAnggotaDasawisma);
 router.get("/get/getAnggota/:id", dasawismaController.getAnggotaDasawismaById);
+router.get("/get/getAnggotaByRW", dasawismaController.getAnggotaDasawismaByRWid);
+router.get("/get/getPenanggungJawabByRW", dasawismaController.getPenanggungJawabByRWid);
 router.post("/post/createAnggota", dasawismaController.createAnggotaDasawisma);
 router.delete("/delete/deleteAnggota/:id", dasawismaController.deleteAnggotaDasawisma);
 router.put("/update/updateProfile/:id", dasawismaController.updateProfileAnggota);

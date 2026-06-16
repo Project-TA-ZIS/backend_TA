@@ -1,13 +1,23 @@
 const transaksi = require("../transaksi.models");
 
 class PengeluaranDasawisma extends transaksi {
+  #rw_id;
   #tanggal_penyaluran;
   #nama_anggota;
 
   constructor(data) {
     super(data);
+    this.#rw_id = data.rw_id ?? null;
     this.#tanggal_penyaluran = data.tanggal_penyaluran;
     this.#nama_anggota = data.nama_anggota;
+  }
+
+  set rw_id(value) {
+    this.#rw_id = value;
+  }
+
+  get rw_id() {
+    return this.#rw_id;
   }
 
   get tanggal_penyaluran() {
@@ -29,6 +39,7 @@ class PengeluaranDasawisma extends transaksi {
   toJSON() {
     return {
       ...super.toJSON(),
+      rw_id: this.rw_id,
       tanggal_penyaluran: this.tanggal_penyaluran,
       nama_anggota: this.nama_anggota,
     };

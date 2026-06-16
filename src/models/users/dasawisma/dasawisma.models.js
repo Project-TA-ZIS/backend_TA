@@ -1,6 +1,8 @@
 const User = require("../users.models");
 
 class Dasawisma extends User {
+  #rw_id;
+  #nama_rw;
   #email;
   #password;
   #nik;
@@ -10,12 +12,30 @@ class Dasawisma extends User {
 
   constructor(data) {
     super(data);
+    this.#rw_id = data.rw_id ?? null;
+    this.#nama_rw = data.nama_rw ?? null;
     this.#email = data.email ?? null;
     this.#password = data.password ?? null;
     this.#nik = data.nik ?? null;
     this.#roles = data.roles ?? null;
     this.#tempat_lahir = data.tempat_lahir ?? null;
     this.#tanggal_lahir = data.tanggal_lahir ?? null;
+  }
+
+  get rw_id() {
+    return this.#rw_id;
+  }
+
+  set rw_id(value) {
+    this.#rw_id = value;
+  }
+
+  get nama_rw() {
+    return this.#nama_rw;
+  }
+
+  set nama_rw(value) {
+    this.#nama_rw = value;
   }
 
   get email() {
@@ -75,6 +95,8 @@ class Dasawisma extends User {
       roles: this.#roles,
       tempat_lahir: this.#tempat_lahir,
       tanggal_lahir: this.#tanggal_lahir,
+      rw_id: this.#rw_id,
+      nama_rw: this.#nama_rw,
     };
   }
 }
