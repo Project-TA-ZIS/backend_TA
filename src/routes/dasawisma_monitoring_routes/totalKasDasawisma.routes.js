@@ -3,5 +3,6 @@ const totalKasDasawismaControllers = require("../../controllers/dasawisma_monito
 const router = express.Router();
 
 router.get("/get/getTotalKasDasawisma", totalKasDasawismaControllers.getTotalKasDasawisma);
+router.get("/get/getTotalKasDasawismaByRW", totalKasDasawismaControllers.getTotalKasDasawismaByRWid);
 
 module.exports = router;

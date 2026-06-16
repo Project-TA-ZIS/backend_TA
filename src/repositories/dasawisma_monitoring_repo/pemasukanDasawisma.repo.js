@@ -16,11 +16,20 @@ const getPemasukanDasawismaById = async (id) => {
   return data[0];
 };
 
+const getPemasukanDasawismaByRWid = async (rw_id) => {
+  const [data] = await conn.execute(
+    "SELECT * FROM pemasukan_dasawisma WHERE rw_id = ? AND deleted_status = 0",
+    [rw_id],
+  );
+  return data;
+};
+
 const createPemasukanDasawisma = async (pemasukanDasawisma) => {
   const [result] = await conn.execute(
-    "INSERT INTO pemasukan_dasawisma (anggota_dasawisma_id, nama_anggota, sumber,  jumlah, deskripsi, tanggal_penghimpunan, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO pemasukan_dasawisma (anggota_dasawisma_id, rw_id, nama_anggota, sumber,  jumlah, deskripsi, tanggal_penghimpunan, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     [
       pemasukanDasawisma.anggota_dasawisma_id,
+      pemasukanDasawisma.rw_id,
       pemasukanDasawisma.nama_anggota,
       pemasukanDasawisma.sumber,
       pemasukanDasawisma.jumlah,
@@ -34,13 +43,14 @@ const createPemasukanDasawisma = async (pemasukanDasawisma) => {
 
 const updatePemasukanDasawisma = async (id, pemasukanDasawisma) => {
   await conn.execute(
-    "UPDATE pemasukan_dasawisma SET jumlah = ?, sumber = ?, deskripsi = ?, tanggal_penghimpunan = ?, anggota_dasawisma_id = ?, nama_anggota = ?, updated_at = ? WHERE id = ? AND deleted_status = 0",
+    "UPDATE pemasukan_dasawisma SET jumlah = ?, sumber = ?, deskripsi = ?, tanggal_penghimpunan = ?, anggota_dasawisma_id = ?, rw_id = ?, nama_anggota = ?, updated_at = ? WHERE id = ? AND deleted_status = 0",
     [
       pemasukanDasawisma.jumlah,
       pemasukanDasawisma.sumber,
       pemasukanDasawisma.deskripsi,
       pemasukanDasawisma.tanggal_penghimpunan,
       pemasukanDasawisma.anggota_dasawisma_id,
+      pemasukanDasawisma.rw_id,
       pemasukanDasawisma.nama_anggota,
       new Date(),
       id,
@@ -61,4 +71,5 @@ module.exports = {
   createPemasukanDasawisma,
   updatePemasukanDasawisma,
   deletePemasukanDasawisma,
+  getPemasukanDasawismaByRWid,
 };

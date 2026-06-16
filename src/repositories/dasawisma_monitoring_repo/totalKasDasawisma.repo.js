@@ -4,7 +4,9 @@ const makeSaldoTidakCukupError = async (delta) => {
   const current = await getAllTotalDasawisma();
   const saldo = current ? Number(current.jumlah_keseluruhan) : null;
 
-  const err = new Error("Total Kas Dasawisma tidak mencukupi untuk pengeluaran ini");
+  const err = new Error(
+    "Total Kas Dasawisma tidak mencukupi untuk pengeluaran ini",
+  );
   err.code = "SALDO_TIDAK_CUKUP";
   err.kategori = "kas dasawisma";
   err.saldo_tersedia = saldo;
@@ -22,22 +24,30 @@ const getAllTotalDasawisma = async () => {
   return data[0];
 };
 
-const tambahTotalDasawisma = async (jumlah) => {
+const getTotalDasawismaByRWid = async (rw_id) => {
+  const [data] = await conn.execute(
+    "SELECT jumlah_keseluruhan FROM total_kas_dasawisma WHERE rw_id = ?",
+    [rw_id],
+  );
+  return data[0];
+};
+
+const tambahTotalDasawisma = async (jumlah, rw_id) => {
   const [result] = await conn.execute(
-    "UPDATE total_kas_dasawisma SET jumlah_keseluruhan = jumlah_keseluruhan + ?, updated_at = ? ",
-    [jumlah, new Date()],
+    "UPDATE total_kas_dasawisma SET jumlah_keseluruhan = jumlah_keseluruhan + ?, updated_at = ? WHERE rw_id = ?",
+    [jumlah, new Date(), rw_id],
   );
   return result;
 };
 
-const kurangiTotalDasawisma = async (jumlah) => {
+const kurangiTotalDasawisma = async (jumlah, rw_id) => {
   const delta = Number(jumlah);
   if (!delta || delta <= 0) return { affectedRows: 0 };
 
   const now = new Date();
   const [result] = await conn.execute(
-    "UPDATE total_kas_dasawisma SET jumlah_keseluruhan = jumlah_keseluruhan - ?, updated_at = ? WHERE jumlah_keseluruhan >= ?",
-    [delta, now, delta],
+    "UPDATE total_kas_dasawisma SET jumlah_keseluruhan = jumlah_keseluruhan - ?, updated_at = ? WHERE rw_id = ? AND jumlah_keseluruhan >= ?",
+    [delta, now, rw_id, delta],
   );
 
   if (result.affectedRows === 0) {
@@ -51,4 +61,5 @@ module.exports = {
   getAllTotalDasawisma,
   tambahTotalDasawisma,
   kurangiTotalDasawisma,
+  getTotalDasawismaByRWid,
 };

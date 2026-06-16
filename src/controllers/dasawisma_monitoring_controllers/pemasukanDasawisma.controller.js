@@ -59,6 +59,31 @@ const getPemasukanDasawismaById = async (req, res) => {
   }
 };
 
+const getPemasukanDasawismaByRWid = async (req, res) => {
+  try {
+    const roles = req.roles;
+    if (!checkRoles(roles)) {
+      return res.status(403).json({
+        error:
+          "hanya penanggung jawab dasawisma dan kader dasawisma yang boleh mengakses data pemasukan dasawisma",
+      });
+    }
+
+    const rwId = req.rw;
+    const data = await pemasukanDasawismaRepo.getPemasukanDasawismaByRWid(rwId);
+    if (!data || data.length === 0) {
+      return res.status(404).json({ message: "Pemasukan dasawisma not found" });
+    }
+    res.status(200).json({
+      data: data.map((item) => new PemasukanDasawismaModels(item)),
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching data", error: error.message });
+  }
+};
+
 const validatePemasukanDasawisma = (pemasukanDasawisma) => {
   if (!pemasukanDasawisma.sumber) {
     return { valid: false, message: "Sumber is required" };
@@ -109,6 +134,7 @@ const addPemasukanDasawisma = async (req, res) => {
       nama_anggota: existingAnggota ? existingAnggota.nama_lengkap : null,
       tanggal_penghimpunan: req.body.tanggal_penghimpunan,
       anggota_dasawisma_id: req.body.anggota_dasawisma_id,
+      rw_id: req.rw,
       created_at: new Date(),
     });
 
@@ -128,17 +154,12 @@ const addPemasukanDasawisma = async (req, res) => {
 
     await totalKasDasawismaRepo.tambahTotalDasawisma(
       newPemasukanDasawisma.jumlah,
-    );
-
-    console.log(
-      "New pemasukan dasawisma added with ID:",
-      newPemasukanDasawisma,
+      req.rw,
     );
 
     res.status(200).json({
       message: "Pemasukan dasawisma created",
       data: { ...newPemasukanDasawisma, id: insertId },
-      // data: { ...newPemasukanDasawisma},
     });
   } catch (error) {
     console.error("Error in addPemasukanDasawisma:", error);
@@ -213,21 +234,30 @@ const updatePemasukanDasawisma = async (req, res) => {
       const jumlahDifference = newJumlah - oldJumlah;
 
       if (jumlahDifference > 0) {
-        await totalKasDasawismaRepo.tambahTotalDasawisma(jumlahDifference);
+        await totalKasDasawismaRepo.tambahTotalDasawisma(
+          jumlahDifference,
+          req.rw,
+        );
       } else {
         await totalKasDasawismaRepo.kurangiTotalDasawisma(
           Math.abs(jumlahDifference),
+          req.rw,
         );
       }
     }
 
     const updatedPemasukanDasawisma = new PemasukanDasawismaModels({
+      rw_id: req.rw,
       jumlah: newJumlah,
       sumber: req.body.sumber,
       deskripsi: req.body.deskripsi,
       tanggal_penghimpunan: tanggalPenghimpunan,
-      anggota_dasawisma_id: req.body.anggota_dasawisma_id ? req.body.anggota_dasawisma_id : null,
-      nama_anggota: req.body.nama_anggota ? req.body.nama_anggota : existingData.nama_anggota,
+      anggota_dasawisma_id: req.body.anggota_dasawisma_id
+        ? req.body.anggota_dasawisma_id
+        : null,
+      nama_anggota: req.body.nama_anggota
+        ? req.body.nama_anggota
+        : existingData.nama_anggota,
     });
 
     await pemasukanDasawismaRepo.updatePemasukanDasawisma(
@@ -264,6 +294,7 @@ const updatePemasukanDasawisma = async (req, res) => {
 module.exports = {
   getAllPemasukanDasawisma,
   getPemasukanDasawismaById,
+  getPemasukanDasawismaByRWid,
   addPemasukanDasawisma,
   updatePemasukanDasawisma,
 };

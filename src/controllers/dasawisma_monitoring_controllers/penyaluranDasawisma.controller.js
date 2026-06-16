@@ -55,6 +55,32 @@ const getPengeluaranDasawismaById = async (req, res) => {
   }
 };
 
+const getPengeluaranDasawismaByRWid = async (req, res) => {
+  try {
+    const role = req.roles;
+    if (role !== "penanggung jawab dasawisma" && role !== "kader dasawisma") {
+      return res.status(403).json({
+        error:
+          "hanya koordinator dan kader dasawisma yang boleh mengakses data pengeluaran Dasawisma",
+      });
+    }
+    const rw_id = req.rw;
+    const data = (
+      await pengeluaranDasawismaRepo.getPengeluaranDasawismaByRWid(rw_id)
+    ).map((item) => new penyaluranDasawismaModel(item));
+
+    if (data.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Data pengeluaran Dasawisma tidak ditemukan" });
+    }
+
+    res.status(200).json({ data: data });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const validatePengeluaranDasawisma = (pengeluaranDasawisma) => {
   if (!pengeluaranDasawisma.deskripsi) {
     return { valid: false, message: "Deskripsi is required" };
@@ -86,6 +112,7 @@ const addPengeluaranDasawisma = async (req, res) => {
 
     const penyaluranDasawisma = new penyaluranDasawismaModel({
       jumlah: req.body.jumlah,
+      rw_id: req.rw,
       deskripsi: req.body.deskripsi,
       tanggal_penyaluran: req.body.tanggal_penyaluran,
       nama_anggota: req.body.nama_anggota,
@@ -102,7 +129,10 @@ const addPengeluaranDasawisma = async (req, res) => {
     }
 
     // Kurangi saldo dulu agar tidak ada transaksi yang tersimpan saat saldo tidak cukup
-    await totalDasawismaRepos.kurangiTotalDasawisma(penyaluranDasawisma.jumlah);
+    await totalDasawismaRepos.kurangiTotalDasawisma(
+      penyaluranDasawisma.jumlah,
+      req.rw,
+    );
 
     let insertedId;
     try {
@@ -115,6 +145,7 @@ const addPengeluaranDasawisma = async (req, res) => {
       try {
         await totalDasawismaRepos.tambahTotalDasawisma(
           penyaluranDasawisma.jumlah,
+          req.rw,
         );
       } catch (_) {
         // ignore
@@ -175,10 +206,10 @@ const updatePengeluaranDasawisma = async (req, res) => {
     const diff = newJumlah - oldJumlah;
     if (diff > 0) {
       // pengeluaran naik -> saldo turun
-      await totalDasawismaRepos.kurangiTotalDasawisma(diff);
+      await totalDasawismaRepos.kurangiTotalDasawisma(diff, req.rw);
     } else if (diff < 0) {
       // pengeluaran turun -> saldo naik
-      await totalDasawismaRepos.tambahTotalDasawisma(Math.abs(diff));
+      await totalDasawismaRepos.tambahTotalDasawisma(Math.abs(diff), req.rw);
     }
 
     const newPengeluaranDasawisma = new penyaluranDasawismaModel({
@@ -186,6 +217,7 @@ const updatePengeluaranDasawisma = async (req, res) => {
       deskripsi: req.body.deskripsi,
       tanggal_penyaluran: tanggal_penyaluran,
       nama_anggota: req.body.nama_anggota,
+      rw_id: req.rw,
     });
 
     const result = await pengeluaranDasawismaRepo.updatePengeluaranDasawisma(
@@ -197,9 +229,12 @@ const updatePengeluaranDasawisma = async (req, res) => {
       // rollback best-effort bila update transaksi gagal
       try {
         if (diff > 0) {
-          await totalDasawismaRepos.tambahTotalDasawisma(diff);
+          await totalDasawismaRepos.tambahTotalDasawisma(diff, req.rw);
         } else if (diff < 0) {
-          await totalDasawismaRepos.kurangiTotalDasawisma(Math.abs(diff));
+          await totalDasawismaRepos.kurangiTotalDasawisma(
+            Math.abs(diff),
+            req.rw,
+          );
         }
       } catch (_) {
         // ignore
@@ -232,4 +267,5 @@ module.exports = {
   getPengeluaranDasawismaById,
   addPengeluaranDasawisma,
   updatePengeluaranDasawisma,
+  getPengeluaranDasawismaByRWid,
 };

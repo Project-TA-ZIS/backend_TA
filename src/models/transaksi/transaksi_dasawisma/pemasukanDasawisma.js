@@ -4,13 +4,23 @@ class PemasukanDasawisma extends transaksi {
   #anggota_dasawisma_id;
   #sumber;
   #nama_anggota;
+  #rw_id;
 
   constructor(data) {
     super(data);
+    this.#rw_id = data.rw_id ?? null;
     this.#tanggal_penghimpunan = data.tanggal_penghimpunan ?? null;
     this.#anggota_dasawisma_id = data.anggota_dasawisma_id ?? null;
     this.#sumber = data.sumber ?? null;
     this.#nama_anggota = data.nama_anggota ?? null;
+  }
+
+  get rw_id() {
+    return this.#rw_id;
+  }
+
+  set rw_id(value) {
+    this.#rw_id = value;
   }
 
   get tanggal_penghimpunan() {
@@ -48,6 +58,7 @@ class PemasukanDasawisma extends transaksi {
   toJSON() {
     return {
       ...super.toJSON(),
+      rw_id: this.rw_id,
       tanggal_penghimpunan: this.tanggal_penghimpunan,
       anggota_dasawisma_id: this.anggota_dasawisma_id,
       sumber: this.sumber,
