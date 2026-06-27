@@ -4,8 +4,6 @@
  *   get:
  *     tags: [Mustahik]
  *     summary: Get all mustahik
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List mustahik

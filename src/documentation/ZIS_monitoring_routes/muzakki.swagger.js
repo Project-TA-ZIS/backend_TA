@@ -4,8 +4,6 @@
  *   get:
  *     tags: [Muzakki]
  *     summary: Get all muzakki
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List muzakki
@@ -37,6 +35,32 @@
  *     responses:
  *       200:
  *         description: Muzakki detail
+ */
+
+/**
+ * @openapi
+ * /muzakki/get/getMuzakkiByNik/{nik}:
+ *   get:
+ *     tags: [Muzakki]
+ *     summary: Get muzakki by NIK
+ *     parameters:
+ *       - in: path
+ *         name: nik
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Muzakki detail
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Muzakki'
+ *       404:
+ *         description: Muzakki not found
  */
 
 /**

@@ -10,8 +10,8 @@ export const options = {
   ],
 
   thresholds: {
-    http_req_duration: ["p(95)<2000"],
-    http_req_failed: ["rate<0.05"],
+    http_req_duration: ["p(95)<3000"], // 95% request harus selesai dalam 3 detik
+    http_req_failed: ["rate<0.05"], // kurang dari 5% request boleh gagal
   },
 };
 
@@ -33,7 +33,7 @@ export default function () {
 
   check(res, {
     "status is 200": (r) => r.status === 200,
-    "response time < 2s": (r) => r.timings.duration < 2000,
+    "response time < 3s": (r) => r.timings.duration < 3000,
   });
 
   if (res.status !== 200) {

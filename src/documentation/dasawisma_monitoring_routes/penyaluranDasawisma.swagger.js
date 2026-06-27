@@ -1,14 +1,14 @@
 /**
  * @openapi
- * /pemasukanDasawisma/get/getAllPemasukan:
+ * /pengeluaranDasawisma/get/getAllPengeluaran:
  *   get:
- *     tags: [Pemasukan Dasawisma]
- *     summary: Get all pemasukan dasawisma
+ *     tags: [Pengeluaran Dasawisma]
+ *     summary: Get all pengeluaran dasawisma
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List pemasukan dasawisma
+ *         description: List pengeluaran dasawisma
  *         content:
  *           application/json:
  *             schema:
@@ -17,19 +17,19 @@
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/PemasukanDasawisma'
+ *                     $ref: '#/components/schemas/PengeluaranDasawisma'
  *       403:
  *         description: Forbidden (role not allowed)
  *       404:
- *         description: No pemasukan dasawisma found
+ *         description: Data pengeluaran Dasawisma tidak ditemukan
  */
 
 /**
  * @openapi
- * /pemasukanDasawisma/get/getPemasukan/{id}:
+ * /pengeluaranDasawisma/get/getPengeluaran/{id}:
  *   get:
- *     tags: [Pemasukan Dasawisma]
- *     summary: Get pemasukan dasawisma by id
+ *     tags: [Pengeluaran Dasawisma]
+ *     summary: Get pengeluaran dasawisma by id
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -40,31 +40,31 @@
  *           type: integer
  *     responses:
  *       200:
- *         description: Pemasukan dasawisma detail
+ *         description: Pengeluaran dasawisma detail
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 data:
- *                   $ref: '#/components/schemas/PemasukanDasawisma'
+ *                   $ref: '#/components/schemas/PengeluaranDasawisma'
  *       403:
  *         description: Forbidden (role not allowed)
  *       404:
- *         description: Pemasukan dasawisma not found
+ *         description: Data pengeluaran Dasawisma tidak ditemukan
  */
 
 /**
  * @openapi
- * /pemasukanDasawisma/get/getPemasukanByRW:
+ * /pengeluaranDasawisma/get/getPengeluaranByRW:
  *   get:
- *     tags: [Pemasukan Dasawisma]
- *     summary: Get pemasukan dasawisma by RW dari token
+ *     tags: [Pengeluaran Dasawisma]
+ *     summary: Get pengeluaran dasawisma by RW dari token
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List pemasukan dasawisma pada RW user
+ *         description: List pengeluaran dasawisma pada RW user
  *         content:
  *           application/json:
  *             schema:
@@ -73,19 +73,19 @@
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/PemasukanDasawisma'
+ *                     $ref: '#/components/schemas/PengeluaranDasawisma'
  *       403:
  *         description: Forbidden (role not allowed)
  *       404:
- *         description: Pemasukan dasawisma not found
+ *         description: Data pengeluaran Dasawisma tidak ditemukan
  */
 
 /**
  * @openapi
- * /pemasukanDasawisma/post/createPemasukan:
+ * /pengeluaranDasawisma/post/createPengeluaran:
  *   post:
- *     tags: [Pemasukan Dasawisma]
- *     summary: "Add pemasukan dasawisma (role: koordinator/anggota dasawisma)"
+ *     tags: [Pengeluaran Dasawisma]
+ *     summary: "Add pengeluaran dasawisma (role: penanggung jawab dasawisma)"
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -94,46 +94,35 @@
  *         application/json:
  *           schema:
  *             type: object
- *             required: [sumber, deskripsi, jumlah, tanggal_penghimpunan]
+ *             required: [deskripsi, jumlah, tanggal_penyaluran]
  *             properties:
  *               jumlah:
  *                 type: number
  *                 example: 10000
  *               deskripsi:
  *                 type: string
- *               sumber:
- *                 type: string
- *                 example: IURAN
- *               tanggal_penghimpunan:
+ *               tanggal_penyaluran:
  *                 type: string
  *                 format: date
  *                 example: 2026-05-18
- *               anggota_dasawisma_id:
- *                 type: integer
+ *               nama_anggota:
+ *                 type: string
  *                 nullable: true
- *                 example: 1
  *     responses:
  *       200:
  *         description: Created
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 data:
- *                   $ref: '#/components/schemas/PemasukanDasawisma'
+ *       400:
+ *         description: Validation error atau saldo tidak cukup
  *       403:
  *         description: Forbidden (role not allowed)
  */
 
 /**
  * @openapi
- * /pemasukanDasawisma/update/updatePemasukan/{id}:
+ * /pengeluaranDasawisma/update/updatePengeluaran/{id}:
  *   put:
- *     tags: [Pemasukan Dasawisma]
- *     summary: "Update pemasukan dasawisma (role: koordinator/anggota dasawisma)"
+ *     tags: [Pengeluaran Dasawisma]
+ *     summary: "Update pengeluaran dasawisma (role: penanggung jawab dasawisma)"
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -148,39 +137,25 @@
  *         application/json:
  *           schema:
  *             type: object
- *             required: [sumber, deskripsi, jumlah, tanggal_penghimpunan]
  *             properties:
  *               jumlah:
  *                 type: number
  *                 example: 15000
  *               deskripsi:
  *                 type: string
- *               sumber:
- *                 type: string
- *                 example: IURAN
- *               tanggal_penghimpunan:
+ *               tanggal_penyaluran:
  *                 type: string
  *                 format: date
- *               anggota_dasawisma_id:
- *                 type: integer
- *                 nullable: true
  *               nama_anggota:
  *                 type: string
  *                 nullable: true
  *     responses:
  *       200:
  *         description: Updated
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 data:
- *                   $ref: '#/components/schemas/PemasukanDasawisma'
+ *       400:
+ *         description: Validation error atau saldo tidak cukup
  *       403:
  *         description: Forbidden (role not allowed)
  *       404:
- *         description: Pemasukan dasawisma not found
+ *         description: Data pengeluaran Dasawisma tidak ditemukan
  */
