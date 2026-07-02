@@ -2,9 +2,9 @@ name: Backend CI Pipeline
 
 on:
   push:
-    branches: [ main, rafif ]
+    branches: [ main, development, rafif ]
   pull_request:
-    branches: [ main, rafif ]
+    branches: [ main, development, rafif ]
 
 jobs:
   test:

@@ -129,3 +129,33 @@
  *       200:
  *         description: Updated
  */
+
+/**
+ * @openapi
+ * /amil/put/updateAmilPassword:
+ *   put:
+ *     tags: [Amil]
+ *     summary: Update password amil yang sedang login
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [oldPassword, newPassword]
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 6
+ *     responses:
+ *       200:
+ *         description: Password berhasil diupdate
+ *       400:
+ *         description: Password lama salah
+ *       404:
+ *         description: Amil not found
+ */

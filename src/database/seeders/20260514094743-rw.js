@@ -6,6 +6,7 @@ module.exports = {
 
     for (let i = 1; i <= 10; i++) {
       data.push({
+        id: i,
         nama_rw: String(i).padStart(3, "0"),
         tipe_pengelolaan_kas: "RW",
         created_at: new Date(),

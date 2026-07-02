@@ -21,3 +21,27 @@
  *       404:
  *         description: Total kas dasawisma not found
  */
+
+/**
+ * @openapi
+ * /totalKasDasawisma/get/getTotalKasDasawismaByRW:
+ *   get:
+ *     tags: [Total Kas Dasawisma]
+ *     summary: Get total kas dasawisma by RW dari token
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Total kas dasawisma pada RW user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/TotalKasDasawisma'
+ *       403:
+ *         description: Forbidden (role not allowed)
+ *       404:
+ *         description: Total Kas Dasawisma not found
+ */
