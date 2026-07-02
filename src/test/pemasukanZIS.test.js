@@ -20,7 +20,7 @@ jest.mock("../controllers/auth/auth.controller", () => ({
   validateDate: jest.fn(),
 }));
 
-jest.mock("../../../Frontend-TA/src/utils/formattedDate", () => ({
+jest.mock("../utils/formatDateInput", () => ({
   formatDateInput: jest.fn((tanggal) => tanggal),
 }));
 

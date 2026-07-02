@@ -4,9 +4,7 @@ const totalZISRepo = require("../../repositories/ZIS_monitoring_repo/totalZIS.re
 const PemasukanZIS = require("../../models/transaksi/transaksi_zis/pemasukanZIS.models");
 const totalZIS = require("../../models/total_kas/totalZIS.models");
 const authController = require("../auth/auth.controller");
-const {
-  formatDateInput,
-} = require("../../../../Frontend-TA/src/utils/formattedDate");
+const { formatDateInput } = require("../../utils/formatDateInput");
 
 const getAllPemasukanZIS = async (req, res) => {
   try {
