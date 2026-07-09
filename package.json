@@ -10,7 +10,11 @@
     "test": "jest ./src/test",
     "test:watch": "jest --watch",
     "coverage": "jest --coverage",
-    "start": "nodemon ./src/index.js"
+    "start": "nodemon ./src/index.js",
+    "perf:login": "node scripts/run-performance.js login",
+    "perf:dasawisma": "node scripts/run-performance.js dasawisma",
+    "perf:zis": "node scripts/run-performance.js zis",
+    "perf:all": "node scripts/run-performance.js all"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
