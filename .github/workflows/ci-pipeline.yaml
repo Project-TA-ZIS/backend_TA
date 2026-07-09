@@ -68,7 +68,7 @@ jobs:
               . "$HOME/.nvm/nvm.sh"
               nvm use --lts
             fi
-            cd /var/www/project-ta/Backend_TA
+            cd /var/www/project-ta/backend_TA
             git fetch origin master
             git checkout master
             git pull --ff-only origin master
