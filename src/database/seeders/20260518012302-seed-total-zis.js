@@ -2,33 +2,31 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const now = new Date();
-
     await queryInterface.bulkInsert("total_zis", [
       {
         kategori: "zakat fitrah beras",
-        jumlah_keseluruhan: 20,
-        updated_at: now,
+        jumlah_keseluruhan: 0,
+        updated_at: null,
       },
       {
         kategori: "zakat fitrah uang",
-        jumlah_keseluruhan: 600000,
-        updated_at: now,
+        jumlah_keseluruhan: 0,
+        updated_at: null,
       },
       {
         kategori: "zakat mal",
-        jumlah_keseluruhan: 2750000,
-        updated_at: now,
+        jumlah_keseluruhan: 0,
+        updated_at: null,
       },
       {
         kategori: "shodaqoh",
-        jumlah_keseluruhan: 350000,
-        updated_at: now,
+        jumlah_keseluruhan: 0,
+        updated_at: null,
       },
       {
         kategori: "infaq",
-        jumlah_keseluruhan: 600000,
-        updated_at: now,
+        jumlah_keseluruhan: 0,
+        updated_at: null,
       },
     ]);
   },
