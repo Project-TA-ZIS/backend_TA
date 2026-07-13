@@ -1,4 +1,4 @@
-# Backend TA — Monitoring Dasawisma & ZIS
+﻿# Backend Dasawisma Sistem Manajemen Kas Dasawisma & ZIS
 
 Backend service (REST API) untuk **Sistem Monitoring Keuangan Dasawisma** dan
 **ZIS (Zakat, Infaq, Shodaqoh)**. Menyediakan autentikasi berbasis JWT,
@@ -7,82 +7,88 @@ rekap total kas, serta dokumentasi API interaktif via Swagger.
 
 ---
 
-## ✨ Fitur
+## âœ¨ Fitur
 
-- **Autentikasi JWT** — login, ambil profil, lupa & reset password via email.
-- **Manajemen Pengguna** — anggota Dasawisma, Amil, Muzakki, Mustahik.
-- **Monitoring Dasawisma** — pemasukan, penyaluran (pengeluaran), dan total kas.
-- **Monitoring ZIS** — pemasukan ZIS, penyaluran ZIS, rekap total per kategori.
-- **Soft Delete** — data ditandai (`deleted_status`/`deleted_at`), bukan dihapus permanen.
-- **Dokumentasi API** — Swagger UI (OpenAPI 3.0).
-- **Reset Password via Email** — pengiriman link reset menggunakan Nodemailer.
-
----
-
-## 🛠️ Tech Stack
-
-| Kategori        | Teknologi                              |
-| --------------- | -------------------------------------- |
-| Runtime         | Node.js                                |
-| Framework       | Express 5                              |
-| Database        | MySQL / MariaDB (`mysql2`)             |
-| ORM             | Sequelize 6 + Sequelize CLI            |
-| Autentikasi     | JSON Web Token (`jsonwebtoken`)        |
-| Hashing         | bcrypt                                 |
-| Email           | Nodemailer (Gmail)                     |
-| Dokumentasi     | swagger-jsdoc + swagger-ui-express     |
-| Lainnya         | cors, dotenv, uuid, chalk, nodemon     |
+- **Autentikasi JWT** login, ambil profil, lupa & reset password via email.
+- **Manajemen Pengguna** anggota Dasawisma, Amil, Muzakki, Mustahik.
+- **Monitoring Dasawisma** pemasukan, penyaluran (pengeluaran), dan total kas.
+- **Monitoring ZIS** pemasukan ZIS, penyaluran ZIS, rekap total per kategori.
+- **Soft Delete** data ditandai (`deleted_status`/`deleted_at`), bukan dihapus permanen.
+- **Dokumentasi API** Swagger UI (OpenAPI 3.0).
+- **Reset Password via Email** pengiriman link reset menggunakan Nodemailer.
 
 ---
 
-## 🧱 Arsitektur (Layered)
+## Tech Stack
+
+| Kategori    | Teknologi                          |
+| ----------- | ---------------------------------- |
+| Runtime     | Node.js                            |
+| Framework   | Express 5                          |
+| Database    | MySQL / MariaDB (`mysql2`)         |
+| ORM         | Sequelize 6 + Sequelize CLI        |
+| Autentikasi | JSON Web Token (`jsonwebtoken`)    |
+| Hashing     | bcrypt                             |
+| Email       | Nodemailer (Gmail)                 |
+| Dokumentasi | swagger-jsdoc + swagger-ui-express |
+| Lainnya     | cors, dotenv, uuid, chalk, nodemon |
+
+---
+
+## ðŸ§± Arsitektur (Layered)
 
 Setiap domain mengikuti alur berlapis agar mudah dirawat:
 
 ```
-Request → Routes → Middleware (verifyToken/JWT) → Controller → Repository → Model (Sequelize) → Database                 
+Request -> Routes -> Middleware (verifyToken/JWT) -> Controller -> Repository -> Model (Sequelize) -> Database
 ```
 
-- **Routes** (`src/routes`) — mendefinisikan endpoint & memasang middleware.
-- **Controller** (`src/controllers`) — menangani request/response & validasi.
-- **Repository** (`src/repositories`) — logika akses data (query Sequelize).
-- **Model** (`src/models`) — definisi tabel/skema Sequelize.
-- **Middleware** (`src/middleware`) — `verifyToken` memverifikasi Bearer JWT.
-- **Documentation** (`src/documentation`) — anotasi Swagger (`*.swagger.js`) dipisah dari routes agar tetap rapi.
+- **Routes** (`src/routes`) mendefinisikan endpoint & memasang middleware.
+- **Controller** (`src/controllers`) menangani request/response & validasi.
+- **Repository** (`src/repositories`) logika akses data (query Sequelize).
+- **Model** (`src/models`) definisi tabel/skema Sequelize.
+- **Middleware** (`src/middleware`) `verifyToken` memverifikasi Bearer JWT.
+- **Documentation** (`src/documentation`) anotasi Swagger (`*.swagger.js`) dipisah dari routes agar tetap rapi.
 
 ---
 
-## 📁 Struktur Proyek
+## Struktur Proyek
 
-```
-backend_TA/
-├── src/
-│   ├── app.js                 # konfigurasi Express, mount semua routes & Swagger
-│   ├── index.js               # entry point, menjalankan server (app.listen)
-│   ├── config/
-│   │   ├── db_connection.js   # koneksi MySQL
-│   │   ├── sequelize.js       # konfigurasi Sequelize CLI
-│   │   ├── mail.config.js     # transporter Nodemailer (Gmail)
-│   │   └── swagger.js         # definisi OpenAPI & komponen schema
-│   ├── controllers/           # ZIS, dasawisma, auth
-│   ├── repositories/          # akses data per domain
-│   ├── models/                # model Sequelize (users, transaksi, total_kas)
-│   ├── routes/                # definisi endpoint per domain
-│   ├── documentation/         # anotasi Swagger (*.swagger.js)
-│   ├── middleware/
-│   │   └── verifyToken.js     # verifikasi JWT (Bearer)
-│   └── database/
-│       ├── migrations/        # skema tabel
-│       ├── seeders/           # data awal
-│       └── step-database.md   # panduan migration & seeder
-├── .env.example
-├── .sequelizerc               # path config/migrations/seeders untuk Sequelize CLI
-└── package.json
+```text
+Backend_TA/
+|-- .github/workflows/                         # workflow CI/CD
+|-- performance/                               # performance test k6
+|   |-- config.k6.js                           # konfigurasi stages dan thresholds
+|   |-- login.k6.js                            # skenario login
+|   |-- manajemenDasawisma.k6.js               # skenario kas Dasawisma
+|   |-- manajemenZIS.k6.js                     # skenario transaksi ZIS
+|   `-- performance-test.md                    # panduan menjalankan k6
+|-- scripts/
+|   `-- run-performance.js                     # runner npm script untuk k6
+|-- src/
+|   |-- app.js                                 # konfigurasi Express, routes, Swagger
+|   |-- index.js                               # entry point server
+|   |-- config/                                # konfigurasi DB, Sequelize, email, Swagger
+|   |-- controllers/                           # handler request/response per domain
+|   |-- database/                              # migrations, seeders, panduan database
+|   |-- documentation/                         # anotasi Swagger per route
+|   |-- middleware/                            # middleware Express, termasuk verifyToken
+|   |-- models/                                # model/domain entity
+|   |-- note/                                  # catatan internal pengembangan
+|   |-- repositories/                          # akses data per domain
+|   |-- routes/                                # definisi endpoint Express
+|   |-- test/                                  # unit/integration test Jest
+|   `-- utils/                                 # helper backend
+|-- .env.example
+|-- .sequelizerc                              # path Sequelize CLI
+|-- docker-compose.yml
+|-- package.json
+`-- README.md
 ```
 
 ---
 
-## 🚀 Menjalankan Project (Local)
+## Menjalankan Project (Local)
 
 ### 1. Prasyarat
 
@@ -100,7 +106,7 @@ npm install
 
 Buat file `.env` di root `backend_TA` (acuan: `.env.example`).
 
-> ⚠️ File `.env` sudah masuk `.gitignore` — jangan di-commit.
+> File `.env` sudah masuk `.gitignore` jangan di-commit.
 
 ```env
 # Server
@@ -126,7 +132,7 @@ AUTH_EMAIL=email-anda@gmail.com
 AUTH_PASSWORD=app-password-gmail
 ```
 
-> 💡 `AUTH_PASSWORD` sebaiknya memakai **App Password** Gmail, bukan password akun biasa.
+> `AUTH_PASSWORD` sebaiknya memakai **App Password** Gmail, bukan password akun biasa.
 
 ### 4. Buat database kosong
 
@@ -154,7 +160,7 @@ Server berjalan dengan **nodemon** (auto-reload). Setelah aktif:
 
 ---
 
-## 🔐 Autentikasi & Otorisasi
+## Autentikasi & Otorisasi
 
 Endpoint terproteksi membutuhkan header:
 
@@ -179,116 +185,116 @@ Content-Type: application/json
 
 ---
 
-## 📡 Daftar Endpoint
+## Daftar Endpoint
 
 Base URL: `http://localhost:<PORT>`
 
-### Auth — `/auth`
+### Auth `/auth`
 
-| Method | Path                                    | Keterangan                  | Auth |
-| ------ | --------------------------------------- | --------------------------- | :--: |
-| POST   | `/auth/post/login`                      | Login, mengembalikan token  |  —   |
-| GET    | `/auth/get/me`                          | Profil user yang login      |  ✅  |
-| POST   | `/auth/post/forgot-password`            | Minta link reset password   |  —   |
-| POST   | `/auth/post/reset-password`             | Reset password via token    |  —   |
-| GET    | `/auth/get/validate-reset-token/:token` | Validasi token reset        |  —   |
+| Method | Path                                    | Keterangan                 | Auth |
+| ------ | --------------------------------------- | -------------------------- | :--: |
+| POST   | `/auth/post/login`                      | Login, mengembalikan token |      |
+| GET    | `/auth/get/me`                          | Profil user yang login     |  ya  |
+| POST   | `/auth/post/forgot-password`            | Minta link reset password  |      |
+| POST   | `/auth/post/reset-password`             | Reset password via token   |      |
+| GET    | `/auth/get/validate-reset-token/:token` | Validasi token reset       |      |
 
-### Amil — `/amil` *(mount ber-JWT)*
+### Amil `/amil` _(mount ber-JWT)_
 
-| Method | Path                          | Keterangan          |
-| ------ | ----------------------------- | ------------------- |
-| GET    | `/amil/get/getAllAmil`        | Daftar amil         |
-| GET    | `/amil/get/getAmil/:id`       | Detail amil         |
-| POST   | `/amil/post/createAmil`       | Tambah amil         |
-| PUT    | `/amil/put/updateAmil/:id`    | Ubah amil           |
-| PUT    | `/amil/put/updateAmilPassword`| Ubah password amil  |
-| DELETE | `/amil/delete/deleteAmil/:id` | Hapus amil          |
+| Method | Path                           | Keterangan         |
+| ------ | ------------------------------ | ------------------ |
+| GET    | `/amil/get/getAllAmil`         | Daftar amil        |
+| GET    | `/amil/get/getAmil/:id`        | Detail amil        |
+| POST   | `/amil/post/createAmil`        | Tambah amil        |
+| PUT    | `/amil/put/updateAmil/:id`     | Ubah amil          |
+| PUT    | `/amil/put/updateAmilPassword` | Ubah password amil |
+| DELETE | `/amil/delete/deleteAmil/:id`  | Hapus amil         |
 
-### Anggota Dasawisma — `/dasawisma` *(mount ber-JWT)*
+### Anggota Dasawisma `/dasawisma` _(mount ber-JWT)_
 
-| Method | Path                                  | Keterangan         |
-| ------ | ------------------------------------- | ------------------ |
-| GET    | `/dasawisma/get/getAllAnggota`        | Daftar anggota     |
-| GET    | `/dasawisma/get/getAnggota/:id`       | Detail anggota     |
-| POST   | `/dasawisma/post/createAnggota`       | Tambah anggota     |
-| PUT    | `/dasawisma/update/updateAnggota/:id` | Ubah anggota       |
-| PUT    | `/dasawisma/update/updatePassword`    | Ubah password      |
-| DELETE | `/dasawisma/delete/deleteAnggota/:id` | Hapus anggota      |
+| Method | Path                                  | Keterangan     |
+| ------ | ------------------------------------- | -------------- |
+| GET    | `/dasawisma/get/getAllAnggota`        | Daftar anggota |
+| GET    | `/dasawisma/get/getAnggota/:id`       | Detail anggota |
+| POST   | `/dasawisma/post/createAnggota`       | Tambah anggota |
+| PUT    | `/dasawisma/update/updateAnggota/:id` | Ubah anggota   |
+| PUT    | `/dasawisma/update/updatePassword`    | Ubah password  |
+| DELETE | `/dasawisma/delete/deleteAnggota/:id` | Hapus anggota  |
 
-### Muzakki — `/muzakki`
+### Muzakki `/muzakki`
 
-| Method | Path                              | Keterangan        | Auth |
-| ------ | --------------------------------- | ----------------- | :--: |
-| GET    | `/muzakki/get/getAllMuzakki`      | Daftar muzakki    |  —   |
-| GET    | `/muzakki/get/getMuzakkiById/:id` | Detail muzakki    |  ✅  |
-| POST   | `/muzakki/post/createMuzakki`     | Tambah muzakki    |  ✅  |
-| PUT    | `/muzakki/put/editMuzakki/:id`    | Ubah muzakki      |  ✅  |
-| DELETE | `/muzakki/delete/deleteMuzakki/:id`| Hapus muzakki    |  ✅  |
+| Method | Path                                | Keterangan     | Auth |
+| ------ | ----------------------------------- | -------------- | :--: |
+| GET    | `/muzakki/get/getAllMuzakki`        | Daftar muzakki |      |
+| GET    | `/muzakki/get/getMuzakkiById/:id`   | Detail muzakki |      |
+| POST   | `/muzakki/post/createMuzakki`       | Tambah muzakki |  ya  |
+| PUT    | `/muzakki/put/editMuzakki/:id`      | Ubah muzakki   |  ya  |
+| DELETE | `/muzakki/delete/deleteMuzakki/:id` | Hapus muzakki  |  ya  |
 
-### Mustahik — `/mustahik`
+### Mustahik `/mustahik`
 
-| Method | Path                                | Keterangan       | Auth |
-| ------ | ----------------------------------- | ---------------- | :--: |
-| GET    | `/mustahik/get/getAllMustahik`      | Daftar mustahik  |  —   |
-| GET    | `/mustahik/get/getMustahik/:id`     | Detail mustahik  |  ✅  |
-| POST   | `/mustahik/post/createMustahik`     | Tambah mustahik  |  ✅  |
-| PUT    | `/mustahik/put/editMustahik/:id`    | Ubah mustahik    |  ✅  |
-| DELETE | `/mustahik/delete/deleteMustahik/:id`| Hapus mustahik  |  ✅  |
+| Method | Path                                  | Keterangan      | Auth |
+| ------ | ------------------------------------- | --------------- | :--: |
+| GET    | `/mustahik/get/getAllMustahik`        | Daftar mustahik |      |
+| GET    | `/mustahik/get/getMustahik/:id`       | Detail mustahik |  ya  |
+| POST   | `/mustahik/post/createMustahik`       | Tambah mustahik |  ya  |
+| PUT    | `/mustahik/put/editMustahik/:id`      | Ubah mustahik   |  ya  |
+| DELETE | `/mustahik/delete/deleteMustahik/:id` | Hapus mustahik  |  ya  |
 
-### Pemasukan ZIS — `/pemasukanZIS`
+### Pemasukan ZIS `/pemasukanZIS`
 
 | Method | Path                                            | Keterangan              | Auth |
 | ------ | ----------------------------------------------- | ----------------------- | :--: |
-| GET    | `/pemasukanZIS/get/getAllPemasukanZIS`          | Daftar pemasukan ZIS    |  —   |
-| GET    | `/pemasukanZIS/get/getPemasukanZISById/:id`     | Detail pemasukan ZIS    |  —   |
-| GET    | `/pemasukanZIS/get/getRiwayatPemasukanZISByNik` | Riwayat berdasarkan NIK |  —   |
-| POST   | `/pemasukanZIS/add/addPemasukanZIS`             | Tambah pemasukan ZIS    |  ✅  |
-| PUT    | `/pemasukanZIS/update/updatePemasukanZIS/:id`   | Ubah pemasukan ZIS      |  ✅  |
-| DELETE | `/pemasukanZIS/delete/deletePemasukanZIS/:id`   | Hapus pemasukan ZIS     |  ✅  |
+| GET    | `/pemasukanZIS/get/getAllPemasukanZIS`          | Daftar pemasukan ZIS    |      |
+| GET    | `/pemasukanZIS/get/getPemasukanZISById/:id`     | Detail pemasukan ZIS    |      |
+| GET    | `/pemasukanZIS/get/getRiwayatPemasukanZISByNik` | Riwayat berdasarkan NIK |      |
+| POST   | `/pemasukanZIS/add/addPemasukanZIS`             | Tambah pemasukan ZIS    |  ya  |
+| PUT    | `/pemasukanZIS/update/updatePemasukanZIS/:id`   | Ubah pemasukan ZIS      |  ya  |
+| DELETE | `/pemasukanZIS/delete/deletePemasukanZIS/:id`   | Hapus pemasukan ZIS     |  ya  |
 
-### Pengeluaran ZIS — `/pengeluaranZIS`
+### Pengeluaran ZIS `/pengeluaranZIS`
 
 | Method | Path                                              | Keterangan             | Auth |
 | ------ | ------------------------------------------------- | ---------------------- | :--: |
-| GET    | `/pengeluaranZIS/get/getAllPengeluaranZIS`        | Daftar pengeluaran ZIS |  —   |
-| GET    | `/pengeluaranZIS/get/getPengeluaranZISById/:id`   | Detail pengeluaran ZIS |  —   |
-| POST   | `/pengeluaranZIS/add/addPengeluaranZIS`           | Tambah pengeluaran ZIS |  ✅  |
-| PUT    | `/pengeluaranZIS/update/updatePengeluaranZIS/:id` | Ubah pengeluaran ZIS   |  ✅  |
+| GET    | `/pengeluaranZIS/get/getAllPengeluaranZIS`        | Daftar pengeluaran ZIS |      |
+| GET    | `/pengeluaranZIS/get/getPengeluaranZISById/:id`   | Detail pengeluaran ZIS |      |
+| POST   | `/pengeluaranZIS/add/addPengeluaranZIS`           | Tambah pengeluaran ZIS |  ya  |
+| PUT    | `/pengeluaranZIS/update/updatePengeluaranZIS/:id` | Ubah pengeluaran ZIS   |  ya  |
 
-### Total ZIS — `/totalZIS`
+### Total ZIS `/totalZIS`
 
-| Method | Path                                  | Keterangan                  |
-| ------ | ------------------------------------- | --------------------------- |
-| GET    | `/totalZIS/get/getTotalZISByKategori` | Total ZIS per kategori      |
-| GET    | `/totalZIS/get/getTotalAllPemasukanZIS`| Total seluruh pemasukan ZIS|
+| Method | Path                                    | Keterangan                  |
+| ------ | --------------------------------------- | --------------------------- |
+| GET    | `/totalZIS/get/getTotalZISByKategori`   | Total ZIS per kategori      |
+| GET    | `/totalZIS/get/getTotalAllPemasukanZIS` | Total seluruh pemasukan ZIS |
 
-### Pemasukan Dasawisma — `/pemasukanDasawisma` *(mount ber-JWT)*
+### Pemasukan Dasawisma `/pemasukanDasawisma` _(mount ber-JWT)_
 
-| Method | Path                                            | Keterangan          |
-| ------ | ----------------------------------------------- | ------------------- |
-| GET    | `/pemasukanDasawisma/get/getAllPemasukan`       | Daftar pemasukan    |
-| GET    | `/pemasukanDasawisma/get/getPemasukan/:id`      | Detail pemasukan    |
-| POST   | `/pemasukanDasawisma/post/createPemasukan`      | Tambah pemasukan    |
-| PUT    | `/pemasukanDasawisma/update/updatePemasukan/:id`| Ubah pemasukan      |
+| Method | Path                                             | Keterangan       |
+| ------ | ------------------------------------------------ | ---------------- |
+| GET    | `/pemasukanDasawisma/get/getAllPemasukan`        | Daftar pemasukan |
+| GET    | `/pemasukanDasawisma/get/getPemasukan/:id`       | Detail pemasukan |
+| POST   | `/pemasukanDasawisma/post/createPemasukan`       | Tambah pemasukan |
+| PUT    | `/pemasukanDasawisma/update/updatePemasukan/:id` | Ubah pemasukan   |
 
-### Pengeluaran Dasawisma — `/pengeluaranDasawisma` *(mount ber-JWT)*
+### Pengeluaran Dasawisma `/pengeluaranDasawisma` _(mount ber-JWT)_
 
-| Method | Path                                                | Keterangan           |
-| ------ | --------------------------------------------------- | -------------------- |
-| GET    | `/pengeluaranDasawisma/get/getAllPengeluaran`       | Daftar pengeluaran   |
-| GET    | `/pengeluaranDasawisma/get/getPengeluaran/:id`      | Detail pengeluaran   |
-| POST   | `/pengeluaranDasawisma/post/createPengeluaran`      | Tambah pengeluaran   |
-| PUT    | `/pengeluaranDasawisma/update/updatePengeluaran/:id`| Ubah pengeluaran     |
+| Method | Path                                                 | Keterangan         |
+| ------ | ---------------------------------------------------- | ------------------ |
+| GET    | `/pengeluaranDasawisma/get/getAllPengeluaran`        | Daftar pengeluaran |
+| GET    | `/pengeluaranDasawisma/get/getPengeluaran/:id`       | Detail pengeluaran |
+| POST   | `/pengeluaranDasawisma/post/createPengeluaran`       | Tambah pengeluaran |
+| PUT    | `/pengeluaranDasawisma/update/updatePengeluaran/:id` | Ubah pengeluaran   |
 
-### Total Kas Dasawisma — `/totalKasDasawisma` *(mount ber-JWT)*
+### Total Kas Dasawisma `/totalKasDasawisma` _(mount ber-JWT)_
 
-| Method | Path                                          | Keterangan        |
-| ------ | --------------------------------------------- | ----------------- |
-| GET    | `/totalKasDasawisma/get/getTotalKasDasawisma` | Total kas saat ini|
+| Method | Path                                          | Keterangan         |
+| ------ | --------------------------------------------- | ------------------ |
+| GET    | `/totalKasDasawisma/get/getTotalKasDasawisma` | Total kas saat ini |
 
 ---
 
-## 📚 Dokumentasi API (Swagger)
+## Dokumentasi API (Swagger)
 
 - Swagger UI: `http://localhost:<PORT>/api-docs`
 - Anotasi OpenAPI dipisah dari routes agar rapi:
@@ -297,15 +303,15 @@ Base URL: `http://localhost:<PORT>`
 
 ---
 
-## 🗄️ Database & Sequelize CLI
+## Database & Sequelize CLI
 
 Konfigurasi path Sequelize diatur di `.sequelizerc`:
 
-| Item            | Lokasi                       |
-| --------------- | ---------------------------- |
-| Config          | `src/config/sequelize.js`    |
-| Migrations      | `src/database/migrations`    |
-| Seeders         | `src/database/seeders`       |
+| Item       | Lokasi                    |
+| ---------- | ------------------------- |
+| Config     | `src/config/sequelize.js` |
+| Migrations | `src/database/migrations` |
+| Seeders    | `src/database/seeders`    |
 
 Perintah yang sering dipakai:
 
@@ -327,7 +333,7 @@ Panduan lebih rinci: `src/database/step-database.md`.
 
 ---
 
-## 👤 Akun Seed (Default)
+## Akun Seed (Default)
 
 Seeder membuat akun koordinator awal:
 
@@ -339,17 +345,17 @@ Seeder membuat akun koordinator awal:
 
 ---
 
-## 📜 Skrip NPM
+## Skrip NPM
 
-| Perintah        | Keterangan                              |
-| --------------- | --------------------------------------- |
-| `npm start`     | Menjalankan server via nodemon          |
-| `npm test`      | Placeholder (belum ada test)            |
+| Perintah    | Keterangan                     |
+| ----------- | ------------------------------ |
+| `npm start` | Menjalankan server via nodemon |
+| `npm test`  | Placeholder (belum ada test)   |
 
 ---
 
-## 📝 Catatan
+## Catatan
 
 - Semua response error mengikuti format `{ message, error }` (lihat schema `ErrorResponse` di Swagger).
-- Fitur reset password mengirim email berisi link ke `WEB_URL` — pastikan konfigurasi email & `WEB_URL` benar.
+- Fitur reset password mengirim email berisi link ke `WEB_URL` pastikan konfigurasi email & `WEB_URL` benar.
 - Data menggunakan pola **soft delete** (`deleted_status`, `deleted_at`).
