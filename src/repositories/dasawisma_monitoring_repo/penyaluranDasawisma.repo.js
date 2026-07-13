@@ -56,6 +56,7 @@ const updatePengeluaranDasawisma = async (id, pengeluaranDasawisma) => {
 
 module.exports = {
   getAllPengeluaranDasawisma,
+  getPengeluaranDasawismaById,
   getPengeluaranDasawismaByRWid,
   addPengeluaranDasawisma,
   updatePengeluaranDasawisma,

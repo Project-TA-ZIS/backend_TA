@@ -48,7 +48,7 @@ performance/.env.test.local
 Isi dengan variable berikut jika tiap skenario memakai akun berbeda:
 
 ```env
-BASE_URL=https://api.e-dasawisma.web.id
+BASE_URL=http-api
 K6_DASAWISMA_EMAIL=akun-dasawisma@example.com
 K6_DASAWISMA_PASSWORD=password-dasawisma
 K6_AMIL_EMAIL=akun-amil@example.com
@@ -63,6 +63,8 @@ Mapping akun:
 
 Jika variable role-specific tidak diisi, runner akan fallback ke `K6_EMAIL` dan `K6_PASSWORD`.
 
+Untuk `perf:zis`, pastikan database sudah memiliki minimal satu data `muzakki` dan satu data `mustahik`, karena performance test hanya menguji transaksi pemasukan/pengeluaran ZIS dan tidak membuat master data.
+
 Runner juga mendukung file `.env.performance` di root backend, tetapi untuk performance test disarankan memakai `performance/.env.test.local`.
 
 ## Cara run di Linux / Ubuntu / macOS
@@ -70,7 +72,7 @@ Runner juga mendukung file `.env.performance` di root backend, tetapi untuk perf
 Login test:
 
 ```bash
-BASE_URL=https://api.e-dasawisma.web.id \
+BASE_URL=http-api \
 K6_EMAIL=email-test@example.com \
 K6_PASSWORD=password-test \
 npm run perf:login
@@ -79,7 +81,7 @@ npm run perf:login
 Dasawisma test:
 
 ```bash
-BASE_URL=https://api.e-dasawisma.web.id \
+BASE_URL=http-api \
 K6_DASAWISMA_EMAIL=akun-dasawisma@example.com \
 K6_DASAWISMA_PASSWORD=password-dasawisma \
 npm run perf:dasawisma
@@ -88,7 +90,7 @@ npm run perf:dasawisma
 ZIS test:
 
 ```bash
-BASE_URL=https://api.e-dasawisma.web.id \
+BASE_URL=http-api \
 K6_AMIL_EMAIL=akun-amil@example.com \
 K6_AMIL_PASSWORD=password-amil \
 npm run perf:zis
@@ -97,7 +99,7 @@ npm run perf:zis
 Semua skenario:
 
 ```bash
-BASE_URL=https://api.e-dasawisma.web.id \
+BASE_URL=http-api \
 K6_EMAIL=email-test@example.com \
 K6_PASSWORD=password-test \
 K6_DASAWISMA_EMAIL=akun-dasawisma@example.com \
@@ -110,7 +112,7 @@ npm run perf:all
 ## Cara run di Windows PowerShell
 
 ```powershell
-$env:BASE_URL="https://api.e-dasawisma.web.id"
+$env:BASE_URL="http-api"
 $env:K6_EMAIL="email-test@example.com"
 $env:K6_PASSWORD="password-test"
 $env:K6_DASAWISMA_EMAIL="akun-dasawisma@example.com"

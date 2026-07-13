@@ -1,105 +1,170 @@
 import http from "k6/http";
 import { check, sleep } from "k6";
 
-export const options = {
-  stages: [
-    { duration: "30s", target: 10 }, // ramp-up ke 10 user
-    { duration: "1m", target: 50 }, // naik ke 50 user
-    { duration: "1m", target: 100 }, // naik ke 100 user
-    { duration: "30s", target: 0 }, // ramp-down
-  ],
+import { stages, thresholds } from "./config.k6.js";
 
-  thresholds: {
-    http_req_duration: ["p(95)<3000"], // 95% request harus selesai dalam 3 detik
-    http_req_failed: ["rate<0.05"], // kurang dari 5% request boleh gagal
-  },
+export const options = {
+  stages: stages(),
+  thresholds,
 };
 
-// =====================================================
-// LOGIN SEKALI SAJA
-// =====================================================
-export function setup() {
-  const loginUrl = `${__ENV.BASE_URL}/auth/post/login`;
+const today = new Date().toISOString().slice(0, 10);
 
-  const payload = JSON.stringify({
-    email: __ENV.K6_EMAIL,
-    password: __ENV.K6_PASSWORD,
-  });
-
-  const params = {
+function jsonHeaders(token) {
+  return {
     headers: {
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-  };
-
-  const loginRes = http.post(loginUrl, payload, params);
-
-  check(loginRes, {
-    "login status 200": (r) => r.status === 200,
-  });
-
-  if (loginRes.status !== 200) {
-    throw new Error(
-      `Login gagal. Status: ${loginRes.status}\n${loginRes.body}`,
-    );
-  }
-
-  const body = JSON.parse(loginRes.body);
-
-  // SESUAIKAN DENGAN RESPONSE LOGIN ANDA
-  const token = body.token;
-
-  return {
-    token,
   };
 }
 
-// =====================================================
-// LOAD TEST
-// =====================================================
+function parseJson(response) {
+  try {
+    return JSON.parse(response.body || "{}");
+  } catch (_) {
+    return {};
+  }
+}
+
+function login(email, password) {
+  const response = http.post(
+    `${__ENV.BASE_URL}/auth/post/login`,
+    JSON.stringify({ email, password }),
+    { headers: { "Content-Type": "application/json" } },
+  );
+
+  check(response, {
+    "login status 200": (r) => r.status === 200,
+  });
+
+  if (response.status !== 200) {
+    throw new Error(
+      `Login gagal. Status: ${response.status}\n${response.body}`,
+    );
+  }
+
+  return parseJson(response).token;
+}
+
+function makeUnique() {
+  return `${Date.now()}-${__VU}-${__ITER}`;
+}
+
+function getCreatedId(response) {
+  return parseJson(response)?.data?.id;
+}
+
+function expectOk(response, label, accepted = [200]) {
+  check(response, {
+    [`${label} status ${accepted.join("/")}`]: (r) =>
+      accepted.includes(r.status),
+  });
+}
+
+export function setup() {
+  return {
+    token: login(
+      __ENV.K6_EMAIL || __ENV.K6_DASAWISMA_EMAIL,
+      __ENV.K6_PASSWORD || __ENV.K6_DASAWISMA_PASSWORD,
+    ),
+  };
+}
+
 export default function (data) {
-  const authHeaders = {
-    headers: {
-      Authorization: `Bearer ${data.token}`,
-      "Content-Type": "application/json",
-    },
+  const unique = makeUnique();
+  const headers = jsonHeaders(data.token);
+
+  const pemasukanPayload = {
+    jumlah: 50000,
+    sumber: "LAINNYA",
+    deskripsi: `Pemasukan Dasawisma K6 ${unique}`,
+    tanggal_penghimpunan: today,
+    nama_anggota: "Performance Test",
   };
 
-  // ==========================================
-  // GET PEMASUKAN DASAWISMA
-  // ==========================================
-  const pemasukanRes = http.get(
-    `${__ENV.BASE_URL}/pemasukanDasawisma/get/getAllPemasukan`,
-    authHeaders,
+  const createPemasukan = http.post(
+    `${__ENV.BASE_URL}/pemasukanDasawisma/post/createPemasukan`,
+    JSON.stringify(pemasukanPayload),
+    headers,
+  );
+  expectOk(createPemasukan, "POST pemasukan dasawisma");
+  const pemasukanId = getCreatedId(createPemasukan);
+
+  expectOk(
+    http.get(
+      `${__ENV.BASE_URL}/pemasukanDasawisma/get/getAllPemasukan`,
+      headers,
+    ),
+    "GET all pemasukan dasawisma",
+  );
+  expectOk(
+    http.get(
+      `${__ENV.BASE_URL}/pemasukanDasawisma/get/getPemasukan/${pemasukanId}`,
+      headers,
+    ),
+    "GET pemasukan dasawisma by id",
+  );
+  expectOk(
+    http.get(
+      `${__ENV.BASE_URL}/pemasukanDasawisma/get/getPemasukanByRW`,
+      headers,
+    ),
+    "GET pemasukan dasawisma by RW",
+  );
+  expectOk(
+    http.put(
+      `${__ENV.BASE_URL}/pemasukanDasawisma/update/updatePemasukan/${pemasukanId}`,
+      JSON.stringify({ ...pemasukanPayload, jumlah: 60000 }),
+      headers,
+    ),
+    "PUT pemasukan dasawisma",
   );
 
-  check(pemasukanRes, {
-    "GET pemasukan status 200": (r) => r.status === 200,
-  });
+  const pengeluaranPayload = {
+    jumlah: 1000,
+    deskripsi: `Pengeluaran Dasawisma K6 ${unique}`,
+    tanggal_penyaluran: today,
+    nama_anggota: "Performance Test",
+  };
 
-  // ==========================================
-  // GET PENGELUARAN DASAWISMA
-  // ==========================================
-  const pengeluaranRes = http.get(
-    `${__ENV.BASE_URL}/pengeluaranDasawisma/get/getAllPengeluaran`,
-    authHeaders,
+  const createPengeluaran = http.post(
+    `${__ENV.BASE_URL}/pengeluaranDasawisma/post/createPengeluaran`,
+    JSON.stringify(pengeluaranPayload),
+    headers,
   );
+  expectOk(createPengeluaran, "POST pengeluaran dasawisma");
+  const pengeluaranId = getCreatedId(createPengeluaran);
 
-  check(pengeluaranRes, {
-    "GET pengeluaran status 200": (r) => r.status === 200,
-  });
-
-  // ==========================================
-  // GET TOTAL KAS DASAWISMA
-  // ==========================================
-  const totalKasRes = http.get(
-    `${__ENV.BASE_URL}/totalKasDasawisma/get/getTotalKasDasawisma`,
-    authHeaders,
+  expectOk(
+    http.get(
+      `${__ENV.BASE_URL}/pengeluaranDasawisma/get/getAllPengeluaran`,
+      headers,
+    ),
+    "GET all pengeluaran dasawisma",
   );
-
-  check(totalKasRes, {
-    "GET total kas status 200": (r) => r.status === 200,
-  });
+  expectOk(
+    http.get(
+      `${__ENV.BASE_URL}/pengeluaranDasawisma/get/getPengeluaran/${pengeluaranId}`,
+      headers,
+    ),
+    "GET pengeluaran dasawisma by id",
+  );
+  expectOk(
+    http.get(
+      `${__ENV.BASE_URL}/pengeluaranDasawisma/get/getPengeluaranByRW`,
+      headers,
+    ),
+    "GET pengeluaran dasawisma by RW",
+  );
+  expectOk(
+    http.put(
+      `${__ENV.BASE_URL}/pengeluaranDasawisma/update/updatePengeluaran/${pengeluaranId}`,
+      JSON.stringify({ ...pengeluaranPayload, jumlah: 1500 }),
+      headers,
+    ),
+    "PUT pengeluaran dasawisma",
+  );
 
   sleep(1);
 }

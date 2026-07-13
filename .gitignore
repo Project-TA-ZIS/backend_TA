@@ -140,4 +140,5 @@ note
 # K6 performance raw result files
 performance/result/*.jsonl
 performance/result/*.json
+performance/result/*
 !performance/result/.gitkeep
