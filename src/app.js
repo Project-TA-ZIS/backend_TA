@@ -11,7 +11,20 @@ const helmet = require("helmet");
 app.disable("x-powered-by");
 app.use(helmet());
 
-app.use(cors());
+const allowedOrigins = (
+  process.env.NODE_ENV === "production"
+    ? process.env.FRONTEND_URLS
+    : "http://localhost:5173"
+)
+  .split(",")
+  .map((origin) => origin.trim());
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
