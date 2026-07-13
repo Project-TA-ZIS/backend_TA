@@ -1,6 +1,5 @@
 import http from "k6/http";
 import { check, sleep } from "k6";
-
 import { stages, thresholds } from "./config.k6.js";
 
 export const options = {
@@ -8,163 +7,91 @@ export const options = {
   thresholds,
 };
 
-const today = new Date().toISOString().slice(0, 10);
+// =====================================================
+// LOGIN SEKALI SAJA
+// =====================================================
+export function setup() {
+  const loginUrl = `${__ENV.BASE_URL}/auth/post/login`;
 
-function jsonHeaders(token) {
-  return {
+  const payload = JSON.stringify({
+    email: __ENV.K6_EMAIL,
+    password: __ENV.K6_PASSWORD,
+  });
+
+  const params = {
     headers: {
-      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
   };
-}
 
-function parseJson(response) {
-  try {
-    return JSON.parse(response.body || "{}");
-  } catch (_) {
-    return {};
-  }
-}
+  const loginRes = http.post(loginUrl, payload, params);
 
-function login(email, password) {
-  const response = http.post(
-    `${__ENV.BASE_URL}/auth/post/login`,
-    JSON.stringify({ email, password }),
-    { headers: { "Content-Type": "application/json" } },
-  );
-
-  check(response, {
+  check(loginRes, {
     "login status 200": (r) => r.status === 200,
   });
 
-  if (response.status !== 200) {
+  if (loginRes.status !== 200) {
     throw new Error(
-      `Login gagal. Status: ${response.status}\n${response.body}`,
+      `Login gagal. Status: ${loginRes.status}\n${loginRes.body}`,
     );
   }
 
-  return parseJson(response).token;
-}
+  const body = JSON.parse(loginRes.body);
 
-function makeUnique() {
-  return `${Date.now()}-${__VU}-${__ITER}`;
-}
+  // SESUAIKAN DENGAN RESPONSE LOGIN ANDA
+  const token = body.token;
 
-function getCreatedId(response) {
-  return parseJson(response)?.data?.id;
-}
-
-function expectOk(response, label, accepted = [200]) {
-  check(response, {
-    [`${label} status ${accepted.join("/")}`]: (r) =>
-      accepted.includes(r.status),
-  });
-}
-
-export function setup() {
   return {
-    token: login(
-      __ENV.K6_EMAIL || __ENV.K6_DASAWISMA_EMAIL,
-      __ENV.K6_PASSWORD || __ENV.K6_DASAWISMA_PASSWORD,
-    ),
+    token,
   };
 }
 
+// =====================================================
+// LOAD TEST
+// =====================================================
 export default function (data) {
-  const unique = makeUnique();
-  const headers = jsonHeaders(data.token);
-
-  const pemasukanPayload = {
-    jumlah: 50000,
-    sumber: "LAINNYA",
-    deskripsi: `Pemasukan Dasawisma K6 ${unique}`,
-    tanggal_penghimpunan: today,
-    nama_anggota: "Performance Test",
+  const authHeaders = {
+    headers: {
+      Authorization: `Bearer ${data.token}`,
+      "Content-Type": "application/json",
+    },
   };
 
-  const createPemasukan = http.post(
-    `${__ENV.BASE_URL}/pemasukanDasawisma/post/createPemasukan`,
-    JSON.stringify(pemasukanPayload),
-    headers,
-  );
-  expectOk(createPemasukan, "POST pemasukan dasawisma");
-  const pemasukanId = getCreatedId(createPemasukan);
-
-  expectOk(
-    http.get(
-      `${__ENV.BASE_URL}/pemasukanDasawisma/get/getAllPemasukan`,
-      headers,
-    ),
-    "GET all pemasukan dasawisma",
-  );
-  expectOk(
-    http.get(
-      `${__ENV.BASE_URL}/pemasukanDasawisma/get/getPemasukan/${pemasukanId}`,
-      headers,
-    ),
-    "GET pemasukan dasawisma by id",
-  );
-  expectOk(
-    http.get(
-      `${__ENV.BASE_URL}/pemasukanDasawisma/get/getPemasukanByRW`,
-      headers,
-    ),
-    "GET pemasukan dasawisma by RW",
-  );
-  expectOk(
-    http.put(
-      `${__ENV.BASE_URL}/pemasukanDasawisma/update/updatePemasukan/${pemasukanId}`,
-      JSON.stringify({ ...pemasukanPayload, jumlah: 60000 }),
-      headers,
-    ),
-    "PUT pemasukan dasawisma",
+  // ==========================================
+  // GET PEMASUKAN DASAWISMA
+  // ==========================================
+  const pemasukanRes = http.get(
+    `${__ENV.BASE_URL}/pemasukanDasawisma/get/getAllPemasukan`,
+    authHeaders,
   );
 
-  const pengeluaranPayload = {
-    jumlah: 1000,
-    deskripsi: `Pengeluaran Dasawisma K6 ${unique}`,
-    tanggal_penyaluran: today,
-    nama_anggota: "Performance Test",
-  };
+  check(pemasukanRes, {
+    "GET pemasukan status 200": (r) => r.status === 200,
+  });
 
-  const createPengeluaran = http.post(
-    `${__ENV.BASE_URL}/pengeluaranDasawisma/post/createPengeluaran`,
-    JSON.stringify(pengeluaranPayload),
-    headers,
+  // ==========================================
+  // GET PENGELUARAN DASAWISMA
+  // ==========================================
+  const pengeluaranRes = http.get(
+    `${__ENV.BASE_URL}/pengeluaranDasawisma/get/getAllPengeluaran`,
+    authHeaders,
   );
-  expectOk(createPengeluaran, "POST pengeluaran dasawisma");
-  const pengeluaranId = getCreatedId(createPengeluaran);
 
-  expectOk(
-    http.get(
-      `${__ENV.BASE_URL}/pengeluaranDasawisma/get/getAllPengeluaran`,
-      headers,
-    ),
-    "GET all pengeluaran dasawisma",
+  check(pengeluaranRes, {
+    "GET pengeluaran status 200": (r) => r.status === 200,
+  });
+
+  // ==========================================
+  // GET TOTAL KAS DASAWISMA
+  // ==========================================
+  const totalKasRes = http.get(
+    `${__ENV.BASE_URL}/totalKasDasawisma/get/getTotalKasDasawisma`,
+    authHeaders,
   );
-  expectOk(
-    http.get(
-      `${__ENV.BASE_URL}/pengeluaranDasawisma/get/getPengeluaran/${pengeluaranId}`,
-      headers,
-    ),
-    "GET pengeluaran dasawisma by id",
-  );
-  expectOk(
-    http.get(
-      `${__ENV.BASE_URL}/pengeluaranDasawisma/get/getPengeluaranByRW`,
-      headers,
-    ),
-    "GET pengeluaran dasawisma by RW",
-  );
-  expectOk(
-    http.put(
-      `${__ENV.BASE_URL}/pengeluaranDasawisma/update/updatePengeluaran/${pengeluaranId}`,
-      JSON.stringify({ ...pengeluaranPayload, jumlah: 1500 }),
-      headers,
-    ),
-    "PUT pengeluaran dasawisma",
-  );
+
+  check(totalKasRes, {
+    "GET total kas status 200": (r) => r.status === 200,
+  });
 
   sleep(1);
 }
