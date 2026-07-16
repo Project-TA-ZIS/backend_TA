@@ -64,7 +64,7 @@ describe("Pemasukan ZIS Controller", () => {
         {
           id: 1,
           muzakki_id: 2,
-          kategori: "zakat mal",
+          kategori: "zakat maal",
           jumlah: 100000,
           deskripsi: "Zakat bulan ini",
           tanggal_penghimpunan: "2026-01-01",
@@ -79,7 +79,7 @@ describe("Pemasukan ZIS Controller", () => {
         data: [
           expect.objectContaining({
             id: 1,
-            kategori: "zakat mal",
+            kategori: "zakat maal",
             jumlah: 100000,
           }),
         ],
@@ -136,7 +136,7 @@ describe("Pemasukan ZIS Controller", () => {
       req.roles = "amil zakat";
       req.body = {
         muzakki_id: 1,
-        kategori: "zakat mal",
+        kategori: "zakat maal",
         jumlah: 100000,
         deskripsi: "Zakat",
         tanggal_penghimpunan: "2099-01-01",
@@ -155,7 +155,7 @@ describe("Pemasukan ZIS Controller", () => {
       req.roles = "amil zakat";
       req.body = {
         muzakki_id: 1,
-        kategori: "zakat mal",
+        kategori: "zakat maal",
         jumlah: 100000,
         deskripsi: "Zakat",
         tanggal_penghimpunan: "2026-01-01",
@@ -170,12 +170,12 @@ describe("Pemasukan ZIS Controller", () => {
       expect(pemasukanRepo.addPemasukanZIS).toHaveBeenCalledWith(
         expect.objectContaining({
           muzakki_id: 1,
-          kategori: "zakat mal",
+          kategori: "zakat maal",
           jumlah: 100000,
           nama_muzakki: "Rafif",
         }),
       );
-      expect(totalZISRepo.tambahTotalZIS).toHaveBeenCalledWith("zakat mal", 100000);
+      expect(totalZISRepo.tambahTotalZIS).toHaveBeenCalledWith("zakat maal", 100000);
       expect(res.status).toHaveBeenCalledWith(200);
     });
   });
@@ -186,7 +186,7 @@ describe("Pemasukan ZIS Controller", () => {
       req.params = { id: 1 };
       req.body = {
         muzakki_id: 1,
-        kategori: "zakat mal",
+        kategori: "zakat maal",
         jumlah: 100000,
         tanggal_penghimpunan: "2026-01-01",
       };
@@ -204,7 +204,7 @@ describe("Pemasukan ZIS Controller", () => {
       req.params = { id: 1 };
       req.body = {
         muzakki_id: 1,
-        kategori: "zakat mal",
+        kategori: "zakat maal",
         jumlah: 150000,
         deskripsi: "Update zakat",
         tanggal_penghimpunan: "2026-01-01",
@@ -214,16 +214,16 @@ describe("Pemasukan ZIS Controller", () => {
       authController.validateDate.mockReturnValue(true);
       pemasukanRepo.getPemasukanZISById.mockResolvedValue({
         id: 1,
-        kategori: "zakat mal",
+        kategori: "zakat maal",
         jumlah: 100000,
       });
 
       await controller.updatePemasukanZIS(req, res);
 
-      expect(totalZISRepo.tambahTotalZIS).toHaveBeenCalledWith("zakat mal", 50000);
+      expect(totalZISRepo.tambahTotalZIS).toHaveBeenCalledWith("zakat maal", 50000);
       expect(pemasukanRepo.updatePemasukanZIS).toHaveBeenCalledWith(
         1,
-        expect.objectContaining({ kategori: "zakat mal", jumlah: 150000 }),
+        expect.objectContaining({ kategori: "zakat maal", jumlah: 150000 }),
       );
       expect(res.status).toHaveBeenCalledWith(200);
     });
@@ -243,13 +243,13 @@ describe("Pemasukan ZIS Controller", () => {
       authController.validateDate.mockReturnValue(true);
       pemasukanRepo.getPemasukanZISById.mockResolvedValue({
         id: 1,
-        kategori: "zakat mal",
+        kategori: "zakat maal",
         jumlah: 100000,
       });
 
       await controller.updatePemasukanZIS(req, res);
 
-      expect(totalZISRepo.tambahTotalZIS).toHaveBeenNthCalledWith(1, "zakat mal", -100000);
+      expect(totalZISRepo.tambahTotalZIS).toHaveBeenNthCalledWith(1, "zakat maal", -100000);
       expect(totalZISRepo.tambahTotalZIS).toHaveBeenNthCalledWith(2, "infaq", 50000);
       expect(res.status).toHaveBeenCalledWith(200);
     });
@@ -261,14 +261,14 @@ describe("Pemasukan ZIS Controller", () => {
       req.params = { id: 1 };
       pemasukanRepo.getPemasukanZISById.mockResolvedValue({
         id: 1,
-        kategori: "zakat mal",
+        kategori: "zakat maal",
         jumlah: 100000,
       });
 
       await controller.deletePemasukanZIS(req, res);
 
       expect(pemasukanRepo.deletePemasukanZIS).toHaveBeenCalledWith(1);
-      expect(totalZISRepo.tambahTotalZIS).toHaveBeenCalledWith("zakat mal", -100000);
+      expect(totalZISRepo.tambahTotalZIS).toHaveBeenCalledWith("zakat maal", -100000);
       expect(res.status).toHaveBeenCalledWith(200);
     });
   });

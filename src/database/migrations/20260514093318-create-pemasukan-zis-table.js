@@ -23,9 +23,7 @@ module.exports = {
       nama_muzakki: Sequelize.STRING(255),
 
       kategori: Sequelize.ENUM(
-        "zakat fitrah beras",
-        "zakat fitrah uang",
-        "zakat mal",
+        "zakat maal",
         "infaq",
         "shodaqoh",
       ),

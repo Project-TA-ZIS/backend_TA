@@ -11,8 +11,7 @@ module.exports = {
       nama_lengkap: Sequelize.STRING,
       email: Sequelize.STRING,
       nomor_telpon: Sequelize.STRING,
-      alamat: Sequelize.STRING,
-      npwp: Sequelize.STRING,
+      alamat: Sequelize.TEXT,
       nik: {
         type: Sequelize.STRING,
       },
@@ -20,6 +19,7 @@ module.exports = {
       tanggal_lahir: Sequelize.DATEONLY,
       jenis_kelamin: Sequelize.ENUM('laki-laki', 'perempuan'),
       pekerjaan: Sequelize.STRING,
+      status_pernikahan: Sequelize.ENUM('menikah', 'lajang', 'cerai'),
       created_at: Sequelize.DATE,
       updated_at: Sequelize.DATE,
       deleted_at: Sequelize.DATE,

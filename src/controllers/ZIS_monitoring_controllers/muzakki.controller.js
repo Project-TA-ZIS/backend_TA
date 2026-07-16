@@ -3,6 +3,8 @@ const authController = require("../auth/auth.controller");
 const muzakkiModel = require("../../models/users/muzakki/muzakki.models");
 const { formatDateInput } = require("../../utils/formatDateInput");
 
+const validStatusPernikahan = new Set(["menikah", "lajang", "cerai"]);
+
 const getAllMuzakki = async (req, res) => {
   try {
     const muzakki = (await muzakkiRepo.getAllMuzakki()).map(
@@ -54,6 +56,7 @@ const getMuzakkiByNik = async (req, res) => {
 };
 
 const createMuzakki = async (req, res) => {
+
   try {
     const roles = req.roles;
     if (roles != "amil zakat") {
@@ -71,10 +74,17 @@ const createMuzakki = async (req, res) => {
       !req.body.tempat_lahir ||
       !req.body.tanggal_lahir ||
       !req.body.jenis_kelamin ||
-      !req.body.pekerjaan
+      !req.body.pekerjaan ||
+      !req.body.status_pernikahan
     ) {
       return res.status(400).json({
         message: "Semua field wajib diisi",
+      });
+    }
+
+    if (!validStatusPernikahan.has(req.body.status_pernikahan)) {
+      return res.status(400).json({
+        message: "Status pernikahan harus bernilai menikah, lajang, atau cerai",
       });
     }
 
@@ -83,12 +93,12 @@ const createMuzakki = async (req, res) => {
       email: req.body.email,
       nomor_telpon: req.body.nomor_telpon,
       alamat: req.body.alamat,
-      npwp: req.body.npwp,
       nik: req.body.nik,
       tempat_lahir: req.body.tempat_lahir,
       tanggal_lahir: formatDateInput(req.body.tanggal_lahir),
       jenis_kelamin: req.body.jenis_kelamin,
       pekerjaan: req.body.pekerjaan,
+      status_pernikahan: req.body.status_pernikahan,
       created_at: new Date(),
       updated_at: null,
       deleted_at: null,
@@ -147,14 +157,20 @@ const editMuzakki = async (req, res) => {
       email: req.body.email,
       nomor_telpon: req.body.nomor_telpon,
       alamat: req.body.alamat,
-      npwp: req.body.npwp,
       nik: req.body.nik,
       tempat_lahir: req.body.tempat_lahir,
       tanggal_lahir: formatDateInput(req.body.tanggal_lahir),
       jenis_kelamin: req.body.jenis_kelamin,
       pekerjaan: req.body.pekerjaan,
+      status_pernikahan: req.body.status_pernikahan,
       updated_at: new Date(),
     });
+
+    if (!validStatusPernikahan.has(muzakkiData.status_pernikahan)) {
+      return res.status(400).json({
+        message: "Status pernikahan harus bernilai menikah, lajang, atau cerai",
+      });
+    }
 
     await validateNewData(muzakkiData, id);
 

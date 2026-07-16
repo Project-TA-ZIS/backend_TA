@@ -6,6 +6,10 @@ class mustahik extends User {
   #tanggal_lahir;
   #jenis_kelamin;
   #kategori;
+  #status_pekerjaan;
+  #pekerjaan;
+  #penghasilan;
+  #status_pernikahan;
 
   constructor(data) {
     super(data);
@@ -14,6 +18,10 @@ class mustahik extends User {
     this.#tanggal_lahir = data.tanggal_lahir ?? null;
     this.#jenis_kelamin = data.jenis_kelamin ?? null;
     this.#kategori = data.kategori ?? null;
+    this.#status_pekerjaan = data.status_pekerjaan ?? null;
+    this.#pekerjaan = data.pekerjaan ?? null;
+    this.#penghasilan = data.penghasilan ?? null;
+    this.#status_pernikahan = data.status_pernikahan ?? null;
   }
 
   get nik() {
@@ -56,6 +64,38 @@ class mustahik extends User {
     this.#kategori = value;
   }
 
+  get status_pekerjaan() {
+    return this.#status_pekerjaan;
+  }
+
+  set status_pekerjaan(value) {
+    this.#status_pekerjaan = value;
+  }
+
+  get pekerjaan() {
+    return this.#pekerjaan;
+  }
+
+  set pekerjaan(value) {
+    this.#pekerjaan = value;
+  }
+
+  get penghasilan() {
+    return this.#penghasilan;
+  }
+
+  set penghasilan(value) {
+    this.#penghasilan = value;
+  }
+
+  get status_pernikahan() {
+    return this.#status_pernikahan;
+  }
+
+  set status_pernikahan(value) {
+    this.#status_pernikahan = value;
+  }
+
   toJSON() {
     return {
       ...super.toJSON(),
@@ -64,6 +104,10 @@ class mustahik extends User {
       tanggal_lahir: this.tanggal_lahir,
       jenis_kelamin: this.jenis_kelamin,
       kategori: this.kategori,
+      status_pekerjaan: this.status_pekerjaan,
+      pekerjaan: this.pekerjaan,
+      penghasilan: this.penghasilan,
+      status_pernikahan: this.status_pernikahan,
     };
   }
 }

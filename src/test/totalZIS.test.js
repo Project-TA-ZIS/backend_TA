@@ -71,7 +71,7 @@ describe("Total ZIS Controller", () => {
     test("returns total uang and beras", async () => {
       totalZISRepo.getTotalAllPemasukanZIS.mockResolvedValue({
         total_uang: "250000",
-        total_beras: "35",
+        total_beras: "0",
         updated_at: "2026-01-01",
       });
 
@@ -81,7 +81,7 @@ describe("Total ZIS Controller", () => {
       expect(res.json).toHaveBeenCalledWith({
         data: {
           total_uang_zis: 250000,
-          total_beras_zakat: 35,
+          total_beras_zakat: 0,
           updated_at: "2026-01-01",
         },
       });
