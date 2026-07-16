@@ -72,7 +72,7 @@ const addPengeluaranZIS = async (req, res) => {
     );
     if (!dateStatus) {
       return res.status(400).json({
-        message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
+        message: "Tanggal penyaluran harus sama dengan tanggal hari ini",
       });
     }
 
@@ -146,7 +146,7 @@ const updatePengeluaranZIS = async (req, res) => {
     );
     if (!dateStatus) {
       return res.status(400).json({
-        message: "Tanggal penyaluran tidak boleh melebihi tanggal saat ini",
+        message: "Tanggal penyaluran harus sama dengan tanggal hari ini",
       });
     }
 

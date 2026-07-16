@@ -9,9 +9,7 @@ module.exports = {
         primaryKey: true,
       },
       kategori: Sequelize.ENUM(
-        "zakat fitrah beras",
-        "zakat fitrah uang",
-        "zakat mal",
+        "zakat maal",
         "infaq",
         "shodaqoh",
       ),

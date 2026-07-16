@@ -2,22 +2,22 @@ const User = require("../users.models");
 
 class Muzakki extends User {
   #email;
-  #npwp;
   #nik;
   #tempat_lahir;
   #tanggal_lahir;
   #jenis_kelamin;
   #pekerjaan;
+  #status_pernikahan;
 
   constructor(data) {
     super(data);
     this.#email = data.email ?? null;
-    this.#npwp = data.npwp ?? null;
     this.#nik = data.nik ?? null;
     this.#tempat_lahir = data.tempat_lahir ?? null;
     this.#tanggal_lahir = data.tanggal_lahir ?? null;
     this.#jenis_kelamin = data.jenis_kelamin ?? null;
     this.#pekerjaan = data.pekerjaan ?? null;
+    this.#status_pernikahan = data.status_pernikahan ?? null;
   }
 
   get email() {
@@ -26,14 +26,6 @@ class Muzakki extends User {
 
   set email(value) {
     this.#email = value;
-  }
-
-  get npwp() {
-    return this.#npwp;
-  }
-
-  set npwp(value) {
-    this.#npwp = value;
   }
 
   get nik() {
@@ -72,16 +64,28 @@ class Muzakki extends User {
     return this.#pekerjaan;
   }
 
+  set pekerjaan(value) {
+    this.#pekerjaan = value;
+  }
+
+  get status_pernikahan() {
+    return this.#status_pernikahan;
+  }
+
+  set status_pernikahan(value) {
+    this.#status_pernikahan = value;
+  }
+
   toJSON() {
     return {
       ...super.toJSON(),
       email: this.#email,
-      npwp: this.#npwp,
       nik: this.#nik,
       tempat_lahir: this.#tempat_lahir,
       tanggal_lahir: this.#tanggal_lahir,
       jenis_kelamin: this.#jenis_kelamin,
       pekerjaan: this.#pekerjaan,
+      status_pernikahan: this.#status_pernikahan,
     };
   }
 }

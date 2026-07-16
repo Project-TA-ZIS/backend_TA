@@ -46,12 +46,16 @@ const createMustahik = async (mustahikData) => {
           tanggal_lahir,
           jenis_kelamin,
           kategori,
+          status_pekerjaan,
+          pekerjaan,
+          penghasilan,
+          status_pernikahan,
           created_at,
           updated_at,
           deleted_at,
           deleted_status
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     `,
     [
       mustahikData.nama_lengkap,
@@ -62,6 +66,10 @@ const createMustahik = async (mustahikData) => {
       mustahikData.tanggal_lahir,
       mustahikData.jenis_kelamin,
       mustahikData.kategori,
+      mustahikData.status_pekerjaan,
+      mustahikData.pekerjaan,
+      mustahikData.penghasilan,
+      mustahikData.status_pernikahan,
       mustahikData.created_at,
       mustahikData.updated_at,
       mustahikData.deleted_at,
@@ -96,6 +104,10 @@ const editMustahik = async (id, mustahikData) => {
             tanggal_lahir = ?,
             jenis_kelamin = ?,
             kategori = ?,
+            status_pekerjaan = ?,
+            pekerjaan = ?,
+            penghasilan = ?,
+            status_pernikahan = ?,
             updated_at = NOW()
         WHERE id = ? AND deleted_status = 0
     `;
@@ -108,6 +120,10 @@ const editMustahik = async (id, mustahikData) => {
     mustahikData.tanggal_lahir,
     mustahikData.jenis_kelamin,
     mustahikData.kategori,
+    mustahikData.status_pekerjaan,
+    mustahikData.pekerjaan,
+    mustahikData.penghasilan,
+    mustahikData.status_pernikahan,
     id,
   ]);
   return result.affectedRows > 0;

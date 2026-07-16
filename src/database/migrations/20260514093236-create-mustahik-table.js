@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('mustahik', {
+    await queryInterface.createTable("mustahik", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -16,16 +16,31 @@ module.exports = {
       },
       tempat_lahir: Sequelize.STRING,
       tanggal_lahir: Sequelize.DATEONLY,
-      jenis_kelamin: Sequelize.ENUM('laki-laki', 'perempuan'),
+      jenis_kelamin: Sequelize.ENUM("laki-laki", "perempuan"),
       kategori: Sequelize.ENUM(
-        'fakir',
-        'miskin',
-        'amil',
-        'mualaf',
-        'berhutang',
-        'fisabilillah',
-        'musafir'
+        "fakir",
+        "miskin",
+        "amil",
+        "mualaf",
+        "berhutang",
+        "fisabilillah",
+        "musafir",
       ),
+      status_pekerjaan: Sequelize.ENUM("tetap", "tidak tetap"),
+      pekerjaan: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      penghasilan: {
+        type: Sequelize.ENUM(
+          "0-500000",
+          "500001-5000000",
+          "5000001-10000000",
+          ">10000000",
+        ),
+        allowNull: true,
+      },
+      status_pernikahan: Sequelize.ENUM("menikah", "lajang", "cerai"),
       created_at: Sequelize.DATE,
       updated_at: Sequelize.DATE,
       deleted_at: Sequelize.DATE,
@@ -37,6 +52,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable('mustahik');
+    await queryInterface.dropTable("mustahik");
   },
 };

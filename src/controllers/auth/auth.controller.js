@@ -115,21 +115,41 @@ const hashPassword = async (password) => {
   return await bcrypt.hash(password, 10);
 };
 
+const getDateKey = (dateValue) => {
+  if (typeof dateValue === "string") {
+    const trimmedValue = dateValue.trim();
+    const dateOnlyMatch = trimmedValue.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+    if (dateOnlyMatch) {
+      return `${dateOnlyMatch[1]}-${dateOnlyMatch[2]}-${dateOnlyMatch[3]}`;
+    }
+  }
+
+  const parsedDate = new Date(dateValue);
+
+  if (isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 const validateDate = (dateString) => {
   if (!dateString) return false;
 
-  const inputDate = new Date(dateString);
-
-  if (isNaN(inputDate.getTime())) {
+  const inputDateKey = getDateKey(dateString);
+  if (!inputDateKey) {
     return false;
   }
 
   const today = new Date();
+  const todayKey = getDateKey(today);
 
-  today.setHours(0, 0, 0, 0);
-  inputDate.setHours(0, 0, 0, 0);
-
-  return inputDate <= today;
+  return inputDateKey === todayKey;
 };
 
 const requestPasswordReset = async (req, res) => {

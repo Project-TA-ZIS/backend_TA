@@ -20,6 +20,10 @@ const validBody = {
   tanggal_lahir: "2000-01-01",
   jenis_kelamin: "Perempuan",
   kategori: "fakir",
+  status_pekerjaan: "tetap",
+  pekerjaan: "Guru",
+  penghasilan: 3000000,
+  status_pernikahan: "menikah",
 };
 
 describe("Mustahik Controller", () => {
@@ -133,6 +137,8 @@ describe("Mustahik Controller", () => {
           nama_lengkap: validBody.nama_lengkap,
           nik: validBody.nik,
           kategori: validBody.kategori,
+          status_pekerjaan: validBody.status_pekerjaan,
+          status_pernikahan: validBody.status_pernikahan,
         }),
       );
       expect(res.status).toHaveBeenCalledWith(200);
@@ -202,7 +208,12 @@ describe("Mustahik Controller", () => {
 
       expect(mustahikRepo.editMustahik).toHaveBeenCalledWith(
         1,
-        expect.objectContaining({ nik: validBody.nik, kategori: validBody.kategori }),
+        expect.objectContaining({
+          nik: validBody.nik,
+          kategori: validBody.kategori,
+          status_pekerjaan: validBody.status_pekerjaan,
+          status_pernikahan: validBody.status_pernikahan,
+        }),
       );
       expect(res.status).toHaveBeenCalledWith(200);
     });

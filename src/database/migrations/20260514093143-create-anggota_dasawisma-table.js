@@ -35,7 +35,7 @@ module.exports = {
       },
       roles: Sequelize.ENUM("kader dasawisma", "penanggung jawab dasawisma"),
 
-      alamat: Sequelize.STRING,
+      alamat: Sequelize.TEXT,
 
       tempat_lahir: Sequelize.STRING,
 

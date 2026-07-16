@@ -2,6 +2,9 @@ const mustahikRepo = require("../../repositories/ZIS_monitoring_repo/mustahik.re
 const authController = require("../auth/auth.controller");
 const mustahikModel = require("../../models/users/mustahik/mustahik.models");
 
+const validStatusPernikahan = new Set(["menikah", "lajang", "cerai"]);
+const validStatusPekerjaan = new Set(["tetap", "tidak tetap"]);
+
 const getAllMustahik = async (req, res) => {
   try {
     const mustahik = (await mustahikRepo.getAllMustahik()).map(
@@ -50,13 +53,44 @@ const createMustahik = async (req, res) => {
       !req.body.tempat_lahir ||
       !req.body.tanggal_lahir ||
       !req.body.jenis_kelamin ||
-      !req.body.kategori
+      !req.body.kategori ||
+      !req.body.status_pekerjaan ||
+      !req.body.status_pernikahan
     ) {
       return res.status(400).json({
         message: "Semua field wajib diisi",
       });
     }
-    
+
+    if (!validStatusPekerjaan.has(req.body.status_pekerjaan)) {
+      return res.status(400).json({
+        message: "Status pekerjaan harus bernilai tetap atau tidak tetap",
+      });
+    }
+
+    if (!validStatusPernikahan.has(req.body.status_pernikahan)) {
+      return res.status(400).json({
+        message: "Status pernikahan harus bernilai menikah, lajang, atau cerai",
+      });
+    }
+
+    const isPekerjaanTetap = req.body.status_pekerjaan === "tetap";
+    if (
+      isPekerjaanTetap &&
+      (!req.body.pekerjaan ||
+        req.body.penghasilan === undefined ||
+        req.body.penghasilan === null ||
+        req.body.penghasilan === "")
+    ) {
+      return res.status(400).json({
+        message:
+          "Pekerjaan dan penghasilan wajib diisi untuk status pekerjaan tetap",
+      });
+    }
+
+    const pekerjaan = isPekerjaanTetap ? req.body.pekerjaan : null;
+    const penghasilan = isPekerjaanTetap ? req.body.penghasilan : null;
+
     const mustahikData = new mustahikModel({
       nama_lengkap: req.body.nama_lengkap,
       nomor_telpon: req.body.nomor_telpon,
@@ -66,6 +100,10 @@ const createMustahik = async (req, res) => {
       tanggal_lahir: req.body.tanggal_lahir,
       jenis_kelamin: req.body.jenis_kelamin,
       kategori: req.body.kategori,
+      status_pekerjaan: req.body.status_pekerjaan,
+      pekerjaan,
+      penghasilan,
+      status_pernikahan: req.body.status_pernikahan,
       created_at: new Date(),
       updated_at: null,
       deleted_at: null,
@@ -128,7 +166,38 @@ const editMustahik = async (req, res) => {
       tanggal_lahir: req.body.tanggal_lahir,
       jenis_kelamin: req.body.jenis_kelamin,
       kategori: req.body.kategori,
+      status_pekerjaan: req.body.status_pekerjaan,
+      pekerjaan:
+        req.body.status_pekerjaan === "tetap" ? req.body.pekerjaan : null,
+      penghasilan:
+        req.body.status_pekerjaan === "tetap" ? req.body.penghasilan : null,
+      status_pernikahan: req.body.status_pernikahan,
     });
+
+    if (!validStatusPekerjaan.has(mustahikData.status_pekerjaan)) {
+      return res.status(400).json({
+        message: "Status pekerjaan harus bernilai tetap atau tidak tetap",
+      });
+    }
+
+    if (!validStatusPernikahan.has(mustahikData.status_pernikahan)) {
+      return res.status(400).json({
+        message: "Status pernikahan harus bernilai menikah, lajang, atau cerai",
+      });
+    }
+
+    if (
+      mustahikData.status_pekerjaan === "tetap" &&
+      (!mustahikData.pekerjaan ||
+        mustahikData.penghasilan === undefined ||
+        mustahikData.penghasilan === null ||
+        mustahikData.penghasilan === "")
+    ) {
+      return res.status(400).json({
+        message:
+          "Pekerjaan dan penghasilan wajib diisi untuk status pekerjaan tetap",
+      });
+    }
 
     await validateNewData(mustahikData, id);
 

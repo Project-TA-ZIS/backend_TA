@@ -14,7 +14,7 @@ module.exports = {
       },
       password: Sequelize.STRING,
       nomor_telpon: Sequelize.STRING,
-      alamat: Sequelize.STRING,
+      alamat: Sequelize.TEXT,
       roles: Sequelize.ENUM('amil zakat'),
       created_at: Sequelize.DATE,
       updated_at: Sequelize.DATE,

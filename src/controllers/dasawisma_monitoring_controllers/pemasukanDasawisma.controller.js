@@ -144,7 +144,7 @@ const addPemasukanDasawisma = async (req, res) => {
 
     if (!isValidDate) {
       return res.status(400).json({
-        message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
+        message: "Tanggal penghimpunan harus sama dengan tanggal hari ini",
       });
     }
 
@@ -219,7 +219,7 @@ const updatePemasukanDasawisma = async (req, res) => {
 
     if (!dateStatus) {
       return res.status(400).json({
-        message: "Tanggal penghimpunan tidak boleh melebihi tanggal saat ini",
+        message: "Tanggal penghimpunan harus sama dengan tanggal hari ini",
       });
     }
 

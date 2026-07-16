@@ -17,12 +17,12 @@ const validBody = {
   email: "rafif@test.com",
   nomor_telpon: "081234567890",
   alamat: "Bandung",
-  npwp: "123",
   nik: "3273010101010001",
   tempat_lahir: "Bandung",
   tanggal_lahir: "2000-01-01",
   jenis_kelamin: "Laki-laki",
   pekerjaan: "Karyawan",
+  status_pernikahan: "menikah",
 };
 
 describe("Muzakki Controller", () => {
@@ -152,6 +152,7 @@ describe("Muzakki Controller", () => {
           nama_lengkap: validBody.nama_lengkap,
           email: validBody.email,
           nik: validBody.nik,
+          status_pernikahan: validBody.status_pernikahan,
         }),
       );
       expect(res.status).toHaveBeenCalledWith(201);
@@ -213,7 +214,11 @@ describe("Muzakki Controller", () => {
 
       expect(muzakkiRepo.editMuzakki).toHaveBeenCalledWith(
         1,
-        expect.objectContaining({ id: 1, email: validBody.email }),
+        expect.objectContaining({
+          id: 1,
+          email: validBody.email,
+          status_pernikahan: validBody.status_pernikahan,
+        }),
       );
       expect(res.status).toHaveBeenCalledWith(200);
     });
