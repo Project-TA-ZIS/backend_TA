@@ -141,15 +141,6 @@ const updatePengeluaranZIS = async (req, res) => {
       tanggal_penyaluran: formatDateInput(req.body.tanggal_penyaluran),
     });
 
-    const dateStatus = authController.validateDate(
-      penyaluranZIS.tanggal_penyaluran,
-    );
-    if (!dateStatus) {
-      return res.status(400).json({
-        message: "Tanggal penyaluran harus sama dengan tanggal hari ini",
-      });
-    }
-
     const mustahik = await mustahikRepo.getMustahikById(
       penyaluranZIS.mustahik_id,
     );

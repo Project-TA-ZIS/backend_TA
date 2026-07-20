@@ -192,13 +192,6 @@ const updatePengeluaranDasawisma = async (req, res) => {
         .json({ message: "Data pengeluaran Dasawisma tidak ditemukan" });
     }
 
-    const dateStatus = authController.validateDate(req.body.tanggal_penyaluran);
-    if (!dateStatus) {
-      return res.status(400).json({
-        message: "Tanggal penyaluran harus sama dengan tanggal hari ini",
-      });
-    }
-
     const tanggal_penyaluran = formatDateInput(req.body.tanggal_penyaluran);
     const newJumlah = Number(req.body.jumlah);
     const oldJumlah = Number(existingData.jumlah);

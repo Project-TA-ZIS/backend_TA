@@ -212,17 +212,6 @@ const updatePemasukanDasawisma = async (req, res) => {
       return res.status(400).json({ message: validation.message });
     }
 
-    // VALIDASI TANGGAL
-    const dateStatus = authController.validateDate(
-      req.body.tanggal_penghimpunan,
-    );
-
-    if (!dateStatus) {
-      return res.status(400).json({
-        message: "Tanggal penghimpunan harus sama dengan tanggal hari ini",
-      });
-    }
-
     const tanggalPenghimpunan = new Date(req.body.tanggal_penghimpunan)
       .toISOString()
       .split("T")[0];
