@@ -279,6 +279,7 @@ describe("Penyaluran ZIS Controller", () => {
 
       await controller.updatePengeluaranZIS(req, res);
 
+      expect(authController.validateDate).not.toHaveBeenCalled();
       expect(totalZISRepo.kurangTotalZIS).toHaveBeenCalledWith("zakat mal", 50000);
       expect(penyaluranRepo.updatePengeluaranZIS).toHaveBeenCalledWith(
         1,

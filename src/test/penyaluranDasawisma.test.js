@@ -198,7 +198,7 @@ describe("Penyaluran Dasawisma Controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(404);
     });
-    test("updatePengeluaranDasawisma invalid date", async () => {
+    test("updatePengeluaranDasawisma permits a previously recorded date", async () => {
       req.roles = "penanggung jawab dasawisma";
       req.params = { id: 1 };
 
@@ -207,11 +207,23 @@ describe("Penyaluran Dasawisma Controller", () => {
         jumlah: 100000,
       });
 
-      authController.validateDate.mockReturnValue(false);
+      req.body = {
+        jumlah: 100000,
+        deskripsi: "Update transaksi lama",
+        tanggal_penyaluran: "2026-07-15",
+      };
+      pengeluaranRepo.updatePengeluaranDasawisma.mockResolvedValue({
+        affectedRows: 1,
+      });
 
       await controller.updatePengeluaranDasawisma(req, res);
 
-      expect(res.status).toHaveBeenCalledWith(400);
+      expect(authController.validateDate).not.toHaveBeenCalled();
+      expect(pengeluaranRepo.updatePengeluaranDasawisma).toHaveBeenCalledWith(
+        1,
+        expect.objectContaining({ tanggal_penyaluran: "2026-07-15" }),
+      );
+      expect(res.status).toHaveBeenCalledWith(200);
     });
     test("updatePengeluaranDasawisma success", async () => {
       req.roles = "penanggung jawab dasawisma";

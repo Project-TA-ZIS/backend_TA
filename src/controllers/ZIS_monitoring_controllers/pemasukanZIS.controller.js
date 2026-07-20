@@ -104,15 +104,6 @@ const updatePemasukanZIS = async (req, res) => {
 
     const { id } = req.params;
 
-    const dateStatus = authController.validateDate(
-      req.body.tanggal_penghimpunan,
-    );
-    if (!dateStatus) {
-      return res.status(400).json({
-        message: "Tanggal penghimpunan harus sama dengan tanggal hari ini",
-      });
-    }
-
     const pemasukanZIS = new PemasukanZIS({
       muzakki_id: req.body.muzakki_id,
       kategori: req.body.kategori,

@@ -220,6 +220,7 @@ describe("Pemasukan ZIS Controller", () => {
 
       await controller.updatePemasukanZIS(req, res);
 
+      expect(authController.validateDate).not.toHaveBeenCalled();
       expect(totalZISRepo.tambahTotalZIS).toHaveBeenCalledWith("zakat maal", 50000);
       expect(pemasukanRepo.updatePemasukanZIS).toHaveBeenCalledWith(
         1,
